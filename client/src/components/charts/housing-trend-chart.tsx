@@ -7,8 +7,6 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
-  AreaChart,
-  Area,
   ReferenceLine
 } from 'recharts';
 import { format } from 'date-fns';
@@ -21,43 +19,67 @@ interface HousingTrendChartProps {
   metric: 'medianHomeValue' | 'yoyChange';
   selectedStateName?: string;
   isLoading?: boolean;
+  movingAverages?: {
+    ma12: boolean;
+    ma24: boolean;
+    ma60: boolean;
+  };
 }
 
 export function HousingTrendChart({ 
   data, 
   metric, 
   selectedStateName,
-  isLoading 
+  isLoading,
+  movingAverages = { ma12: false, ma24: false, ma60: false }
 }: HousingTrendChartProps) {
   
   const chartData = useMemo(() => {
-    return data.map(item => ({
-      ...item,
-      displayDate: new Date(item.date),
-      formattedValue: metric === 'medianHomeValue' 
-        ? item.medianHomeValue 
-        : item.yoyChange
-    }));
-  }, [data, metric]);
+    const sortedData = [...data].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    
+    return sortedData.map((item, index) => {
+      const calculateMA = (period: number) => {
+        if (index < period - 1) return null;
+        const slice = sortedData.slice(index - period + 1, index + 1);
+        const sum = slice.reduce((acc, curr) => acc + (metric === 'medianHomeValue' ? curr.medianHomeValue : curr.yoyChange), 0);
+        return sum / period;
+      };
+
+      return {
+        ...item,
+        displayDate: new Date(item.date),
+        formattedValue: metric === 'medianHomeValue' 
+          ? item.medianHomeValue 
+          : item.yoyChange,
+        ma12: movingAverages.ma12 ? calculateMA(12) : null,
+        ma24: movingAverages.ma24 ? calculateMA(24) : null,
+        ma60: movingAverages.ma60 ? calculateMA(60) : null,
+      };
+    });
+  }, [data, metric, movingAverages]);
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-popover border border-border shadow-lg rounded-lg p-3 text-sm z-50">
-          <p className="font-semibold text-foreground mb-1">
-            {format(new Date(label), "MMM yyyy")}
+          <p className="font-semibold text-foreground mb-2 border-b border-border pb-1">
+            {format(new Date(label), "MMMM yyyy")}
           </p>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-primary" />
-            <span className="text-muted-foreground">
-              {metric === 'medianHomeValue' ? 'Value:' : 'YoY Change:'}
-            </span>
-            <span className="font-medium font-mono text-foreground">
-              {metric === 'medianHomeValue' 
-                ? `$${payload[0].value.toLocaleString()}`
-                : `${payload[0].value.toFixed(1)}%`
-              }
-            </span>
+          <div className="space-y-1.5">
+            {payload.map((entry: any, index: number) => (
+              <div key={index} className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+                  <span className="text-muted-foreground whitespace-nowrap">{entry.name}:</span>
+                </div>
+                <span className="font-medium font-mono text-foreground">
+                  {metric === 'medianHomeValue' 
+                    ? `$${Math.round(entry.value).toLocaleString()}`
+                    : `${entry.value.toFixed(2)}%`
+                  }
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       );
@@ -71,7 +93,7 @@ export function HousingTrendChart({
       if (value >= 1000) return `$${(value / 1000).toFixed(0)}k`;
       return `$${value}`;
     }
-    return `${value}%`;
+    return `${value.toFixed(2)}%`;
   };
 
   if (isLoading) {
@@ -96,11 +118,10 @@ export function HousingTrendChart({
   }
 
   const isValueMetric = metric === 'medianHomeValue';
-  const color = isValueMetric ? "hsl(var(--primary))" : "hsl(var(--accent))";
-  const gradientId = `gradient-${metric}`;
+  const mainColor = isValueMetric ? "hsl(var(--primary))" : "hsl(var(--accent))";
 
   return (
-    <Card className="border-border/60 shadow-sm bg-card h-full">
+    <Card className="border-border/60 shadow-sm bg-card h-full overflow-visible">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div>
@@ -111,25 +132,12 @@ export function HousingTrendChart({
               {selectedStateName ? `Historical trends for ${selectedStateName}` : 'National Average Historical Trends'}
             </CardDescription>
           </div>
-          <div className="hidden sm:block">
-            {/* Legend or status indicator could go here */}
-            <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">
-              <div className={cn("w-2 h-2 rounded-full", isValueMetric ? "bg-primary" : "bg-accent")} />
-              {isValueMetric ? "USD Value" : "Percentage"}
-            </div>
-          </div>
         </div>
       </CardHeader>
       <CardContent>
         <div className="h-[300px] w-full mt-4">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-              <defs>
-                <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={color} stopOpacity={0.2}/>
-                  <stop offset="95%" stopColor={color} stopOpacity={0}/>
-                </linearGradient>
-              </defs>
+            <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
               <XAxis 
                 dataKey="displayDate" 
@@ -144,23 +152,58 @@ export function HousingTrendChart({
                 axisLine={false}
                 tickLine={false}
                 tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
-                width={60}
+                width={65}
               />
-              <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1, strokeDasharray: '4 4' }} />
-              {/* Add a zero line for YoY change */}
+              <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1 }} />
               {!isValueMetric && (
                 <ReferenceLine y={0} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" opacity={0.5} />
               )}
-              <Area 
+              
+              <Line 
+                name={isValueMetric ? "Price" : "YoY %"}
                 type="monotone" 
                 dataKey="formattedValue" 
-                stroke={color} 
-                strokeWidth={2}
-                fillOpacity={1} 
-                fill={`url(#${gradientId})`} 
+                stroke={mainColor} 
+                strokeWidth={3}
+                dot={false}
+                activeDot={{ r: 4, strokeWidth: 0 }}
                 animationDuration={1000}
               />
-            </AreaChart>
+
+              {movingAverages.ma12 && (
+                <Line
+                  name="12m MA"
+                  type="monotone"
+                  dataKey="ma12"
+                  stroke="hsl(var(--primary) / 0.6)"
+                  strokeWidth={2}
+                  strokeDasharray="5 5"
+                  dot={false}
+                />
+              )}
+              {movingAverages.ma24 && (
+                <Line
+                  name="24m MA"
+                  type="monotone"
+                  dataKey="ma24"
+                  stroke="hsl(var(--accent) / 0.6)"
+                  strokeWidth={2}
+                  strokeDasharray="5 5"
+                  dot={false}
+                />
+              )}
+              {movingAverages.ma60 && (
+                <Line
+                  name="5y MA"
+                  type="monotone"
+                  dataKey="ma60"
+                  stroke="hsl(var(--muted-foreground))"
+                  strokeWidth={2}
+                  strokeDasharray="5 5"
+                  dot={false}
+                />
+              )}
+            </LineChart>
           </ResponsiveContainer>
         </div>
       </CardContent>
