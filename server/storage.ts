@@ -1,38 +1,42 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { db } from "./db";
+import { housingStats, type HousingStat, type InsertHousingStat } from "@shared/schema";
+import { eq, and, gte, lte, desc } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getHousingStats(stateCode?: string, startDate?: string, endDate?: string): Promise<HousingStat[]>;
+  getAllStates(): Promise<{ code: string, name: string }[]>;
+  seedHousingData(data: InsertHousingStat[]): Promise<void>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
+export class DatabaseStorage implements IStorage {
+  async getHousingStats(stateCode?: string, startDate?: string, endDate?: string): Promise<HousingStat[]> {
+    let conditions = [];
+    if (stateCode) conditions.push(eq(housingStats.stateCode, stateCode));
+    if (startDate) conditions.push(gte(housingStats.date, startDate));
+    if (endDate) conditions.push(lte(housingStats.date, endDate));
 
-  constructor() {
-    this.users = new Map();
+    return await db.select()
+      .from(housingStats)
+      .where(and(...conditions))
+      .orderBy(desc(housingStats.date));
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getAllStates(): Promise<{ code: string, name: string }[]> {
+    const result = await db.selectDistinct({
+      code: housingStats.stateCode,
+      name: housingStats.stateName
+    }).from(housingStats);
+    return result;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async seedHousingData(data: InsertHousingStat[]): Promise<void> {
+    if (data.length === 0) return;
+    // Batch insert for performance
+    const batchSize = 1000;
+    for (let i = 0; i < data.length; i += batchSize) {
+      await db.insert(housingStats).values(data.slice(i, i + batchSize));
+    }
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

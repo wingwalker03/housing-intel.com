@@ -1,0 +1,54 @@
+import { z } from 'zod';
+import { insertHousingStatSchema, housingStats } from './schema';
+
+export const errorSchemas = {
+  validation: z.object({
+    message: z.string(),
+    field: z.string().optional(),
+  }),
+  notFound: z.object({
+    message: z.string(),
+  }),
+  internal: z.object({
+    message: z.string(),
+  }),
+};
+
+export const api = {
+  housing: {
+    list: {
+      method: 'GET' as const,
+      path: '/api/housing',
+      input: z.object({
+        stateCode: z.string().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+      }).optional(),
+      responses: {
+        200: z.array(z.custom<typeof housingStats.$inferSelect>()),
+      },
+    },
+    states: {
+      method: 'GET' as const,
+      path: '/api/states',
+      responses: {
+        200: z.array(z.object({ code: z.string(), name: z.string() })),
+      },
+    },
+  },
+};
+
+export function buildUrl(path: string, params?: Record<string, string | number>): string {
+  let url = path;
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      if (url.includes(`:${key}`)) {
+        url = url.replace(`:${key}`, String(value));
+      }
+    });
+  }
+  return url;
+}
+
+export type HousingStat = z.infer<typeof api.housing.list.responses[200]>[number];
+export type StateInfo = z.infer<typeof api.housing.states.responses[200]>[number];
