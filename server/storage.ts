@@ -18,7 +18,7 @@ export class DatabaseStorage implements IStorage {
     return await db.select()
       .from(housingStats)
       .where(and(...conditions))
-      .orderBy(desc(housingStats.date));
+      .orderBy(housingStats.date);
   }
 
   async getAllStates(): Promise<{ code: string, name: string }[]> {
