@@ -37,6 +37,10 @@ export class DatabaseStorage implements IStorage {
       await db.insert(housingStats).values(data.slice(i, i + batchSize));
     }
   }
+
+  async clearHousingData(): Promise<void> {
+    await db.delete(housingStats);
+  }
 }
 
 export const storage = new DatabaseStorage();

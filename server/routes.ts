@@ -3,6 +3,11 @@ import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
+import multer from "multer";
+import { parse } from "csv-parse";
+import { insertHousingStatSchema } from "@shared/schema";
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 // Seed data helper
 const STATES = [
@@ -113,6 +118,43 @@ export async function registerRoutes(
   app.get(api.housing.states.path, async (req, res) => {
     const states = await storage.getAllStates();
     res.json(states);
+  });
+
+  app.post(api.housing.uploadCsv.path, upload.single('file'), async (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    try {
+      const records: any[] = [];
+      const parser = parse(req.file.buffer, {
+        columns: true,
+        skip_empty_lines: true,
+        trim: true
+      });
+
+      for await (const record of parser) {
+        // Validate record
+        const validated = insertHousingStatSchema.parse({
+          stateCode: record.stateCode || record.state_code,
+          stateName: record.stateName || record.state_name,
+          date: record.date,
+          medianHomeValue: parseInt(record.medianHomeValue || record.median_home_value),
+          yoyChange: parseFloat(record.yoyChange || record.yoy_change)
+        });
+        records.push(validated);
+      }
+
+      if (records.length > 0) {
+        await storage.clearHousingData();
+        await storage.seedHousingData(records);
+      }
+
+      res.json({ message: "CSV uploaded and processed successfully", count: records.length });
+    } catch (err: any) {
+      console.error('CSV Processing Error:', err);
+      res.status(400).json({ message: err.message || "Failed to process CSV" });
+    }
   });
 
   // Start seeding in background

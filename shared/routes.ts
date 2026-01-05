@@ -35,6 +35,14 @@ export const api = {
         200: z.array(z.object({ code: z.string(), name: z.string() })),
       },
     },
+    uploadCsv: {
+      method: 'POST' as const,
+      path: '/api/housing/upload',
+      responses: {
+        200: z.object({ message: z.string(), count: z.number() }),
+        400: errorSchemas.validation,
+      },
+    },
   },
 };
 
