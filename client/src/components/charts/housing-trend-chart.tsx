@@ -73,7 +73,7 @@ export function HousingTrendChart({
                   <span className="text-muted-foreground whitespace-nowrap">{entry.name}:</span>
                 </div>
                 <span className="font-medium font-mono text-foreground">
-                  {metric === 'medianHomeValue' || (entry.name.includes('MA') && metric === 'medianHomeValue')
+                  {metric === 'medianHomeValue'
                     ? new Intl.NumberFormat('en-US', {
                         style: 'currency',
                         currency: 'USD',
