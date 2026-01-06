@@ -61,7 +61,7 @@ export function StatCard({
               : "text-rose-700 bg-rose-50 dark:bg-rose-900/30 dark:text-rose-400"
           )}>
             {isPositive ? <ArrowUpRight className="w-3 h-3 mr-1" /> : <ArrowDownRight className="w-3 h-3 mr-1" />}
-            {Math.abs(trend)}%
+            {Math.abs(trend).toFixed(2)}%
           </span>
           <span className="ml-2 text-muted-foreground text-xs">{trendLabel}</span>
         </div>
