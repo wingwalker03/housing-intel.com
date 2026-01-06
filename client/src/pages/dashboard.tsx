@@ -18,8 +18,16 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Building2, TrendingUp, Map, Info } from "lucide-react";
-import { format, subYears } from "date-fns";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogTrigger,
+  DialogHeader,
+  DialogTitle 
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Building2, TrendingUp, Map, Info, Maximize2 } from "lucide-react";
+import { format, subYears, isSameMonth } from "date-fns";
 
 export default function Dashboard() {
   const [selectedStateCode, setSelectedStateCode] = useState<string | undefined>(undefined);
@@ -45,8 +53,14 @@ export default function Dashboard() {
 
   const { data: stats = [], isLoading: statsLoading } = useHousingStats({
     stateCode: selectedStateCode,
-    startDate,
+    startDate: undefined, // Fetch all for YoY calc
   });
+
+  const filteredStats = useMemo(() => {
+    if (!startDate) return stats;
+    const start = new Date(startDate);
+    return stats.filter(s => new Date(s.date) >= start);
+  }, [stats, startDate]);
 
   const { data: states = [] } = useStates();
 
@@ -68,12 +82,21 @@ export default function Dashboard() {
 
   // Derive summary stats from the latest data point
   const latestStat = stats.length > 0 ? stats[stats.length - 1] : null;
-  const previousStat = stats.length > 1 ? stats[stats.length - 2] : null;
   
-  // Calculate raw difference for value
-  const valueTrend = latestStat && previousStat 
-    ? ((latestStat.medianHomeValue - previousStat.medianHomeValue) / previousStat.medianHomeValue) * 100 
-    : 0;
+  // Find stat from 12 months ago
+  const stat12mAgo = useMemo(() => {
+    if (!latestStat || stats.length < 13) return null;
+    const targetDate = subYears(new Date(latestStat.date), 1);
+    return stats.find(s => isSameMonth(new Date(s.date), targetDate)) || null;
+  }, [latestStat, stats]);
+
+  // Calculate YoY Growth for Value
+  const valueYoY = useMemo(() => {
+    if (latestStat && stat12mAgo) {
+      return ((latestStat.medianHomeValue - stat12mAgo.medianHomeValue) / stat12mAgo.medianHomeValue) * 100;
+    }
+    return 0;
+  }, [latestStat, stat12mAgo]);
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-20">
@@ -182,30 +205,22 @@ export default function Dashboard() {
         </div>
 
         {/* Key Metrics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <StatCard 
             title="Current Median Value"
             value={latestStat ? `$${latestStat.medianHomeValue.toLocaleString()}` : "---"}
-            trend={valueTrend}
-            trendLabel="vs previous month"
+            trend={valueYoY}
+            trendLabel="vs 12 months ago"
             icon="currency"
             isLoading={statsLoading}
             className="border-primary/20 bg-primary/5 shadow-sm"
           />
           <StatCard 
-            title="YoY Growth"
-            value={latestStat ? `${latestStat.yoyChange.toFixed(2)}%` : "---"}
-            trend={latestStat ? latestStat.yoyChange - (previousStat?.yoyChange || 0) : 0}
-            trendLabel="vs previous year"
+            title="YoY % Growth"
+            value={latestStat ? `${valueYoY.toFixed(2)}%` : "---"}
+            trend={latestStat && stat12mAgo ? valueYoY - ((stat12mAgo.medianHomeValue - (stats[stats.indexOf(stat12mAgo) - 12]?.medianHomeValue || stat12mAgo.medianHomeValue)) / (stats[stats.indexOf(stat12mAgo) - 12]?.medianHomeValue || stat12mAgo.medianHomeValue) * 100) : 0}
+            trendLabel="vs previous YoY"
             icon="percent"
-            isLoading={statsLoading}
-          />
-          <StatCard 
-            title="Projected Value (12m)"
-            value={latestStat ? `$${Math.round(latestStat.medianHomeValue * 1.045).toLocaleString()}` : "---"}
-            trend={4.5}
-            trendLabel="Forecasted"
-            icon="currency"
             isLoading={statsLoading}
           />
           <StatCard 
@@ -228,11 +243,32 @@ export default function Dashboard() {
                 <Map className="w-5 h-5 text-primary" />
                 Geographic Selection
               </h3>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="ghost" size="sm" className="gap-2">
+                    <Maximize2 className="w-4 h-4" />
+                    Expand Map
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-[90vw] w-full h-[80vh] flex flex-col">
+                  <DialogHeader>
+                    <DialogTitle>Geographic Selection</DialogTitle>
+                  </DialogHeader>
+                  <div className="flex-1 min-h-0 bg-muted/20 rounded-lg p-4">
+                    <USMap 
+                      selectedStateCode={selectedStateCode} 
+                      onStateSelect={handleStateSelect} 
+                    />
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
-            <USMap 
-              selectedStateCode={selectedStateCode} 
-              onStateSelect={handleStateSelect} 
-            />
+            <div className="flex-1 min-h-0">
+              <USMap 
+                selectedStateCode={selectedStateCode} 
+                onStateSelect={handleStateSelect} 
+              />
+            </div>
           </div>
 
           {/* Charts Section */}
@@ -257,7 +293,7 @@ export default function Dashboard() {
             
             <div className="flex-1 min-h-0">
               <HousingTrendChart 
-                data={stats} 
+                data={filteredStats} 
                 metric={metric} 
                 selectedStateName={selectedStateName}
                 isLoading={statsLoading}
