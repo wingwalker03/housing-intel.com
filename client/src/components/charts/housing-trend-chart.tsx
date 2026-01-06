@@ -73,8 +73,12 @@ export function HousingTrendChart({
                   <span className="text-muted-foreground whitespace-nowrap">{entry.name}:</span>
                 </div>
                 <span className="font-medium font-mono text-foreground">
-                  {metric === 'medianHomeValue' 
-                    ? `$${Math.round(entry.value).toLocaleString()}`
+                  {metric === 'medianHomeValue' || (entry.name.includes('MA') && metric === 'medianHomeValue')
+                    ? new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        maximumFractionDigits: 0,
+                      }).format(entry.value)
                     : `${entry.value.toFixed(2)}%`
                   }
                 </span>
@@ -89,9 +93,11 @@ export function HousingTrendChart({
 
   const formatYAxis = (value: number) => {
     if (metric === 'medianHomeValue') {
-      if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
-      if (value >= 1000) return `$${(value / 1000).toFixed(0)}k`;
-      return `$${value}`;
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0,
+      }).format(value);
     }
     return `${value.toFixed(2)}%`;
   };
@@ -137,8 +143,8 @@ export function HousingTrendChart({
       <CardContent>
         <div className="h-[300px] w-full mt-4">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
+            <LineChart data={chartData} margin={{ top: 10, right: 10, left: 20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.3)" />
               <XAxis 
                 dataKey="displayDate" 
                 tickFormatter={(date) => format(date, 'yyyy')}
@@ -152,7 +158,7 @@ export function HousingTrendChart({
                 axisLine={false}
                 tickLine={false}
                 tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
-                width={65}
+                width={80}
               />
               <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1 }} />
               {!isValueMetric && (
