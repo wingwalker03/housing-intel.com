@@ -72,6 +72,49 @@ export async function registerRoutes(
       input?.startDate,
       input?.endDate
     );
+
+    if (!input?.stateCode && data.length > 0) {
+      // Aggregate data by date to calculate national average
+      const dateMap = new Map<string, { sum: number, count: number }>();
+      
+      data.forEach(stat => {
+        const dateStr = typeof stat.date === 'string' ? stat.date : stat.date.toISOString().split('T')[0];
+        const current = dateMap.get(dateStr) || { sum: 0, count: 0 };
+        dateMap.set(dateStr, {
+          sum: current.sum + stat.medianHomeValue,
+          count: current.count + 1
+        });
+      });
+
+      const aggregatedData = Array.from(dateMap.entries()).map(([date, { sum, count }]) => ({
+        id: 0,
+        stateCode: "US",
+        stateName: "United States",
+        date,
+        medianHomeValue: Math.round(sum / count),
+        yoyChange: 0 // Will be calculated on frontend or via another pass
+      })).sort((a, b) => a.date.localeCompare(b.date));
+
+      // Calculate YoY for aggregated data
+      for (let i = 0; i < aggregatedData.length; i++) {
+        const current = aggregatedData[i];
+        const currentMonth = new Date(current.date);
+        const targetMonth = new Date(currentMonth);
+        targetMonth.setFullYear(targetMonth.getFullYear() - 1);
+
+        const prevYear = aggregatedData.find(d => {
+          const dDate = new Date(d.date);
+          return dDate.getFullYear() === targetMonth.getFullYear() && dDate.getMonth() === targetMonth.getMonth();
+        });
+
+        if (prevYear) {
+          current.yoyChange = parseFloat(((current.medianHomeValue - prevYear.medianHomeValue) / prevYear.medianHomeValue * 100).toFixed(2));
+        }
+      }
+      
+      return res.json(aggregatedData);
+    }
+
     res.json(data);
   });
 

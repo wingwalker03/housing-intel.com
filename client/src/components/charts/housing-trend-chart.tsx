@@ -35,7 +35,14 @@ export function HousingTrendChart({
 }: HousingTrendChartProps) {
   
   const chartData = useMemo(() => {
-    const sortedData = [...data].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    // Filter out items with missing or null values for the primary metric
+    const validData = data.filter(item => 
+      metric === 'medianHomeValue' 
+        ? item.medianHomeValue != null && item.medianHomeValue > 0
+        : item.yoyChange != null
+    );
+
+    const sortedData = [...validData].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     
     return sortedData.map((item, index) => {
       const calculateMA = (period: number) => {
