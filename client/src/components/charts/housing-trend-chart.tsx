@@ -172,16 +172,32 @@ export function HousingTrendChart({
                 <ReferenceLine y={0} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" opacity={0.5} />
               )}
               
-              <Line 
-                name={isValueMetric ? "Price" : "YoY %"}
-                type="monotone" 
-                dataKey="formattedValue" 
-                stroke={mainColor} 
-                strokeWidth={3}
-                dot={false}
-                activeDot={{ r: 4, strokeWidth: 0 }}
-                animationDuration={1000}
-              />
+              {metric === 'medianHomeValue' && (
+                <Line 
+                  name="Price"
+                  type="monotone" 
+                  dataKey="formattedValue" 
+                  stroke={mainColor} 
+                  strokeWidth={3}
+                  dot={false}
+                  activeDot={{ r: 4, strokeWidth: 0 }}
+                  animationDuration={1000}
+                  connectNulls
+                />
+              )}
+              {metric === 'yoyChange' && (
+                <Line 
+                  name="YoY %"
+                  type="monotone" 
+                  dataKey="formattedValue" 
+                  stroke={mainColor} 
+                  strokeWidth={3}
+                  dot={false}
+                  activeDot={{ r: 4, strokeWidth: 0 }}
+                  animationDuration={1000}
+                  connectNulls
+                />
+              )}
 
               {movingAverages.ma12 && (
                 <Line
