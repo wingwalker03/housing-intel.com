@@ -1,18 +1,8 @@
-import { useMemo } from 'react';
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  ReferenceLine
-} from 'recharts';
-import { format } from 'date-fns';
+import { useMemo, useEffect, useRef } from 'react';
+// @ts-ignore
+import Plot from 'react-plotly.js';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { HousingStat } from '@/hooks/use-housing';
-import { cn } from '@/lib/utils';
 
 interface HousingTrendChartProps {
   data: HousingStat[];
@@ -34,8 +24,7 @@ export function HousingTrendChart({
   movingAverages = { ma12: false, ma24: false, ma60: false }
 }: HousingTrendChartProps) {
   
-  const chartData = useMemo(() => {
-    // Filter out items with missing or null values for the primary metric
+  const processedData = useMemo(() => {
     const validData = data.filter(item => 
       metric === 'medianHomeValue' 
         ? item.medianHomeValue != null && item.medianHomeValue > 0
@@ -44,74 +33,30 @@ export function HousingTrendChart({
 
     const sortedData = [...validData].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     
-    return sortedData.map((item, index) => {
-      const calculateMA = (period: number) => {
+    const dates = sortedData.map(d => d.date);
+    const values = sortedData.map(d => metric === 'medianHomeValue' ? d.medianHomeValue : d.yoyChange);
+
+    const calculateMA = (period: number) => {
+      return values.map((_, index) => {
         if (index < period - 1) return null;
-        const slice = sortedData.slice(index - period + 1, index + 1);
-        const sum = slice.reduce((acc, curr) => acc + (metric === 'medianHomeValue' ? curr.medianHomeValue : curr.yoyChange), 0);
+        const slice = values.slice(index - period + 1, index + 1);
+        const sum = slice.reduce((acc, curr) => acc + (curr || 0), 0);
         return sum / period;
-      };
+      });
+    };
 
-      return {
-        ...item,
-        displayDate: new Date(item.date),
-        formattedValue: metric === 'medianHomeValue' 
-          ? item.medianHomeValue 
-          : item.yoyChange,
-        ma12: movingAverages.ma12 ? calculateMA(12) : null,
-        ma24: movingAverages.ma24 ? calculateMA(24) : null,
-        ma60: movingAverages.ma60 ? calculateMA(60) : null,
-      };
-    });
+    return {
+      dates,
+      values,
+      ma12: movingAverages.ma12 ? calculateMA(12) : null,
+      ma24: movingAverages.ma24 ? calculateMA(24) : null,
+      ma60: movingAverages.ma60 ? calculateMA(60) : null,
+    };
   }, [data, metric, movingAverages]);
-
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-popover border border-border shadow-lg rounded-lg p-3 text-sm z-50">
-          <p className="font-semibold text-foreground mb-2 border-b border-border pb-1">
-            {format(new Date(label), "MMMM yyyy")}
-          </p>
-          <div className="space-y-1.5">
-            {payload.map((entry: any, index: number) => (
-              <div key={index} className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
-                  <span className="text-muted-foreground whitespace-nowrap">{entry.name}:</span>
-                </div>
-                <span className="font-medium font-mono text-foreground">
-                  {metric === 'medianHomeValue'
-                    ? new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                        maximumFractionDigits: 0,
-                      }).format(entry.value)
-                    : `${entry.value.toFixed(2)}%`
-                  }
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
-
-  const formatYAxis = (value: number) => {
-    if (metric === 'medianHomeValue') {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format(value);
-    }
-    return `${value.toFixed(2)}%`;
-  };
 
   if (isLoading) {
     return (
-      <Card className="h-[400px] flex items-center justify-center border-border/60 bg-card/50">
+      <Card className="h-full flex items-center justify-center border-border/60 bg-card/50">
         <div className="text-muted-foreground animate-pulse flex flex-col items-center">
           <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4" />
           Loading chart data...
@@ -122,7 +67,7 @@ export function HousingTrendChart({
 
   if (data.length === 0) {
     return (
-      <Card className="h-[400px] flex items-center justify-center border-border/60 bg-card/50">
+      <Card className="h-full flex items-center justify-center border-border/60 bg-card/50">
         <div className="text-muted-foreground flex flex-col items-center">
           <p>No data available for the selected criteria.</p>
         </div>
@@ -131,110 +76,125 @@ export function HousingTrendChart({
   }
 
   const isValueMetric = metric === 'medianHomeValue';
-  const mainColor = isValueMetric ? "hsl(var(--primary))" : "hsl(var(--accent))";
+  const mainColor = isValueMetric ? "#3b82f6" : "#8b5cf6"; // Blue-500 or Violet-500
+
+  const traces: any[] = [
+    {
+      x: processedData.dates,
+      y: processedData.values,
+      type: 'scatter',
+      mode: 'lines',
+      name: isValueMetric ? 'Price' : 'Growth',
+      line: {
+        color: mainColor,
+        width: 2,
+        shape: 'linear'
+      },
+      connectgaps: false,
+      hoverinfo: 'text',
+      text: processedData.values.map((v, i) => {
+        const dateStr = new Date(processedData.dates[i]).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+        const valStr = isValueMetric 
+          ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v)
+          : `${v.toFixed(2)}%`;
+        return `${dateStr}<br>${valStr}`;
+      })
+    }
+  ];
+
+  if (movingAverages.ma12 && processedData.ma12) {
+    traces.push({
+      x: processedData.dates,
+      y: processedData.ma12,
+      type: 'scatter',
+      mode: 'lines',
+      name: '12m MA',
+      line: { color: 'rgba(59, 130, 246, 0.5)', width: 1.5, dash: 'dot' },
+      connectgaps: false,
+      hoverinfo: 'skip'
+    });
+  }
+  if (movingAverages.ma24 && processedData.ma24) {
+    traces.push({
+      x: processedData.dates,
+      y: processedData.ma24,
+      type: 'scatter',
+      mode: 'lines',
+      name: '24m MA',
+      line: { color: 'rgba(139, 92, 246, 0.5)', width: 1.5, dash: 'dot' },
+      connectgaps: false,
+      hoverinfo: 'skip'
+    });
+  }
+  if (movingAverages.ma60 && processedData.ma60) {
+    traces.push({
+      x: processedData.dates,
+      y: processedData.ma60,
+      type: 'scatter',
+      mode: 'lines',
+      name: '5y MA',
+      line: { color: 'rgba(156, 163, 175, 0.5)', width: 1.5, dash: 'dot' },
+      connectgaps: false,
+      hoverinfo: 'skip'
+    });
+  }
 
   return (
-    <Card className="border-border/60 shadow-sm bg-card h-full overflow-visible">
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-lg font-semibold tracking-tight">
-              {isValueMetric ? 'Median Home Value' : 'Year-over-Year Change'}
-            </CardTitle>
-            <CardDescription>
-              {selectedStateName ? `Historical trends for ${selectedStateName}` : 'National Average Historical Trends'}
-            </CardDescription>
-          </div>
-        </div>
+    <Card className="border-none shadow-none bg-transparent h-full flex flex-col">
+      <CardHeader className="pb-0 pt-2 px-2">
+        <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+          {isValueMetric ? 'Median Home Value' : 'Year-over-Year Change'}
+        </CardTitle>
+        <CardDescription className="text-xs">
+          {selectedStateName ? `${selectedStateName}` : 'National Average'}
+        </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="h-[300px] w-full mt-4">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} margin={{ top: 10, right: 10, left: 20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.3)" />
-              <XAxis 
-                dataKey="displayDate" 
-                tickFormatter={(date) => format(date, 'yyyy')}
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
-                minTickGap={30}
-              />
-              <YAxis 
-                tickFormatter={formatYAxis}
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
-                width={80}
-              />
-              <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1 }} />
-              {!isValueMetric && (
-                <ReferenceLine y={0} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" opacity={0.5} />
-              )}
-              
-              {metric === 'medianHomeValue' && (
-                <Line 
-                  name="Price"
-                  type="monotone" 
-                  dataKey="formattedValue" 
-                  stroke={mainColor} 
-                  strokeWidth={3}
-                  dot={false}
-                  activeDot={{ r: 4, strokeWidth: 0 }}
-                  animationDuration={1000}
-                  connectNulls
-                />
-              )}
-              {metric === 'yoyChange' && (
-                <Line 
-                  name="YoY %"
-                  type="monotone" 
-                  dataKey="formattedValue" 
-                  stroke={mainColor} 
-                  strokeWidth={3}
-                  dot={false}
-                  activeDot={{ r: 4, strokeWidth: 0 }}
-                  animationDuration={1000}
-                  connectNulls
-                />
-              )}
-
-              {movingAverages.ma12 && (
-                <Line
-                  name="12m MA"
-                  type="monotone"
-                  dataKey="ma12"
-                  stroke="hsl(var(--primary) / 0.6)"
-                  strokeWidth={2}
-                  strokeDasharray="5 5"
-                  dot={false}
-                />
-              )}
-              {movingAverages.ma24 && (
-                <Line
-                  name="24m MA"
-                  type="monotone"
-                  dataKey="ma24"
-                  stroke="hsl(var(--accent) / 0.6)"
-                  strokeWidth={2}
-                  strokeDasharray="5 5"
-                  dot={false}
-                />
-              )}
-              {movingAverages.ma60 && (
-                <Line
-                  name="5y MA"
-                  type="monotone"
-                  dataKey="ma60"
-                  stroke="hsl(var(--muted-foreground))"
-                  strokeWidth={2}
-                  strokeDasharray="5 5"
-                  dot={false}
-                />
-              )}
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+      <CardContent className="flex-1 p-0 min-h-0">
+        <Plot
+          data={traces}
+          layout={ {
+            autosize: true,
+            margin: { l: 10, r: 60, t: 20, b: 40 },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            showlegend: false,
+            hovermode: 'x unified',
+            dragmode: 'pan',
+            xaxis: {
+              showgrid: true,
+              gridcolor: 'rgba(255, 255, 255, 0.05)',
+              zeroline: false,
+              tickfont: { color: '#6b7280', size: 10 },
+              type: 'date',
+              spikethickness: 1,
+              spikedash: 'dot',
+              spikecolor: '#9ca3af',
+              spikemode: 'across',
+            },
+            yaxis: {
+              side: 'right',
+              showgrid: true,
+              gridcolor: 'rgba(255, 255, 255, 0.05)',
+              zeroline: false,
+              tickfont: { color: '#6b7280', size: 10 },
+              tickformat: isValueMetric ? '$,.0f' : '.2f%',
+            },
+            hoverlabel: {
+              bgcolor: '#1f2937',
+              bordercolor: '#374151',
+              font: { color: '#f3f4f6', size: 12 }
+            }
+          } }
+          config={ {
+            responsive: true,
+            displayModeBar: true,
+            displaylogo: false,
+            modeBarButtonsToRemove: ['select2d', 'lasso2d', 'autoScale2d', 'hoverClosestCartesian', 'hoverCompareCartesian'],
+            scrollZoom: true
+          } }
+          style={ { width: '100%', height: '100%' } }
+          useResizeHandler={true}
+        />
       </CardContent>
     </Card>
   );

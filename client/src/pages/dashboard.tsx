@@ -232,16 +232,36 @@ export default function Dashboard() {
                   Market Trends
                 </h3>
                 
-                <Tabs 
-                  value={metric} 
-                  onValueChange={(v) => setMetric(v as any)}
-                  className="w-[160px]"
-                >
-                  <TabsList className="grid w-full grid-cols-2 h-8 bg-muted/50">
-                    <TabsTrigger value="medianHomeValue" className="text-xs">Price</TabsTrigger>
-                    <TabsTrigger value="yoyChange" className="text-xs">Growth</TabsTrigger>
-                  </TabsList>
-                </Tabs>
+                <div className="flex items-center gap-2">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Maximize2 className="w-4 h-4" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-[90vw] w-full h-[80vh] flex flex-col p-0">
+                      <div className="flex-1 min-h-0">
+                        <HousingTrendChart 
+                          data={filteredStats} 
+                          metric={metric} 
+                          selectedStateName={selectedStateName}
+                          isLoading={statsLoading}
+                          movingAverages={movingAverages}
+                        />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                  <Tabs 
+                    value={metric} 
+                    onValueChange={(v) => setMetric(v as any)}
+                    className="w-[160px]"
+                  >
+                    <TabsList className="grid w-full grid-cols-2 h-8 bg-muted/50">
+                      <TabsTrigger value="medianHomeValue" className="text-xs">Price</TabsTrigger>
+                      <TabsTrigger value="yoyChange" className="text-xs">Growth</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                </div>
               </div>
 
               <div className="flex flex-wrap items-center gap-4">
