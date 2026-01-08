@@ -133,77 +133,6 @@ export default function Dashboard() {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4 bg-card/50 p-4 rounded-xl border border-border/60">
-            <div className="flex flex-col gap-1.5">
-              <Label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground ml-1">Location</Label>
-              <Select 
-                value={selectedStateCode || "all"} 
-                onValueChange={handleDropdownSelect}
-              >
-                <SelectTrigger className="w-[180px] h-9 bg-background border-border shadow-sm">
-                  <Map className="w-3.5 h-3.5 mr-2 text-muted-foreground" />
-                  <SelectValue placeholder="Select State" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Entire United States</SelectItem>
-                  <Separator className="my-1" />
-                  {states.map(state => (
-                    <SelectItem key={state.code} value={state.code}>
-                      {state.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <Label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground ml-1">Range</Label>
-              <Tabs 
-                value={timeRange} 
-                onValueChange={(v) => setTimeRange(v as any)} 
-                className="h-9"
-              >
-                <TabsList className="h-full bg-background border border-border shadow-sm">
-                  <TabsTrigger value="5y" className="text-xs px-3">5Y</TabsTrigger>
-                  <TabsTrigger value="10y" className="text-xs px-3">10Y</TabsTrigger>
-                  <TabsTrigger value="20y" className="text-xs px-3">20Y</TabsTrigger>
-                  <TabsTrigger value="all" className="text-xs px-3">All</TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <Label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground ml-1">Moving Averages</Label>
-              <div className="flex items-center gap-4 h-9 px-3 bg-background rounded-md border border-border shadow-sm">
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="ma12" 
-                    checked={movingAverages.ma12} 
-                    onCheckedChange={(v) => setMovingAverages(p => ({...p, ma12: !!v}))}
-                  />
-                  <Label htmlFor="ma12" className="text-xs cursor-pointer">12m</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="ma24" 
-                    checked={movingAverages.ma24} 
-                    onCheckedChange={(v) => setMovingAverages(p => ({...p, ma24: !!v}))}
-                  />
-                  <Label htmlFor="ma24" className="text-xs cursor-pointer">24m</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="ma60" 
-                    checked={movingAverages.ma60} 
-                    onCheckedChange={(v) => setMovingAverages(p => ({...p, ma60: !!v}))}
-                  />
-                  <Label htmlFor="ma60" className="text-xs cursor-pointer">5y</Label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Key Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <StatCard 
@@ -236,34 +165,57 @@ export default function Dashboard() {
         {/* Main Content Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-auto lg:h-[650px]">
           
-          {/* Map Section */}
           <div className="lg:col-span-7 h-[450px] lg:h-full flex flex-col space-y-4">
-            <div className="flex items-center justify-between px-1">
-              <h3 className="font-semibold text-lg flex items-center gap-2">
-                <Map className="w-5 h-5 text-primary" />
-                Geographic Selection
-              </h3>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="ghost" size="sm" className="gap-2">
-                    <Maximize2 className="w-4 h-4" />
-                    Expand Map
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-[90vw] w-full h-[80vh] flex flex-col">
-                  <DialogHeader>
-                    <DialogTitle>Geographic Selection</DialogTitle>
-                  </DialogHeader>
-                  <div className="flex-1 min-h-0 bg-muted/20 rounded-lg p-4">
-                    <USMap 
-                      selectedStateCode={selectedStateCode} 
-                      onStateSelect={handleStateSelect} 
-                    />
+            <div className="flex flex-col bg-card/50 p-4 rounded-xl border border-border/60 gap-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-lg flex items-center gap-2">
+                  <Map className="w-5 h-5 text-primary" />
+                  Geographic Selection
+                </h3>
+                <div className="flex items-center gap-2">
+                  <div className="flex flex-col gap-1.5">
+                    <Select 
+                      value={selectedStateCode || "all"} 
+                      onValueChange={handleDropdownSelect}
+                    >
+                      <SelectTrigger className="w-[180px] h-8 bg-background border-border shadow-sm">
+                        <Map className="w-3.5 h-3.5 mr-2 text-muted-foreground" />
+                        <SelectValue placeholder="Select State" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Entire United States</SelectItem>
+                        <Separator className="my-1" />
+                        {states.map(state => (
+                          <SelectItem key={state.code} value={state.code}>
+                            {state.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                </DialogContent>
-              </Dialog>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-8 gap-2">
+                        <Maximize2 className="w-4 h-4" />
+                        Expand
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-[90vw] w-full h-[80vh] flex flex-col">
+                      <DialogHeader>
+                        <DialogTitle>Geographic Selection</DialogTitle>
+                      </DialogHeader>
+                      <div className="flex-1 min-h-0 bg-muted/20 rounded-lg p-4">
+                        <USMap 
+                          selectedStateCode={selectedStateCode} 
+                          onStateSelect={handleStateSelect} 
+                        />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </div>
             </div>
-            <div className="flex-1 min-h-0">
+            <div className="flex-1 min-h-0 bg-card/50 p-4 rounded-xl border border-border/60">
               <USMap 
                 selectedStateCode={selectedStateCode} 
                 onStateSelect={handleStateSelect} 
@@ -273,25 +225,75 @@ export default function Dashboard() {
 
           {/* Charts Section */}
           <div className="lg:col-span-5 h-[450px] lg:h-full flex flex-col space-y-4">
-            <div className="flex items-center justify-between px-1">
-              <h3 className="font-semibold text-lg flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-primary" />
-                Market Trends
-              </h3>
-              
-              <Tabs 
-                value={metric} 
-                onValueChange={(v) => setMetric(v as any)}
-                className="w-[160px]"
-              >
-                <TabsList className="grid w-full grid-cols-2 h-8 bg-muted/50">
-                  <TabsTrigger value="medianHomeValue" className="text-xs">Price</TabsTrigger>
-                  <TabsTrigger value="yoyChange" className="text-xs">Growth</TabsTrigger>
-                </TabsList>
-              </Tabs>
+            <div className="flex flex-col bg-card/50 p-4 rounded-xl border border-border/60 gap-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-lg flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-primary" />
+                  Market Trends
+                </h3>
+                
+                <Tabs 
+                  value={metric} 
+                  onValueChange={(v) => setMetric(v as any)}
+                  className="w-[160px]"
+                >
+                  <TabsList className="grid w-full grid-cols-2 h-8 bg-muted/50">
+                    <TabsTrigger value="medianHomeValue" className="text-xs">Price</TabsTrigger>
+                    <TabsTrigger value="yoyChange" className="text-xs">Growth</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex flex-col gap-1.5 flex-1 min-w-[140px]">
+                  <Label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground ml-1">Range</Label>
+                  <Tabs 
+                    value={timeRange} 
+                    onValueChange={(v) => setTimeRange(v as any)} 
+                    className="h-9"
+                  >
+                    <TabsList className="h-full bg-background border border-border shadow-sm w-full">
+                      <TabsTrigger value="5y" className="flex-1 text-xs px-2">5Y</TabsTrigger>
+                      <TabsTrigger value="10y" className="flex-1 text-xs px-2">10Y</TabsTrigger>
+                      <TabsTrigger value="20y" className="flex-1 text-xs px-2">20Y</TabsTrigger>
+                      <TabsTrigger value="all" className="flex-1 text-xs px-2">All</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <Label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground ml-1">Moving Averages</Label>
+                  <div className="flex items-center gap-3 h-9 px-3 bg-background rounded-md border border-border shadow-sm">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="ma12" 
+                        checked={movingAverages.ma12} 
+                        onCheckedChange={(v) => setMovingAverages(p => ({...p, ma12: !!v}))}
+                      />
+                      <Label htmlFor="ma12" className="text-xs cursor-pointer">12m</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="ma24" 
+                        checked={movingAverages.ma24} 
+                        onCheckedChange={(v) => setMovingAverages(p => ({...p, ma24: !!v}))}
+                      />
+                      <Label htmlFor="ma24" className="text-xs cursor-pointer">24m</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="ma60" 
+                        checked={movingAverages.ma60} 
+                        onCheckedChange={(v) => setMovingAverages(p => ({...p, ma60: !!v}))}
+                      />
+                      <Label htmlFor="ma60" className="text-xs cursor-pointer">5y</Label>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             
-            <div className="flex-1 min-h-0">
+            <div className="flex-1 min-h-0 bg-card/50 p-4 rounded-xl border border-border/60">
               <HousingTrendChart 
                 data={filteredStats} 
                 metric={metric} 
