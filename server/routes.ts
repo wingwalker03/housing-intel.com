@@ -10,55 +10,10 @@ import path from "path";
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-async function processZillowCsv(buffer: Buffer) {
-  const records: any[] = [];
-  const parser = parse(buffer, {
-    columns: true,
-    skip_empty_lines: true,
-    trim: true
-  });
-
-  for await (const row of parser) {
-    const regionName = row.RegionName;
-    const stateName = row.StateName || regionName; // Some rows might have state in RegionName
-    
-    // Zillow CSV has dates as column headers starting from index 5
-    // Format: YYYY-MM-DD
-    const dateColumns = Object.keys(row).filter(key => /^\d{4}-\d{2}-\d{2}$/.test(key));
-    
-    for (const dateStr of dateColumns) {
-      const value = parseFloat(row[dateStr]);
-      if (isNaN(value)) continue;
-
-      // We don't have YoY change in the raw CSV easily, 
-      // but we can calculate it or just set to 0 for now as it's a derived metric
-      // For this specific task, I'll focus on the values.
-      
-      records.push({
-        stateCode: row.StateName || regionName.substring(0, 2).toUpperCase(), // Fallback mapping might be needed
-        stateName: regionName,
-        date: dateStr,
-        medianHomeValue: Math.round(value),
-        yoyChange: 0 
-      });
-    }
-  }
-  return records;
-}
-
 async function seedFromAttachedCsv() {
-  const filePath = "attached_assets/State_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month_1767652185379.csv";
-  if (fs.existsSync(filePath)) {
-    console.log("Found attached Zillow CSV. Processing...");
-    const buffer = fs.readFileSync(filePath);
-    const records = await processZillowCsv(buffer);
-    
-    if (records.length > 0) {
-      await storage.clearHousingData();
-      await storage.seedHousingData(records);
-      console.log(`Successfully seeded ${records.length} records from Zillow CSV.`);
-    }
-  }
+  // Application now uses the long-format state ZHVI dataset as the single source of truth.
+  // The seeding logic is now handled by seed.ts for clarity.
+  return;
 }
 
 export async function registerRoutes(

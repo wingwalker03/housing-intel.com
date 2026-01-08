@@ -18,10 +18,13 @@ const STATE_CODE_MAP: Record<string, string> = {
   "District of Columbia": "DC"
 };
 
+/**
+ * This app now uses the long-format state ZHVI dataset as the single source of truth.
+ */
 async function seed() {
   console.log("Starting database seeding...");
   
-  const csvFile = path.resolve(process.cwd(), "attached_assets/State_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month_CLEAN_ROUNDE_1767828691735.csv");
+  const csvFile = path.resolve(process.cwd(), "attached_assets/state_zhvi_LONG_copy_paste.csv.csv");
   
   if (!fs.existsSync(csvFile)) {
     console.error("CSV file not found at " + csvFile);
@@ -30,8 +33,10 @@ async function seed() {
 
   const content = fs.readFileSync(csvFile, "utf-8");
   const records = parse(content, {
-    columns: true,
+    columns: ['state', 'date', 'value'],
     skip_empty_lines: true,
+    trim: true,
+    delimiter: '\t',
   });
 
   const housingStats: InsertHousingStat[] = [];
@@ -39,50 +44,51 @@ async function seed() {
   // Clear existing data first
   await (storage as any).clearHousingData();
 
+  // Group by state for YoY calc
+  const stateGroups: Record<string, any[]> = {};
   for (const record of records) {
-    const stateName = record.RegionName;
-    const stateCode = STATE_CODE_MAP[stateName];
-    
-    if (!stateCode) continue;
+    // Some CSVs might have different case or extra whitespace
+    const stateName = record.state || record.RegionName;
+    if (!stateGroups[stateName]) stateGroups[stateName] = [];
+    stateGroups[stateName].push(record);
+  }
 
-    // Get all date columns (YYYY-MM-DD)
-    const dateColumns = Object.keys(record).filter(key => /^\d{4}-\d{2}-\d{2}$/.test(key));
-    
-    const stateData: {date: string, value: number}[] = [];
-
-    for (const dateStr of dateColumns) {
-      const value = parseFloat(record[dateStr]);
-      if (!isNaN(value)) {
-        stateData.push({ date: dateStr, value });
-      }
+  for (const [stateName, data] of Object.entries(stateGroups)) {
+    const stateCode = STATE_CODE_MAP[stateName] || (stateName === "United States" ? "US" : null);
+    if (!stateCode) {
+      console.warn(`No mapping for state: ${stateName}`);
+      continue;
     }
 
-    // Sort by date to calculate YoY
-    stateData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    // Sort by date
+    data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-    for (let i = 0; i < stateData.length; i++) {
-      const current = stateData[i];
+    for (let i = 0; i < data.length; i++) {
+      const current = data[i];
       let yoyChange = 0;
 
-      // Find value from 12 months ago
       const currentMonth = new Date(current.date);
       const targetMonth = new Date(currentMonth);
       targetMonth.setFullYear(targetMonth.getFullYear() - 1);
 
-      const previousYearData = stateData.find(d => {
+      const previousYearData = data.find(d => {
         const dDate = new Date(d.date);
         return dDate.getFullYear() === targetMonth.getFullYear() && dDate.getMonth() === targetMonth.getMonth();
       });
 
       if (previousYearData) {
-        yoyChange = ((current.value - previousYearData.value) / previousYearData.value) * 100;
+        const val = parseFloat(current.value);
+        const prevVal = parseFloat(previousYearData.value);
+        if (!isNaN(val) && !isNaN(prevVal) && prevVal !== 0) {
+          yoyChange = ((val - prevVal) / prevVal) * 100;
+        }
       }
 
       housingStats.push({
         stateCode,
         stateName,
         date: current.date,
-        medianHomeValue: Math.round(current.value),
+        medianHomeValue: Math.round(parseFloat(current.value)),
         yoyChange: parseFloat(yoyChange.toFixed(2))
       });
     }
