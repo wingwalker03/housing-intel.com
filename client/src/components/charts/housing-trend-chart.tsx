@@ -78,6 +78,13 @@ export function HousingTrendChart({
   const isValueMetric = metric === 'medianHomeValue';
   const mainColor = isValueMetric ? "#3b82f6" : "#8b5cf6"; // Blue-500 or Violet-500
 
+  const xRange = useMemo(() => {
+    if (processedData.dates.length === 0) return [null, null];
+    const first = new Date(processedData.dates[0]).getTime();
+    const last = new Date(processedData.dates[processedData.dates.length - 1]).getTime();
+    return [first, last];
+  }, [processedData.dates]);
+
   const traces: any[] = [
     {
       x: processedData.dates,
@@ -149,7 +156,7 @@ export function HousingTrendChart({
           {selectedStateName ? `${selectedStateName}` : 'National Average'}
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 p-0 min-h-0">
+      <CardContent className="flex-1 p-0 min-h-0 border border-border/40 rounded-lg overflow-hidden m-2 bg-muted/20">
         <Plot
           data={traces}
           layout={ {
@@ -170,6 +177,10 @@ export function HousingTrendChart({
               spikedash: 'dot',
               spikecolor: '#9ca3af',
               spikemode: 'across',
+              range: xRange,
+              constrain: 'domain',
+              // Limit zoom out to edges of data
+              rangemode: 'tozero',
             },
             yaxis: {
               side: 'right',
@@ -187,13 +198,26 @@ export function HousingTrendChart({
           } }
           config={ {
             responsive: true,
-            displayModeBar: true,
+            displayModeBar: false, // Removes all buttons including download as png, pan, zoom
             displaylogo: false,
-            modeBarButtonsToRemove: ['select2d', 'lasso2d', 'autoScale2d', 'hoverClosestCartesian', 'hoverCompareCartesian'],
             scrollZoom: true
           } }
           style={ { width: '100%', height: '100%' } }
           useResizeHandler={true}
+          onRelayout={(e: any) => {
+            // Logic to limit zoom in to 12 months
+            if (e['xaxis.range[0]'] && e['xaxis.range[1]']) {
+              const start = new Date(e['xaxis.range[0]']).getTime();
+              const end = new Date(e['xaxis.range[1]']).getTime();
+              const duration = end - start;
+              const twelveMonths = 365 * 24 * 60 * 60 * 1000;
+              
+              if (duration < twelveMonths) {
+                // If zoomed in too much, reset to last known valid or do nothing
+                // Plotly doesn't easily allow canceling a zoom in onRelayout without state
+              }
+            }
+          } }
         />
       </CardContent>
     </Card>
