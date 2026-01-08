@@ -132,7 +132,7 @@ export default function Dashboard() {
               Analyzing historical housing value and growth trends.
             </p>
           </div>
-
+        </div>
         {/* Key Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <StatCard 
