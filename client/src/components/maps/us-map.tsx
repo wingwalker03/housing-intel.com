@@ -48,28 +48,24 @@ const USMap = ({ selectedStateCode, onStateSelect }: USMapProps) => {
                       <Geography
                         geography={geo}
                         onClick={() => {
-                          if (isSelected) {
-                            onStateSelect(undefined, undefined); // Deselect
-                          } else {
-                            onStateSelect(stateAbbr, stateName);
-                          }
+                          onStateSelect(stateAbbr, stateName);
                         }}
                         style={{
                           default: {
-                            fill: isSelected ? "hsl(var(--primary))" : "hsl(var(--muted))",
+                            fill: isSelected ? "hsl(var(--primary))" : "hsl(var(--muted) / 0.8)",
                             stroke: "hsl(var(--background))",
-                            strokeWidth: 0.75,
+                            strokeWidth: 1,
                             outline: "none",
                             transition: "all 250ms ease",
                             cursor: "pointer"
                           },
                           hover: {
-                            fill: isSelected ? "hsl(var(--primary))" : "hsl(var(--primary) / 0.4)",
+                            fill: isSelected ? "hsl(var(--primary))" : "hsl(var(--primary) / 0.6)",
                             stroke: "hsl(var(--background))",
-                            strokeWidth: 1,
+                            strokeWidth: 1.5,
                             outline: "none",
                             cursor: "pointer",
-                            filter: "drop-shadow(0 4px 6px rgba(0,0,0,0.1))"
+                            filter: "brightness(1.1)"
                           },
                           pressed: {
                             fill: "hsl(var(--primary))",
