@@ -54,30 +54,6 @@ export function HousingTrendChart({
     };
   }, [data, metric, movingAverages]);
 
-  if (isLoading) {
-    return (
-      <Card className="h-full flex items-center justify-center border-border/60 bg-card/50">
-        <div className="text-muted-foreground animate-pulse flex flex-col items-center">
-          <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4" />
-          Loading chart data...
-        </div>
-      </Card>
-    );
-  }
-
-  if (data.length === 0) {
-    return (
-      <Card className="h-full flex items-center justify-center border-border/60 bg-card/50">
-        <div className="text-muted-foreground flex flex-col items-center">
-          <p>No data available for the selected criteria.</p>
-        </div>
-      </Card>
-    );
-  }
-
-  const isValueMetric = metric === 'medianHomeValue';
-  const mainColor = isValueMetric ? "#3b82f6" : "#8b5cf6"; // Blue-500 or Violet-500
-
   const xRange = useMemo(() => {
     if (processedData.dates.length === 0) return [null, null];
     const first = new Date(processedData.dates[0]).getTime();
@@ -108,6 +84,27 @@ export function HousingTrendChart({
       })
     }
   ];
+
+  if (isLoading) {
+    return (
+      <Card className="h-full flex items-center justify-center border-border/60 bg-card/50">
+        <div className="text-muted-foreground animate-pulse flex flex-col items-center">
+          <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4" />
+          Loading chart data...
+        </div>
+      </Card>
+    );
+  }
+
+  if (data.length === 0) {
+    return (
+      <Card className="h-full flex items-center justify-center border-border/60 bg-card/50">
+        <div className="text-muted-foreground flex flex-col items-center">
+          <p>No data available for the selected criteria.</p>
+        </div>
+      </Card>
+    );
+  }
 
   if (movingAverages.ma12 && processedData.ma12) {
     traces.push({
