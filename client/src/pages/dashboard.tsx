@@ -141,6 +141,12 @@ export default function Dashboard() {
             <p className="text-muted-foreground">
               Analyzing historical housing value and growth trends.
             </p>
+            <div className="flex items-center gap-2 mt-2">
+              <span className="flex h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+              <span className="text-xs font-medium text-amber-500/80 uppercase tracking-wider">
+                Metro level data coming soon
+              </span>
+            </div>
           </div>
         </div>
         {/* Key Metrics Grid */}
