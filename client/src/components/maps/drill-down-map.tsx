@@ -260,8 +260,8 @@ function DrillDownMap({
                                   : "hsl(var(--muted) / 0.8)",
                               stroke: isSelected 
                                 ? "hsl(var(--primary))" 
-                                : "hsl(var(--background))",
-                              strokeWidth: isSelected ? 1.5 : 0.5,
+                                : "hsl(var(--muted-foreground) / 0.15)",
+                              strokeWidth: isSelected ? 1 : 0.25,
                               outline: "none",
                               transition: "all 350ms ease",
                               cursor: selectedStateCode ? "default" : "pointer"
@@ -343,15 +343,15 @@ function DrillDownMap({
                     <circle
                       r={selectedMetroName === metro.name ? markerRadius * 1.5 : markerRadius}
                       fill="transparent"
-                      stroke={selectedMetroName === metro.name ? "hsl(var(--primary))" : "hsl(var(--primary) / 0.6)"}
-                      strokeWidth={0.5 / zoomConfig.zoom + 0.1}
+                      stroke={selectedMetroName === metro.name ? "hsl(var(--destructive))" : "#F59E0B"}
+                      strokeWidth={0.5 / zoomConfig.zoom + 0.15}
                       className="transition-transform group-hover:scale-125"
                     />
                     {selectedMetroName === metro.name && (
                       <circle
                         r={markerRadius * 2.5}
                         fill="none"
-                        stroke="hsl(var(--primary))"
+                        stroke="hsl(var(--destructive))"
                         strokeWidth={0.3 / zoomConfig.zoom + 0.05}
                         opacity={0.3}
                       />
