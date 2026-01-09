@@ -3,12 +3,13 @@ import {
   ComposableMap, 
   Geographies, 
   Geography, 
+  Marker,
   ZoomableGroup 
 } from "react-simple-maps";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, RotateCcw } from "lucide-react";
-import { getCBSAsByState, getCBSADisplayName, type CBSAFeature } from "@/data/cbsa-utils";
+import { getCBSAsByState, getCBSADisplayName, getCBSACentroid, type CBSAFeature } from "@/data/cbsa-utils";
 
 const US_STATES_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 
@@ -276,44 +277,55 @@ function DrillDownMap({
           {selectedStateCode && cbsaFeatures.map((feature) => {
             const isSelectedMetro = selectedMetroId === feature.properties.CBSAFP;
             const displayName = getCBSADisplayName(feature);
+            const centroid = getCBSACentroid(feature);
             
             return (
               <Tooltip key={feature.properties.CBSAFP}>
                 <TooltipTrigger asChild>
-                  <Geography
-                    geography={feature}
-                    onClick={() => handleCBSAClick(feature)}
-                    style={{
-                      default: {
-                        fill: isSelectedMetro 
-                          ? "hsl(var(--destructive) / 0.5)" 
-                          : "hsl(var(--primary) / 0.6)",
-                        stroke: isSelectedMetro 
-                          ? "hsl(var(--destructive))" 
-                          : "hsl(var(--primary))",
-                        strokeWidth: isSelectedMetro ? 1.5 : 0.5,
-                        outline: "none",
-                        cursor: "pointer",
-                        transition: "all 200ms ease"
-                      },
-                      hover: {
-                        fill: isSelectedMetro 
-                          ? "hsl(var(--destructive) / 0.6)" 
-                          : "hsl(var(--primary) / 0.8)",
-                        stroke: isSelectedMetro 
-                          ? "hsl(var(--destructive))" 
-                          : "hsl(var(--primary))",
-                        strokeWidth: 1.5,
-                        outline: "none",
-                        cursor: "pointer",
-                        filter: "brightness(1.1)"
-                      },
-                      pressed: {
-                        fill: "hsl(var(--destructive) / 0.7)",
-                        outline: "none",
-                      },
-                    }}
-                  />
+                  <g>
+                    <Geography
+                      geography={feature}
+                      onClick={() => handleCBSAClick(feature)}
+                      style={{
+                        default: {
+                          fill: isSelectedMetro 
+                            ? "hsl(var(--primary) / 0.15)" 
+                            : "hsl(var(--primary) / 0.05)",
+                          stroke: isSelectedMetro 
+                            ? "hsl(var(--primary))" 
+                            : "hsl(var(--primary) / 0.3)",
+                          strokeWidth: isSelectedMetro ? 1.5 : 0.5,
+                          outline: "none",
+                          cursor: "pointer",
+                          transition: "all 200ms ease"
+                        },
+                        hover: {
+                          fill: isSelectedMetro 
+                            ? "hsl(var(--primary) / 0.25)" 
+                            : "hsl(var(--primary) / 0.15)",
+                          stroke: "hsl(var(--primary))",
+                          strokeWidth: 1.5,
+                          outline: "none",
+                          cursor: "pointer",
+                          filter: "brightness(1.1)"
+                        },
+                        pressed: {
+                          fill: "hsl(var(--primary) / 0.3)",
+                          outline: "none",
+                        },
+                      }}
+                    />
+                    <Marker coordinates={[centroid.lng, centroid.lat]}>
+                      <circle
+                        r={isSelectedMetro ? 6 : 4}
+                        fill={isSelectedMetro ? "hsl(var(--destructive))" : "hsl(var(--primary))"}
+                        stroke="#fff"
+                        strokeWidth={1}
+                        className="transition-all duration-200"
+                        style={{ cursor: "pointer", pointerEvents: "none" }}
+                      />
+                    </Marker>
+                  </g>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="font-semibold">{displayName}</p>
