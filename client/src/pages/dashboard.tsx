@@ -252,11 +252,12 @@ export default function Dashboard() {
                     <DialogContent className="max-w-[90vw] w-full h-[80vh] flex flex-col p-0">
                       <div className="flex-1 min-h-0">
                         <HousingTrendChart 
-                          data={filteredStats} 
+                          data={stats} 
                           metric={metric} 
                           selectedStateName={selectedStateName}
                           isLoading={statsLoading}
                           movingAverages={movingAverages}
+                          startDate={startDate}
                         />
                       </div>
                     </DialogContent>
@@ -325,11 +326,12 @@ export default function Dashboard() {
             
             <div className="flex-1 min-h-0 bg-card/50 p-4 rounded-xl border border-border/60">
               <HousingTrendChart 
-                data={filteredStats} 
+                data={stats} 
                 metric={metric} 
                 selectedStateName={selectedStateName}
                 isLoading={statsLoading}
                 movingAverages={movingAverages}
+                startDate={startDate}
               />
             </div>
           </div>

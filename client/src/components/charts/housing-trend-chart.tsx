@@ -24,38 +24,57 @@ export function HousingTrendChart({
   metric, 
   selectedStateName,
   isLoading,
-  movingAverages = { ma12: false, ma24: false, ma60: false }
-}: HousingTrendChartProps) {
+  movingAverages = { ma12: false, ma24: false, ma60: false },
+  startDate // New prop to handle filtering while keeping full data for MA
+}: HousingTrendChartProps & { startDate?: string }) {
   
   const processedData = useMemo(() => {
-    const validData = data.filter(item => 
+    // 1. Data processing for Moving Averages (using FULL dataset)
+    const validFullData = data.filter(item => 
       metric === 'medianHomeValue' 
         ? item.medianHomeValue != null && item.medianHomeValue > 0
         : item.yoyChange != null
     );
 
-    const sortedData = [...validData].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const sortedFullData = [...validFullData].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     
-    const dates = sortedData.map(d => d.date);
-    const values = sortedData.map(d => metric === 'medianHomeValue' ? d.medianHomeValue : d.yoyChange);
+    const fullDates = sortedFullData.map(d => d.date);
+    const fullValues = sortedFullData.map(d => metric === 'medianHomeValue' ? d.medianHomeValue : d.yoyChange);
 
     const calculateMA = (period: number) => {
-      return values.map((_, index) => {
+      return fullValues.map((_, index) => {
         if (index < period - 1) return null;
-        const slice = values.slice(index - period + 1, index + 1);
+        const slice = fullValues.slice(index - period + 1, index + 1);
         const sum = slice.reduce((acc, curr) => acc + (curr || 0), 0);
         return sum / period;
       });
     };
 
+    const fullMa12 = movingAverages.ma12 ? calculateMA(12) : null;
+    const fullMa24 = movingAverages.ma24 ? calculateMA(24) : null;
+    const fullMa60 = movingAverages.ma60 ? calculateMA(60) : null;
+
+    // 2. Filter for display (using startDate if provided)
+    let displayIndices = sortedFullData.map((_, i) => i);
+    if (startDate) {
+      const start = new Date(startDate);
+      displayIndices = displayIndices.filter(i => new Date(sortedFullData[i].date) >= start);
+    }
+
+    const dates = displayIndices.map(i => fullDates[i]);
+    const values = displayIndices.map(i => fullValues[i]);
+    const ma12 = fullMa12 ? displayIndices.map(i => fullMa12[i]) : null;
+    const ma24 = fullMa24 ? displayIndices.map(i => fullMa24[i]) : null;
+    const ma60 = fullMa60 ? displayIndices.map(i => fullMa60[i]) : null;
+
     return {
       dates,
       values,
-      ma12: movingAverages.ma12 ? calculateMA(12) : null,
-      ma24: movingAverages.ma24 ? calculateMA(24) : null,
-      ma60: movingAverages.ma60 ? calculateMA(60) : null,
+      ma12,
+      ma24,
+      ma60,
     };
-  }, [data, metric, movingAverages]);
+  }, [data, metric, movingAverages, startDate]);
 
   const plotRef = useRef<any>(null);
 
