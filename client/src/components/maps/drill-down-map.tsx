@@ -329,13 +329,14 @@ function DrillDownMap({
                 >
                   <g
                     style={{ cursor: "pointer" }}
-                    className="transition-transform hover:scale-125"
+                    className="group"
                   >
                     <circle
                       r={selectedMetroName === metro.name ? 6 : 4}
                       fill={selectedMetroName === metro.name ? "hsl(var(--primary))" : "hsl(var(--primary) / 0.8)"}
                       stroke="hsl(var(--background))"
                       strokeWidth={1.5}
+                      className="transition-transform group-hover:scale-125"
                     />
                     {selectedMetroName === metro.name && (
                       <circle
@@ -346,6 +347,14 @@ function DrillDownMap({
                         opacity={0.5}
                       />
                     )}
+                    <text
+                      textAnchor="middle"
+                      y={-12}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none text-[8px] font-bold fill-foreground"
+                      style={{ filter: "drop-shadow(0px 1px 2px rgba(0,0,0,0.5))" }}
+                    >
+                      {metro.name.split(',')[0]}
+                    </text>
                   </g>
                 </Marker>
               </TooltipTrigger>
