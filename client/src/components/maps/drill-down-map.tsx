@@ -347,7 +347,7 @@ function DrillDownMap({
                       strokeWidth={0.5 / zoomConfig.zoom + 0.15}
                       className="transition-transform group-hover:scale-125"
                       style={{ 
-                        filter: "drop-shadow(0 0 1px white) drop-shadow(0 0 1px white)",
+                        filter: "drop-shadow(0 0 0.4px white) drop-shadow(0 0 0.4px white)",
                         opacity: 0.9
                       }}
                     />
