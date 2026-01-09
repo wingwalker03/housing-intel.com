@@ -343,10 +343,9 @@ function DrillDownMap({
                     <circle
                       r={selectedMetroName === metro.name ? markerRadius * 1.5 : markerRadius}
                       fill="transparent"
-                      stroke={selectedMetroName === metro.name ? "hsl(var(--destructive))" : "#F59E0B"}
+                      stroke={selectedMetroName === metro.name ? "hsl(var(--destructive))" : "white"}
                       strokeWidth={0.5 / zoomConfig.zoom + 0.15}
                       className="transition-transform group-hover:scale-125"
-                      style={{ filter: "drop-shadow(0 0 1px white) drop-shadow(0 0 1px white)" }}
                     />
                     {selectedMetroName === metro.name && (
                       <circle
