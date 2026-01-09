@@ -200,11 +200,11 @@ export default function Dashboard() {
                         Expand
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-[90vw] w-full h-[80vh] flex flex-col">
-                      <DialogHeader>
+                    <DialogContent className="max-w-[95vw] w-full h-[90vh] flex flex-col p-6">
+                      <DialogHeader className="mb-4">
                         <DialogTitle>Geographic Selection</DialogTitle>
                       </DialogHeader>
-                      <div className="flex-1 min-h-0 bg-muted/20 rounded-lg p-4">
+                      <div className="flex-1 min-h-0 bg-muted/20 rounded-lg overflow-hidden">
                         <USMap 
                           selectedStateCode={selectedStateCode} 
                           onStateSelect={handleStateSelect} 

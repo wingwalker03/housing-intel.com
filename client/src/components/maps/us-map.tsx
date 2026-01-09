@@ -32,7 +32,7 @@ const USMap = ({ selectedStateCode, onStateSelect }: USMapProps) => {
         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Interactive Map</span>
       </div>
       
-      <ComposableMap projection="geoAlbersUsa">
+      <ComposableMap projection="geoAlbersUsa" style={{ width: "100%", height: "100%", maxHeight: "100%" }}>
         <Geographies geography={GEO_URL}>
           {({ geographies }) => (
             <>
