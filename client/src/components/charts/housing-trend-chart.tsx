@@ -1,7 +1,10 @@
 import { useMemo, useEffect, useRef } from 'react';
 // @ts-ignore
 import Plot from 'react-plotly.js';
+import Plotly from 'plotly.js-dist-min';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { RefreshCcw } from "lucide-react";
 import { HousingStat } from '@/hooks/use-housing';
 
 interface HousingTrendChartProps {
@@ -53,6 +56,17 @@ export function HousingTrendChart({
       ma60: movingAverages.ma60 ? calculateMA(60) : null,
     };
   }, [data, metric, movingAverages]);
+
+  const plotRef = useRef<any>(null);
+
+  const handleZoomToFit = () => {
+    if (plotRef.current?.el) {
+      Plotly.relayout(plotRef.current.el, {
+        'xaxis.autorange': true,
+        'yaxis.autorange': true
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -142,15 +156,29 @@ export function HousingTrendChart({
   return (
     <Card className="border-none shadow-none bg-transparent h-full flex flex-col">
       <CardHeader className="pb-0 pt-2 px-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-          {isValueMetric ? 'Median Home Value' : 'Year-over-Year Change'}
-        </CardTitle>
-        <CardDescription className="text-xs">
-          {selectedStateName ? `${selectedStateName}` : 'National Average'}
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+              {isValueMetric ? 'Median Home Value' : 'Year-over-Year Change'}
+            </CardTitle>
+            <CardDescription className="text-xs">
+              {selectedStateName ? `${selectedStateName}` : 'National Average'}
+            </CardDescription>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            onClick={handleZoomToFit}
+            title="Zoom to Fit"
+          >
+            <RefreshCcw className="h-4 w-4" />
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="flex-1 p-0 min-h-0">
         <Plot
+          ref={plotRef}
           data={traces}
           layout={ {
             autosize: true,
