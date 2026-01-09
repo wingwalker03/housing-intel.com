@@ -3,18 +3,14 @@ import {
   ComposableMap, 
   Geographies, 
   Geography, 
-  ZoomableGroup,
-  Marker 
+  ZoomableGroup 
 } from "react-simple-maps";
-import { feature } from "topojson-client";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
-import { MetroInfo } from "@/hooks/use-housing";
-import { metroCoordinates, getStateCentroid } from "@/data/metro-coordinates";
+import { ArrowLeft, RotateCcw } from "lucide-react";
+import { getCBSAsByState, getCBSADisplayName, type CBSAFeature } from "@/data/cbsa-utils";
 
 const US_STATES_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
-const US_COUNTIES_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json";
 
 const fipsToAbbr: Record<string, string> = {
   "01": "AL", "02": "AK", "04": "AZ", "05": "AR", "06": "CA", "08": "CO", "09": "CT", "10": "DE",
@@ -25,10 +21,6 @@ const fipsToAbbr: Record<string, string> = {
   "45": "SC", "46": "SD", "47": "TN", "48": "TX", "49": "UT", "50": "VT", "51": "VA", "53": "WA",
   "54": "WV", "55": "WI", "56": "WY"
 };
-
-const abbrToFips: Record<string, string> = Object.fromEntries(
-  Object.entries(fipsToAbbr).map(([k, v]) => [v, k])
-);
 
 const stateZoomConfig: Record<string, { center: [number, number]; zoom: number }> = {
   "AL": { center: [-86.8, 32.8], zoom: 5 },
@@ -84,26 +76,26 @@ const stateZoomConfig: Record<string, { center: [number, number]; zoom: number }
   "WY": { center: [-107.5, 43], zoom: 4.5 }
 };
 
-
 interface DrillDownMapProps {
   selectedStateCode?: string;
   selectedStateName?: string;
   selectedMetroName?: string;
-  metros: MetroInfo[];
+  selectedMetroId?: string;
   onStateSelect: (code: string | undefined, name: string | undefined) => void;
-  onMetroSelect: (metroName: string | undefined) => void;
+  onMetroSelect: (metroName: string | undefined, metroId: string | undefined) => void;
+  onReset: () => void;
 }
 
 function DrillDownMap({ 
   selectedStateCode, 
   selectedStateName,
   selectedMetroName,
-  metros,
+  selectedMetroId,
   onStateSelect, 
-  onMetroSelect 
+  onMetroSelect,
+  onReset
 }: DrillDownMapProps) {
   const [statesData, setStatesData] = useState<any>(null);
-  const [countiesData, setCountiesData] = useState<any>(null);
 
   useEffect(() => {
     fetch(US_STATES_URL)
@@ -111,73 +103,28 @@ function DrillDownMap({
       .then(data => setStatesData(data));
   }, []);
 
-  useEffect(() => {
-    if (selectedStateCode) {
-      fetch(US_COUNTIES_URL)
-        .then(res => res.json())
-        .then(data => setCountiesData(data));
-    }
-  }, [selectedStateCode]);
-
   const zoomConfig = selectedStateCode 
     ? stateZoomConfig[selectedStateCode] || { center: [-96, 38] as [number, number], zoom: 1 }
     : { center: [-96, 38] as [number, number], zoom: 1 };
 
-  // Calculate proportional marker size based on zoom level
-  const markerRadius = useMemo(() => {
-    if (!selectedStateCode) return 4;
-    const zoom = zoomConfig.zoom;
-    // As zoom increases (smaller state), markers should be visually smaller relative to the zoom
-    // but still clearly visible. 4 / (zoom/2) provides a good balance.
-    return Math.max(0.5, 4 / (zoom * 0.5));
-  }, [selectedStateCode, zoomConfig.zoom]);
-
-  const stateCounties = useMemo(() => {
-    if (!countiesData || !selectedStateCode) return [];
-    const stateFips = abbrToFips[selectedStateCode];
-    if (!stateFips) return [];
-    
-    const countiesGeo = feature(countiesData, countiesData.objects.counties);
-    return (countiesGeo as any).features.filter((f: any) => {
-      const countyFips = String(f.id).padStart(5, '0');
-      return countyFips.startsWith(stateFips);
-    });
-  }, [countiesData, selectedStateCode]);
-
-  const metroMarkers = useMemo(() => {
-    if (!selectedStateCode || metros.length === 0) return [];
-    
-    const hashString = (str: string): number => {
-      let hash = 0;
-      for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash;
-      }
-      return hash;
-    };
-    
-    return metros.map((metro, index) => {
-      const centroid = metroCoordinates[metro.name];
-      if (centroid) {
-        return { ...metro, coordinates: [centroid.lng, centroid.lat] as [number, number] };
-      }
-      const stateCentroid = getStateCentroid(selectedStateCode);
-      const hash = hashString(metro.name);
-      const angle = (hash % 360) * (Math.PI / 180);
-      const radius = 0.3 + (index * 0.15);
-      const offsetLng = Math.cos(angle) * radius;
-      const offsetLat = Math.sin(angle) * radius;
-      return { 
-        ...metro, 
-        coordinates: [stateCentroid.lng + offsetLng, stateCentroid.lat + offsetLat] as [number, number] 
-      };
-    });
-  }, [metros, selectedStateCode]);
+  const cbsaFeatures = useMemo(() => {
+    if (!selectedStateCode) return [];
+    return getCBSAsByState(selectedStateCode);
+  }, [selectedStateCode]);
 
   const handleBackToNational = () => {
     onStateSelect(undefined, undefined);
-    onMetroSelect(undefined);
+    onMetroSelect(undefined, undefined);
+  };
+
+  const handleBackToState = () => {
+    onMetroSelect(undefined, undefined);
+  };
+
+  const handleCBSAClick = (feature: CBSAFeature) => {
+    const name = feature.properties.NAME;
+    const id = feature.properties.CBSAFP;
+    onMetroSelect(name, id);
   };
 
   if (!statesData) {
@@ -191,7 +138,19 @@ function DrillDownMap({
   return (
     <div className="w-full h-full min-h-[300px] flex items-center justify-center bg-card/50 rounded-xl border border-border/60 overflow-hidden relative">
       <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
-        {selectedStateCode && (
+        {selectedMetroName && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleBackToState}
+            className="h-8 gap-1.5 bg-background/80 backdrop-blur border border-border shadow-sm"
+            data-testid="button-map-back-to-state"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to {selectedStateName}
+          </Button>
+        )}
+        {selectedStateCode && !selectedMetroName && (
           <Button
             variant="ghost"
             size="sm"
@@ -203,20 +162,34 @@ function DrillDownMap({
             Back to US
           </Button>
         )}
+        {(selectedStateCode || selectedMetroName) && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onReset}
+            className="h-8 gap-1.5 bg-background/80 backdrop-blur border border-border shadow-sm"
+            data-testid="button-map-reset"
+          >
+            <RotateCcw className="w-4 h-4" />
+            Reset
+          </Button>
+        )}
         <div className="bg-background/80 backdrop-blur px-3 py-1.5 rounded-lg border border-border shadow-sm">
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-            {selectedStateCode ? (selectedMetroName || selectedStateName) : "United States"}
+            {selectedMetroName 
+              ? getCBSADisplayName({ properties: { NAME: selectedMetroName } } as CBSAFeature)
+              : selectedStateName || "United States"}
           </span>
         </div>
       </div>
 
-      {selectedStateCode && metros.length > 0 && (
+      {selectedStateCode && !selectedMetroName && cbsaFeatures.length > 0 && (
         <div className="absolute bottom-4 left-4 z-10 bg-background/90 backdrop-blur px-3 py-2 rounded-lg border border-border shadow-sm max-w-[200px]">
           <span className="text-xs font-medium text-muted-foreground block mb-1">
-            {metros.length} Metro Area{metros.length !== 1 ? 's' : ''}
+            {cbsaFeatures.length} Metro Area{cbsaFeatures.length !== 1 ? 's' : ''}
           </span>
           <span className="text-[10px] text-muted-foreground/70">
-            Click markers to view metro data
+            Click regions to view metro data
           </span>
         </div>
       )}
@@ -254,7 +227,7 @@ function DrillDownMap({
                           style={{
                             default: {
                               fill: isSelected 
-                                ? "hsl(var(--primary) / 0.3)" 
+                                ? "hsl(var(--primary) / 0.2)" 
                                 : isOtherState 
                                   ? "hsl(var(--muted) / 0.2)" 
                                   : "hsl(var(--muted) / 0.8)",
@@ -268,7 +241,7 @@ function DrillDownMap({
                             },
                             hover: {
                               fill: isSelected 
-                                ? "hsl(var(--primary) / 0.3)" 
+                                ? "hsl(var(--primary) / 0.2)" 
                                 : isOtherState 
                                   ? "hsl(var(--muted) / 0.2)" 
                                   : "hsl(var(--primary) / 0.6)",
@@ -300,96 +273,58 @@ function DrillDownMap({
             )}
           </Geographies>
 
-          {selectedStateCode && stateCounties.length > 0 && (
-            <>
-              {stateCounties.map((county: any) => (
-                <Geography
-                  key={county.id}
-                  geography={county}
-                  style={{
-                    default: {
-                      fill: "transparent",
-                      stroke: "hsl(var(--border) / 0.4)",
-                      strokeWidth: 0.3,
-                      outline: "none",
-                    },
-                    hover: {
-                      fill: "transparent",
-                      stroke: "hsl(var(--border) / 0.4)",
-                      strokeWidth: 0.3,
-                      outline: "none",
-                    },
-                    pressed: {
-                      fill: "transparent",
-                      outline: "none",
-                    },
-                  }}
-                />
-              ))}
-            </>
-          )}
-
-          {selectedStateCode && metroMarkers.map((metro) => (
-            <Tooltip key={metro.name}>
-              <TooltipTrigger asChild>
-                <Marker 
-                  coordinates={metro.coordinates}
-                  onClick={() => onMetroSelect(metro.name)}
-                >
-                  <g
-                    style={{ cursor: "pointer" }}
-                    className="group"
-                  >
-                    <circle
-                      r={selectedMetroName === metro.name ? markerRadius * 1.5 : markerRadius}
-                      fill="hsl(var(--background) / 0.8)"
-                      stroke={selectedMetroName === metro.name ? "hsl(var(--destructive))" : "hsl(var(--primary))"}
-                      strokeWidth={0.5 / zoomConfig.zoom + 0.15}
-                      className="transition-transform group-hover:scale-125"
-                      style={{ 
-                        filter: "drop-shadow(0 0 0.4px white) drop-shadow(0 0 0.4px white)",
-                        opacity: 0.9
-                      }}
-                    />
-                    {selectedMetroName === metro.name && (
-                      <circle
-                        r={markerRadius * 2.5}
-                        fill="none"
-                        stroke="hsl(var(--destructive))"
-                        strokeWidth={0.3 / zoomConfig.zoom + 0.05}
-                        opacity={0.3}
-                      />
-                    )}
-                    <g className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                      <rect
-                        x={-(metro.name.split(',')[0].length * (markerRadius * 0.8)) - (markerRadius)}
-                        y={-(markerRadius * 5)}
-                        width={(metro.name.split(',')[0].length * (markerRadius * 1.6)) + (markerRadius * 2)}
-                        height={markerRadius * 3.5}
-                        rx={markerRadius * 0.5}
-                        fill="hsl(var(--background))"
-                        stroke="hsl(var(--primary) / 0.3)"
-                        strokeWidth={0.2 / zoomConfig.zoom + 0.05}
-                        className="shadow-md"
-                      />
-                      <text
-                        textAnchor="middle"
-                        y={-(markerRadius * 2.5)}
-                        className="font-semibold fill-foreground tracking-tight"
-                        style={{ fontSize: `${markerRadius * 2}px` }}
-                      >
-                        {metro.name.split(',')[0]}
-                      </text>
-                    </g>
-                  </g>
-                </Marker>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="font-semibold">{metro.name.replace(/, [A-Z]{2}$/, '')}</p>
-                <p className="text-xs text-muted-foreground">Click to view housing data</p>
-              </TooltipContent>
-            </Tooltip>
-          ))}
+          {selectedStateCode && cbsaFeatures.map((feature) => {
+            const isSelectedMetro = selectedMetroId === feature.properties.CBSAFP;
+            const displayName = getCBSADisplayName(feature);
+            
+            return (
+              <Tooltip key={feature.properties.CBSAFP}>
+                <TooltipTrigger asChild>
+                  <Geography
+                    geography={feature}
+                    onClick={() => handleCBSAClick(feature)}
+                    style={{
+                      default: {
+                        fill: isSelectedMetro 
+                          ? "hsl(var(--destructive) / 0.5)" 
+                          : "hsl(var(--primary) / 0.6)",
+                        stroke: isSelectedMetro 
+                          ? "hsl(var(--destructive))" 
+                          : "hsl(var(--primary))",
+                        strokeWidth: isSelectedMetro ? 1.5 : 0.5,
+                        outline: "none",
+                        cursor: "pointer",
+                        transition: "all 200ms ease"
+                      },
+                      hover: {
+                        fill: isSelectedMetro 
+                          ? "hsl(var(--destructive) / 0.6)" 
+                          : "hsl(var(--primary) / 0.8)",
+                        stroke: isSelectedMetro 
+                          ? "hsl(var(--destructive))" 
+                          : "hsl(var(--primary))",
+                        strokeWidth: 1.5,
+                        outline: "none",
+                        cursor: "pointer",
+                        filter: "brightness(1.1)"
+                      },
+                      pressed: {
+                        fill: "hsl(var(--destructive) / 0.7)",
+                        outline: "none",
+                      },
+                    }}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="font-semibold">{displayName}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {feature.properties.LSAD === "M1" ? "Metro Area" : "Micro Area"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Click to view housing data</p>
+                </TooltipContent>
+              </Tooltip>
+            );
+          })}
         </ZoomableGroup>
       </ComposableMap>
 

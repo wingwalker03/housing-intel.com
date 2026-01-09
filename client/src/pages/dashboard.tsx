@@ -1,8 +1,9 @@
 import { useState, useMemo } from "react";
-import { useHousingStats, useStates, useMetroStats, useMetrosByState } from "@/hooks/use-housing";
+import { useHousingStats, useStates, useMetroStats } from "@/hooks/use-housing";
 import DrillDownMap from "@/components/maps/drill-down-map";
 import { HousingTrendChart } from "@/components/charts/housing-trend-chart";
 import { StatCard } from "@/components/ui/card-stats";
+import { getCBSAsByState, getCBSADisplayName } from "@/data/cbsa-utils";
 import { 
   Select, 
   SelectContent, 
@@ -33,6 +34,7 @@ export default function Dashboard() {
   const [selectedStateCode, setSelectedStateCode] = useState<string | undefined>(undefined);
   const [selectedStateName, setSelectedStateName] = useState<string | undefined>(undefined);
   const [selectedMetroName, setSelectedMetroName] = useState<string | undefined>(undefined);
+  const [selectedMetroId, setSelectedMetroId] = useState<string | undefined>(undefined);
   const [metric, setMetric] = useState<'medianHomeValue' | 'yoyChange'>('medianHomeValue');
   const [timeRange, setTimeRange] = useState<'5y' | '10y' | '20y' | 'all'>('all');
   const [movingAverages, setMovingAverages] = useState({
@@ -62,7 +64,11 @@ export default function Dashboard() {
   });
 
   const { data: states = [] } = useStates();
-  const { data: metros = [] } = useMetrosByState(selectedStateCode);
+  
+  const cbsaMetros = useMemo(() => {
+    if (!selectedStateCode) return [];
+    return getCBSAsByState(selectedStateCode);
+  }, [selectedStateCode]);
 
   const isMetroMode = !!selectedMetroName;
   const stats = isMetroMode ? metroStats : stateStats;
@@ -72,6 +78,7 @@ export default function Dashboard() {
     setSelectedStateCode(code);
     setSelectedStateName(name);
     setSelectedMetroName(undefined);
+    setSelectedMetroId(undefined);
   };
 
   const handleDropdownSelect = (code: string) => {
@@ -83,22 +90,34 @@ export default function Dashboard() {
     }
   };
 
-  const handleMetroSelect = (metroName: string) => {
-    if (metroName === "state") {
+  const handleMetroSelect = (metroName: string | undefined, metroId: string | undefined) => {
+    setSelectedMetroName(metroName);
+    setSelectedMetroId(metroId);
+  };
+
+  const handleMetroDropdownSelect = (value: string) => {
+    if (value === "state") {
       setSelectedMetroName(undefined);
+      setSelectedMetroId(undefined);
     } else {
-      setSelectedMetroName(metroName);
+      const cbsa = cbsaMetros.find(m => m.properties.CBSAFP === value);
+      if (cbsa) {
+        setSelectedMetroName(cbsa.properties.NAME);
+        setSelectedMetroId(cbsa.properties.CBSAFP);
+      }
     }
   };
 
   const handleBackToState = () => {
     setSelectedMetroName(undefined);
+    setSelectedMetroId(undefined);
   };
 
   const handleResetAll = () => {
     setSelectedStateCode(undefined);
     setSelectedStateName(undefined);
     setSelectedMetroName(undefined);
+    setSelectedMetroId(undefined);
   };
 
   const latestStat = stats.length > 0 ? stats[stats.length - 1] : null;
@@ -249,10 +268,10 @@ export default function Dashboard() {
                     </SelectContent>
                   </Select>
                   
-                  {selectedStateCode && metros.length > 0 && (
+                  {selectedStateCode && cbsaMetros.length > 0 && (
                     <Select 
-                      value={selectedMetroName || "state"} 
-                      onValueChange={handleMetroSelect}
+                      value={selectedMetroId || "state"} 
+                      onValueChange={handleMetroDropdownSelect}
                     >
                       <SelectTrigger className="w-[200px] h-8 bg-background border-border shadow-sm" data-testid="select-metro">
                         <MapPin className="w-3.5 h-3.5 mr-2 text-muted-foreground" />
@@ -261,9 +280,9 @@ export default function Dashboard() {
                       <SelectContent>
                         <SelectItem value="state">State Overview</SelectItem>
                         <Separator className="my-1" />
-                        {metros.map(metro => (
-                          <SelectItem key={metro.name} value={metro.name}>
-                            {metro.name.replace(/, [A-Z]{2}$/, '')}
+                        {cbsaMetros.map(metro => (
+                          <SelectItem key={metro.properties.CBSAFP} value={metro.properties.CBSAFP}>
+                            {getCBSADisplayName(metro)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -286,9 +305,10 @@ export default function Dashboard() {
                           selectedStateCode={selectedStateCode}
                           selectedStateName={selectedStateName}
                           selectedMetroName={selectedMetroName}
-                          metros={metros}
+                          selectedMetroId={selectedMetroId}
                           onStateSelect={handleStateSelect}
-                          onMetroSelect={(name) => setSelectedMetroName(name)}
+                          onMetroSelect={handleMetroSelect}
+                          onReset={handleResetAll}
                         />
                       </div>
                     </DialogContent>
@@ -301,9 +321,10 @@ export default function Dashboard() {
                 selectedStateCode={selectedStateCode}
                 selectedStateName={selectedStateName}
                 selectedMetroName={selectedMetroName}
-                metros={metros}
+                selectedMetroId={selectedMetroId}
                 onStateSelect={handleStateSelect}
-                onMetroSelect={(name) => setSelectedMetroName(name)}
+                onMetroSelect={handleMetroSelect}
+                onReset={handleResetAll}
               />
             </div>
           </div>
