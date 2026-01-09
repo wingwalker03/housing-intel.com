@@ -347,14 +347,26 @@ function DrillDownMap({
                         opacity={0.5}
                       />
                     )}
-                    <text
-                      textAnchor="middle"
-                      y={-12}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none text-[8px] font-bold fill-foreground"
-                      style={{ filter: "drop-shadow(0px 1px 2px rgba(0,0,0,0.5))" }}
-                    >
-                      {metro.name.split(',')[0]}
-                    </text>
+                    <g className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                      <rect
+                        x={-(metro.name.split(',')[0].length * 3) - 4}
+                        y={-22}
+                        width={(metro.name.split(',')[0].length * 6) + 8}
+                        height={14}
+                        rx={2}
+                        fill="hsl(var(--background))"
+                        stroke="hsl(var(--border))"
+                        strokeWidth={0.5}
+                        className="shadow-sm"
+                      />
+                      <text
+                        textAnchor="middle"
+                        y={-12}
+                        className="text-[8px] font-medium fill-foreground"
+                      >
+                        {metro.name.split(',')[0]}
+                      </text>
+                    </g>
                   </g>
                 </Marker>
               </TooltipTrigger>
