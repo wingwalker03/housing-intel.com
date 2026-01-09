@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useHousingStats, useStates, useMetroStats, useMetrosByState } from "@/hooks/use-housing";
-import USMap from "@/components/maps/us-map";
+import DrillDownMap from "@/components/maps/drill-down-map";
 import { HousingTrendChart } from "@/components/charts/housing-trend-chart";
 import { StatCard } from "@/components/ui/card-stats";
 import { 
@@ -276,9 +276,13 @@ export default function Dashboard() {
                         <DialogTitle>Geographic Selection</DialogTitle>
                       </DialogHeader>
                       <div className="flex-1 min-h-0 bg-muted/20 rounded-lg overflow-hidden">
-                        <USMap 
-                          selectedStateCode={selectedStateCode} 
-                          onStateSelect={handleStateSelect} 
+                        <DrillDownMap 
+                          selectedStateCode={selectedStateCode}
+                          selectedStateName={selectedStateName}
+                          selectedMetroName={selectedMetroName}
+                          metros={metros}
+                          onStateSelect={handleStateSelect}
+                          onMetroSelect={(name) => setSelectedMetroName(name)}
                         />
                       </div>
                     </DialogContent>
@@ -286,10 +290,14 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            <div className="flex-1 min-h-0 bg-card/50 p-4 rounded-xl border border-border/60">
-              <USMap 
-                selectedStateCode={selectedStateCode} 
-                onStateSelect={handleStateSelect} 
+            <div className="flex-1 min-h-0">
+              <DrillDownMap 
+                selectedStateCode={selectedStateCode}
+                selectedStateName={selectedStateName}
+                selectedMetroName={selectedMetroName}
+                metros={metros}
+                onStateSelect={handleStateSelect}
+                onMetroSelect={(name) => setSelectedMetroName(name)}
               />
             </div>
           </div>
