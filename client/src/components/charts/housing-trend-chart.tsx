@@ -54,12 +54,29 @@ export function HousingTrendChart({
     };
   }, [data, metric, movingAverages]);
 
-  const xRange = useMemo(() => {
-    if (processedData.dates.length === 0) return [null, null];
-    const first = new Date(processedData.dates[0]).getTime();
-    const last = new Date(processedData.dates[processedData.dates.length - 1]).getTime();
-    return [first, last];
-  }, [processedData.dates]);
+  if (isLoading) {
+    return (
+      <Card className="h-full flex items-center justify-center border-border/60 bg-card/50">
+        <div className="text-muted-foreground animate-pulse flex flex-col items-center">
+          <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4" />
+          Loading chart data...
+        </div>
+      </Card>
+    );
+  }
+
+  if (data.length === 0) {
+    return (
+      <Card className="h-full flex items-center justify-center border-border/60 bg-card/50">
+        <div className="text-muted-foreground flex flex-col items-center">
+          <p>No data available for the selected criteria.</p>
+        </div>
+      </Card>
+    );
+  }
+
+  const isValueMetric = metric === 'medianHomeValue';
+  const mainColor = isValueMetric ? "#3b82f6" : "#8b5cf6"; // Blue-500 or Violet-500
 
   const traces: any[] = [
     {
@@ -84,27 +101,6 @@ export function HousingTrendChart({
       })
     }
   ];
-
-  if (isLoading) {
-    return (
-      <Card className="h-full flex items-center justify-center border-border/60 bg-card/50">
-        <div className="text-muted-foreground animate-pulse flex flex-col items-center">
-          <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4" />
-          Loading chart data...
-        </div>
-      </Card>
-    );
-  }
-
-  if (data.length === 0) {
-    return (
-      <Card className="h-full flex items-center justify-center border-border/60 bg-card/50">
-        <div className="text-muted-foreground flex flex-col items-center">
-          <p>No data available for the selected criteria.</p>
-        </div>
-      </Card>
-    );
-  }
 
   if (movingAverages.ma12 && processedData.ma12) {
     traces.push({
@@ -153,7 +149,7 @@ export function HousingTrendChart({
           {selectedStateName ? `${selectedStateName}` : 'National Average'}
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 p-0 min-h-0 border border-border/40 rounded-lg overflow-hidden m-2 bg-muted/20">
+      <CardContent className="flex-1 p-0 min-h-0">
         <Plot
           data={traces}
           layout={ {
@@ -174,10 +170,6 @@ export function HousingTrendChart({
               spikedash: 'dot',
               spikecolor: '#9ca3af',
               spikemode: 'across',
-              range: xRange,
-              constrain: 'domain',
-              // Limit zoom out to edges of data
-              rangemode: 'tozero',
             },
             yaxis: {
               side: 'right',
@@ -195,26 +187,13 @@ export function HousingTrendChart({
           } }
           config={ {
             responsive: true,
-            displayModeBar: false, // Removes all buttons including download as png, pan, zoom
+            displayModeBar: true,
             displaylogo: false,
+            modeBarButtonsToRemove: ['select2d', 'lasso2d', 'autoScale2d', 'hoverClosestCartesian', 'hoverCompareCartesian'],
             scrollZoom: true
           } }
           style={ { width: '100%', height: '100%' } }
           useResizeHandler={true}
-          onRelayout={(e: any) => {
-            // Logic to limit zoom in to 12 months
-            if (e['xaxis.range[0]'] && e['xaxis.range[1]']) {
-              const start = new Date(e['xaxis.range[0]']).getTime();
-              const end = new Date(e['xaxis.range[1]']).getTime();
-              const duration = end - start;
-              const twelveMonths = 365 * 24 * 60 * 60 * 1000;
-              
-              if (duration < twelveMonths) {
-                // If zoomed in too much, reset to last known valid or do nothing
-                // Plotly doesn't easily allow canceling a zoom in onRelayout without state
-              }
-            }
-          } }
         />
       </CardContent>
     </Card>
