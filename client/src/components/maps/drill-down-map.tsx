@@ -342,10 +342,14 @@ function DrillDownMap({
                   >
                     <circle
                       r={selectedMetroName === metro.name ? markerRadius * 1.5 : markerRadius}
-                      fill="transparent"
-                      stroke={selectedMetroName === metro.name ? "hsl(var(--destructive))" : "white"}
+                      fill="hsl(var(--background) / 0.8)"
+                      stroke={selectedMetroName === metro.name ? "hsl(var(--destructive))" : "hsl(var(--primary))"}
                       strokeWidth={0.5 / zoomConfig.zoom + 0.15}
                       className="transition-transform group-hover:scale-125"
+                      style={{ 
+                        filter: "drop-shadow(0 0 1px white) drop-shadow(0 0 1px white)",
+                        opacity: 0.9
+                      }}
                     />
                     {selectedMetroName === metro.name && (
                       <circle
@@ -364,14 +368,14 @@ function DrillDownMap({
                         height={markerRadius * 3.5}
                         rx={markerRadius * 0.5}
                         fill="hsl(var(--background))"
-                        stroke="hsl(var(--border))"
+                        stroke="hsl(var(--primary) / 0.3)"
                         strokeWidth={0.2 / zoomConfig.zoom + 0.05}
-                        className="shadow-sm"
+                        className="shadow-md"
                       />
                       <text
                         textAnchor="middle"
                         y={-(markerRadius * 2.5)}
-                        className="font-medium fill-foreground"
+                        className="font-semibold fill-foreground tracking-tight"
                         style={{ fontSize: `${markerRadius * 2}px` }}
                       >
                         {metro.name.split(',')[0]}
