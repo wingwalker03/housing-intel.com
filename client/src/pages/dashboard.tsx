@@ -98,6 +98,16 @@ export default function Dashboard() {
     return 0;
   }, [latestStat, stat12mAgo]);
 
+  const historicalHigh = useMemo(() => {
+    if (stats.length === 0) return 0;
+    return Math.max(...stats.map(s => s.medianHomeValue));
+  }, [stats]);
+
+  const diffFromHigh = useMemo(() => {
+    if (!latestStat || historicalHigh === 0) return 0;
+    return ((latestStat.medianHomeValue - historicalHigh) / historicalHigh) * 100;
+  }, [latestStat, historicalHigh]);
+
   return (
     <div className="min-h-screen bg-background text-foreground pb-20 dark">
       {/* Header */}
@@ -154,9 +164,9 @@ export default function Dashboard() {
           />
           <StatCard 
             title="Historical High"
-            value={latestStat ? `$${Math.max(...stats.map(s => s.medianHomeValue)).toLocaleString()}` : "---"}
-            trend={0}
-            trendLabel="All-time max"
+            value={latestStat ? `$${historicalHigh.toLocaleString()}` : "---"}
+            trend={diffFromHigh}
+            trendLabel="from all-time high"
             icon="percent"
             isLoading={statsLoading}
           />
