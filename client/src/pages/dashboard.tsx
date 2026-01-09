@@ -116,6 +116,12 @@ export default function Dashboard() {
     return 0;
   }, [latestStat, stat12mAgo]);
 
+  const yoyTrend = useMemo(() => {
+    if (!latestStat || !stat12mAgo) return 0;
+    // trend = current YoY % - YoY % from 12 months ago
+    return latestStat.yoyChange - stat12mAgo.yoyChange;
+  }, [latestStat, stat12mAgo]);
+
   const historicalHigh = useMemo(() => {
     if (stats.length === 0) return 0;
     return Math.max(...stats.map(s => s.medianHomeValue));
@@ -199,8 +205,8 @@ export default function Dashboard() {
           <StatCard 
             title="YoY % Growth"
             value={latestStat ? `${valueYoY.toFixed(2)}%` : "---"}
-            trend={latestStat?.yoyChange || 0}
-            trendLabel="current rate"
+            trend={yoyTrend}
+            trendLabel="vs 12 months ago"
             icon="percent"
             isLoading={statsLoading}
           />
