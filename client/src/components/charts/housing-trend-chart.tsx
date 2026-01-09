@@ -230,17 +230,12 @@ export function HousingTrendChart({
               autorange: true,
               fixedrange: false,
             },
-            onupdate: (figure: any) => {
-              // Logic to handle autorange on zoom/pan could go here if needed
+            hoverlabel: {
+              bgcolor: '#1f2937',
+              bordercolor: '#374151',
+              font: { color: '#f3f4f6', size: 12 }
             }
           } }
-          onRelayout={(eventData: any) => {
-            if (plotRef.current?.el && (eventData['xaxis.range[0]'] || eventData['xaxis.range[1]'])) {
-              Plotly.relayout(plotRef.current.el, {
-                'yaxis.autorange': true
-              });
-            }
-          }}
           config={ {
             responsive: true,
             displayModeBar: true,
