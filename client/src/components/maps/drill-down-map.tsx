@@ -346,6 +346,7 @@ function DrillDownMap({
                       stroke={selectedMetroName === metro.name ? "hsl(var(--destructive))" : "#F59E0B"}
                       strokeWidth={0.5 / zoomConfig.zoom + 0.15}
                       className="transition-transform group-hover:scale-125"
+                      style={{ filter: "drop-shadow(0 0 1px white) drop-shadow(0 0 1px white)" }}
                     />
                     {selectedMetroName === metro.name && (
                       <circle
