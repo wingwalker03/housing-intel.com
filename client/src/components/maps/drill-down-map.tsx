@@ -123,6 +123,15 @@ function DrillDownMap({
     ? stateZoomConfig[selectedStateCode] || { center: [-96, 38] as [number, number], zoom: 1 }
     : { center: [-96, 38] as [number, number], zoom: 1 };
 
+  // Calculate proportional marker size based on zoom level
+  const markerRadius = useMemo(() => {
+    if (!selectedStateCode) return 4;
+    const zoom = zoomConfig.zoom;
+    // As zoom increases (smaller state), markers should be visually smaller relative to the zoom
+    // but still clearly visible. 4 / (zoom/2) provides a good balance.
+    return Math.max(0.5, 4 / (zoom * 0.5));
+  }, [selectedStateCode, zoomConfig.zoom]);
+
   const stateCounties = useMemo(() => {
     if (!countiesData || !selectedStateCode) return [];
     const stateFips = abbrToFips[selectedStateCode];
@@ -332,37 +341,38 @@ function DrillDownMap({
                     className="group"
                   >
                     <circle
-                      r={selectedMetroName === metro.name ? 6 : 4}
-                      fill={selectedMetroName === metro.name ? "hsl(var(--primary))" : "hsl(var(--primary) / 0.8)"}
-                      stroke="hsl(var(--background))"
-                      strokeWidth={1.5}
+                      r={selectedMetroName === metro.name ? markerRadius * 1.5 : markerRadius}
+                      fill="transparent"
+                      stroke={selectedMetroName === metro.name ? "hsl(var(--primary))" : "hsl(var(--primary) / 0.6)"}
+                      strokeWidth={0.5 / zoomConfig.zoom + 0.1}
                       className="transition-transform group-hover:scale-125"
                     />
                     {selectedMetroName === metro.name && (
                       <circle
-                        r={10}
+                        r={markerRadius * 2.5}
                         fill="none"
                         stroke="hsl(var(--primary))"
-                        strokeWidth={1.5}
-                        opacity={0.5}
+                        strokeWidth={0.3 / zoomConfig.zoom + 0.05}
+                        opacity={0.3}
                       />
                     )}
                     <g className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                       <rect
-                        x={-(metro.name.split(',')[0].length * 3) - 4}
-                        y={-22}
-                        width={(metro.name.split(',')[0].length * 6) + 8}
-                        height={14}
-                        rx={2}
+                        x={-(metro.name.split(',')[0].length * (markerRadius * 0.8)) - (markerRadius)}
+                        y={-(markerRadius * 5)}
+                        width={(metro.name.split(',')[0].length * (markerRadius * 1.6)) + (markerRadius * 2)}
+                        height={markerRadius * 3.5}
+                        rx={markerRadius * 0.5}
                         fill="hsl(var(--background))"
                         stroke="hsl(var(--border))"
-                        strokeWidth={0.5}
+                        strokeWidth={0.2 / zoomConfig.zoom + 0.05}
                         className="shadow-sm"
                       />
                       <text
                         textAnchor="middle"
-                        y={-12}
-                        className="text-[8px] font-medium fill-foreground"
+                        y={-(markerRadius * 2.5)}
+                        className="font-medium fill-foreground"
+                        style={{ fontSize: `${markerRadius * 2}px` }}
                       >
                         {metro.name.split(',')[0]}
                       </text>
