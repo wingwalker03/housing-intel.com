@@ -34,9 +34,9 @@ const USMap = ({ selectedStateCode, onStateSelect }: USMapProps) => {
       
       <ComposableMap projection="geoAlbersUsa" style={{ width: "100%", height: "100%", maxHeight: "100%" }}>
         <Geographies geography={GEO_URL}>
-          {({ geographies }) => (
+          {({ geographies }: { geographies: any[] }) => (
             <>
-              {geographies.map((geo) => {
+              {geographies.map((geo: any) => {
                 const fips = geo.id;
                 const stateAbbr = fipsToAbbr[fips];
                 const stateName = geo.properties.name;
