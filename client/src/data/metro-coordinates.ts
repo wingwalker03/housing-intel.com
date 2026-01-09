@@ -813,6 +813,7 @@ export const metroCoordinates: Record<string, { lat: number; lng: number }> = {
   "Sulphur Springs, TX": { lat: 33.1385, lng: -95.6008 },
   "Sweetwater, TX": { lat: 32.4709, lng: -100.4059 },
   "Texarkana, TX": { lat: 33.4418, lng: -94.0477 },
+  "Texarkana, AR": { lat: 33.4251, lng: -94.0477 },
   "Tyler, TX": { lat: 32.3513, lng: -95.3011 },
   "Uvalde, TX": { lat: 29.2097, lng: -99.7862 },
   "Vernon, TX": { lat: 34.1545, lng: -99.2656 },
