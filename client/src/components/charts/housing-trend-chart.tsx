@@ -170,6 +170,8 @@ export function HousingTrendChart({
               spikedash: 'dot',
               spikecolor: '#9ca3af',
               spikemode: 'across',
+              autorange: true,
+              fixedrange: false,
             },
             yaxis: {
               side: 'right',
@@ -178,6 +180,8 @@ export function HousingTrendChart({
               zeroline: false,
               tickfont: { color: '#6b7280', size: 10 },
               tickformat: isValueMetric ? '$,.0f' : '.2f%',
+              autorange: true,
+              fixedrange: false,
             },
             hoverlabel: {
               bgcolor: '#1f2937',
@@ -189,7 +193,7 @@ export function HousingTrendChart({
             responsive: true,
             displayModeBar: true,
             displaylogo: false,
-            modeBarButtonsToRemove: ['select2d', 'lasso2d', 'autoScale2d', 'hoverClosestCartesian', 'hoverCompareCartesian'],
+            modeBarButtonsToRemove: ['toImage', 'select2d', 'lasso2d', 'autoScale2d', 'hoverClosestCartesian', 'hoverCompareCartesian'],
             scrollZoom: true
           } }
           style={ { width: '100%', height: '100%' } }
