@@ -1,7 +1,7 @@
 import fs from "fs";
 import { parse } from "csv-parse/sync";
 import { storage } from "./storage";
-import { type InsertHousingStat } from "@shared/schema";
+import { type InsertHousingStat, type InsertMetroStat } from "@shared/schema";
 import path from "path";
 
 const STATE_CODE_MAP: Record<string, string> = {
@@ -18,16 +18,13 @@ const STATE_CODE_MAP: Record<string, string> = {
   "District of Columbia": "DC"
 };
 
-/**
- * This app now uses the long-format state ZHVI dataset as the single source of truth.
- */
-async function seed() {
-  console.log("Starting database seeding...");
+async function seedStateData() {
+  console.log("Seeding state data...");
   
   const csvFile = path.resolve(process.cwd(), "attached_assets/state_zhvi_LONG_copy_paste.csv.csv");
   
   if (!fs.existsSync(csvFile)) {
-    console.error("CSV file not found at " + csvFile);
+    console.error("State CSV file not found at " + csvFile);
     return;
   }
 
@@ -41,13 +38,10 @@ async function seed() {
 
   const housingStats: InsertHousingStat[] = [];
   
-  // Clear existing data first
   await (storage as any).clearHousingData();
 
-  // Group by state for YoY calc
   const stateGroups: Record<string, any[]> = {};
   for (const record of records) {
-    // Some CSVs might have different case or extra whitespace
     const stateName = record.state || record.RegionName;
     if (!stateGroups[stateName]) stateGroups[stateName] = [];
     stateGroups[stateName].push(record);
@@ -60,8 +54,7 @@ async function seed() {
       continue;
     }
 
-    // Sort by date
-    data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    data.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     for (let i = 0; i < data.length; i++) {
       const current = data[i];
@@ -71,7 +64,7 @@ async function seed() {
       const targetMonth = new Date(currentMonth);
       targetMonth.setFullYear(targetMonth.getFullYear() - 1);
 
-      const previousYearData = data.find(d => {
+      const previousYearData = data.find((d: any) => {
         const dDate = new Date(d.date);
         return dDate.getFullYear() === targetMonth.getFullYear() && dDate.getMonth() === targetMonth.getMonth();
       });
@@ -94,8 +87,83 @@ async function seed() {
     }
   }
 
-  console.log(`Inserting ${housingStats.length} records...`);
+  console.log(`Inserting ${housingStats.length} state records...`);
   await storage.seedHousingData(housingStats);
+}
+
+async function seedMetroData() {
+  console.log("Seeding metro data...");
+  
+  const csvFile = path.resolve(process.cwd(), "attached_assets/metro_zhvi_LONG_1767920463349.csv");
+  
+  if (!fs.existsSync(csvFile)) {
+    console.error("Metro CSV file not found at " + csvFile);
+    return;
+  }
+
+  const content = fs.readFileSync(csvFile, "utf-8");
+  const records = parse(content, {
+    columns: true,
+    skip_empty_lines: true,
+    trim: true,
+  });
+
+  const metroStats: InsertMetroStat[] = [];
+  
+  await storage.clearMetroData();
+
+  const metroGroups: Record<string, any[]> = {};
+  for (const record of records) {
+    const metroName = record.metro;
+    if (!metroGroups[metroName]) metroGroups[metroName] = [];
+    metroGroups[metroName].push(record);
+  }
+
+  for (const [metroName, data] of Object.entries(metroGroups)) {
+    const stateMatch = metroName.match(/,\s*([A-Z]{2})$/);
+    const stateCode = stateMatch ? stateMatch[1] : 'XX';
+
+    data.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    for (let i = 0; i < data.length; i++) {
+      const current = data[i];
+      let yoyChange = 0;
+
+      const currentMonth = new Date(current.date);
+      const targetMonth = new Date(currentMonth);
+      targetMonth.setFullYear(targetMonth.getFullYear() - 1);
+
+      const previousYearData = data.find((d: any) => {
+        const dDate = new Date(d.date);
+        return dDate.getFullYear() === targetMonth.getFullYear() && dDate.getMonth() === targetMonth.getMonth();
+      });
+
+      if (previousYearData) {
+        const val = parseFloat(current.value);
+        const prevVal = parseFloat(previousYearData.value);
+        if (!isNaN(val) && !isNaN(prevVal) && prevVal !== 0) {
+          yoyChange = ((val - prevVal) / prevVal) * 100;
+        }
+      }
+
+      metroStats.push({
+        metroName,
+        stateCode,
+        date: current.date,
+        medianHomeValue: Math.round(parseFloat(current.value)),
+        yoyChange: parseFloat(yoyChange.toFixed(2))
+      });
+    }
+  }
+
+  console.log(`Inserting ${metroStats.length} metro records...`);
+  await storage.seedMetroData(metroStats);
+}
+
+async function seed() {
+  console.log("Starting database seeding...");
+  await seedStateData();
+  await seedMetroData();
   console.log("Seeding completed successfully.");
 }
 

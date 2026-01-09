@@ -11,8 +11,6 @@ import path from "path";
 const upload = multer({ storage: multer.memoryStorage() });
 
 async function seedFromAttachedCsv() {
-  // Application now uses the long-format state ZHVI dataset as the single source of truth.
-  // The seeding logic is now handled by seed.ts for clarity.
   return;
 }
 
@@ -29,7 +27,6 @@ export async function registerRoutes(
     );
 
     if (!input?.stateCode && data.length > 0) {
-      // Aggregate data by date to calculate national average
       const dateMap = new Map<string, { sum: number, count: number }>();
       
       data.forEach(stat => {
@@ -47,10 +44,9 @@ export async function registerRoutes(
         stateName: "United States",
         date,
         medianHomeValue: Math.round(sum / count),
-        yoyChange: 0 // Will be calculated on frontend or via another pass
+        yoyChange: 0
       })).sort((a, b) => a.date.localeCompare(b.date));
 
-      // Calculate YoY for aggregated data
       for (let i = 0; i < aggregatedData.length; i++) {
         const current = aggregatedData[i];
         const currentMonth = new Date(current.date);
@@ -78,6 +74,23 @@ export async function registerRoutes(
     res.json(states);
   });
 
+  app.get(api.metro.list.path, async (req, res) => {
+    const input = api.metro.list.input.parse(req.query);
+    const data = await storage.getMetroStats(
+      input?.stateCode,
+      input?.metroName,
+      input?.startDate,
+      input?.endDate
+    );
+    res.json(data);
+  });
+
+  app.get(api.metro.byState.path, async (req, res) => {
+    const input = api.metro.byState.input.parse(req.query);
+    const metros = await storage.getMetrosByState(input.stateCode);
+    res.json(metros);
+  });
+
   app.post(api.housing.uploadCsv.path, upload.single('file'), async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
@@ -98,7 +111,6 @@ export async function registerRoutes(
     }
   });
 
-  // Try to seed from the specific attached file
   seedFromAttachedCsv().catch(console.error);
 
   return httpServer;

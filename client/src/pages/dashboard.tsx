@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useHousingStats, useStates } from "@/hooks/use-housing";
+import { useHousingStats, useStates, useMetroStats, useMetrosByState } from "@/hooks/use-housing";
 import USMap from "@/components/maps/us-map";
 import { HousingTrendChart } from "@/components/charts/housing-trend-chart";
 import { StatCard } from "@/components/ui/card-stats";
@@ -26,12 +26,13 @@ import {
   DialogTitle 
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Building2, TrendingUp, Map, Info, Maximize2 } from "lucide-react";
+import { Building2, TrendingUp, Map, Info, Maximize2, ArrowLeft, MapPin } from "lucide-react";
 import { format, subYears, isSameMonth } from "date-fns";
 
 export default function Dashboard() {
   const [selectedStateCode, setSelectedStateCode] = useState<string | undefined>(undefined);
   const [selectedStateName, setSelectedStateName] = useState<string | undefined>(undefined);
+  const [selectedMetroName, setSelectedMetroName] = useState<string | undefined>(undefined);
   const [metric, setMetric] = useState<'medianHomeValue' | 'yoyChange'>('medianHomeValue');
   const [timeRange, setTimeRange] = useState<'5y' | '10y' | '20y' | 'all'>('all');
   const [movingAverages, setMovingAverages] = useState({
@@ -40,7 +41,6 @@ export default function Dashboard() {
     ma60: false
   });
 
-  // Calculate start date based on range
   const startDate = useMemo(() => {
     const now = new Date();
     switch (timeRange) {
@@ -51,26 +51,29 @@ export default function Dashboard() {
     }
   }, [timeRange]);
 
-  const { data: stats = [], isLoading: statsLoading } = useHousingStats({
+  const { data: stateStats = [], isLoading: stateStatsLoading } = useHousingStats({
     stateCode: selectedStateCode,
-    startDate: undefined, // Fetch all for YoY calc
+    startDate: undefined,
   });
 
-  const filteredStats = useMemo(() => {
-    if (!startDate) return stats;
-    const start = new Date(startDate);
-    return stats.filter(s => new Date(s.date) >= start);
-  }, [stats, startDate]);
+  const { data: metroStats = [], isLoading: metroStatsLoading } = useMetroStats({
+    stateCode: selectedStateCode,
+    metroName: selectedMetroName,
+  });
 
   const { data: states = [] } = useStates();
+  const { data: metros = [] } = useMetrosByState(selectedStateCode);
 
-  // Helper to handle map clicks
+  const isMetroMode = !!selectedMetroName;
+  const stats = isMetroMode ? metroStats : stateStats;
+  const statsLoading = isMetroMode ? metroStatsLoading : stateStatsLoading;
+
   const handleStateSelect = (code: string | undefined, name: string | undefined) => {
     setSelectedStateCode(code);
     setSelectedStateName(name);
+    setSelectedMetroName(undefined);
   };
 
-  // Helper to handle dropdown selection
   const handleDropdownSelect = (code: string) => {
     if (code === "all") {
       handleStateSelect(undefined, undefined);
@@ -80,17 +83,32 @@ export default function Dashboard() {
     }
   };
 
-  // Derive summary stats from the latest data point
+  const handleMetroSelect = (metroName: string) => {
+    if (metroName === "state") {
+      setSelectedMetroName(undefined);
+    } else {
+      setSelectedMetroName(metroName);
+    }
+  };
+
+  const handleBackToState = () => {
+    setSelectedMetroName(undefined);
+  };
+
+  const handleResetAll = () => {
+    setSelectedStateCode(undefined);
+    setSelectedStateName(undefined);
+    setSelectedMetroName(undefined);
+  };
+
   const latestStat = stats.length > 0 ? stats[stats.length - 1] : null;
   
-  // Find stat from 12 months ago
   const stat12mAgo = useMemo(() => {
     if (!latestStat || stats.length < 13) return null;
     const targetDate = subYears(new Date(latestStat.date), 1);
     return stats.find(s => isSameMonth(new Date(s.date), targetDate)) || null;
   }, [latestStat, stats]);
 
-  // Calculate YoY Growth for Value
   const valueYoY = useMemo(() => {
     if (latestStat && stat12mAgo) {
       return ((latestStat.medianHomeValue - stat12mAgo.medianHomeValue) / stat12mAgo.medianHomeValue) * 100;
@@ -108,9 +126,20 @@ export default function Dashboard() {
     return ((latestStat.medianHomeValue - historicalHigh) / historicalHigh) * 100;
   }, [latestStat, historicalHigh]);
 
+  const displayTitle = useMemo(() => {
+    if (selectedMetroName) return selectedMetroName;
+    if (selectedStateName) return selectedStateName;
+    return "National Market Overview";
+  }, [selectedMetroName, selectedStateName]);
+
+  const displaySubtitle = useMemo(() => {
+    if (selectedMetroName) return `Metro Area in ${selectedStateName}`;
+    if (selectedStateName) return "State Overview";
+    return "Analyzing historical housing value and growth trends.";
+  }, [selectedMetroName, selectedStateName]);
+
   return (
     <div className="min-h-screen bg-background text-foreground pb-20 dark">
-      {/* Header */}
       <header className="sticky top-0 z-30 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -132,24 +161,31 @@ export default function Dashboard() {
       </header>
 
       <main className="container max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        {/* Controls Bar */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
           <div className="space-y-1">
+            <div className="flex items-center gap-3">
+              {(selectedStateCode || selectedMetroName) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={selectedMetroName ? handleBackToState : handleResetAll}
+                  className="h-8 gap-1.5"
+                  data-testid="button-back"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  {selectedMetroName ? "Back to State" : "Back to National"}
+                </Button>
+              )}
+            </div>
             <h2 className="text-3xl font-bold font-display tracking-tight text-foreground">
-              {selectedStateName || "National Market Overview"}
+              {displayTitle}
             </h2>
             <p className="text-muted-foreground">
-              Analyzing historical housing value and growth trends.
+              {displaySubtitle}
             </p>
-            <div className="flex items-center gap-2 mt-2">
-              <span className="flex h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-              <span className="text-xs font-medium text-amber-500/80 uppercase tracking-wider">
-                Metro level data coming soon
-              </span>
-            </div>
           </div>
         </div>
-        {/* Key Metrics Grid */}
+        
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <StatCard 
             title="Current Median Value"
@@ -163,8 +199,8 @@ export default function Dashboard() {
           <StatCard 
             title="YoY % Growth"
             value={latestStat ? `${valueYoY.toFixed(2)}%` : "---"}
-            trend={latestStat && stat12mAgo ? valueYoY - ((stat12mAgo.medianHomeValue - (stats[stats.indexOf(stat12mAgo) - 12]?.medianHomeValue || stat12mAgo.medianHomeValue)) / (stats[stats.indexOf(stat12mAgo) - 12]?.medianHomeValue || stat12mAgo.medianHomeValue) * 100) : 0}
-            trendLabel="vs previous YoY"
+            trend={latestStat?.yoyChange || 0}
+            trendLabel="current rate"
             icon="percent"
             isLoading={statsLoading}
           />
@@ -178,37 +214,56 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Main Content Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-auto lg:h-[650px]">
           
           <div className="lg:col-span-7 h-[450px] lg:h-full flex flex-col space-y-4">
             <div className="flex flex-col bg-card/50 p-4 rounded-xl border border-border/60 gap-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-2">
                 <h3 className="font-semibold text-lg flex items-center gap-2">
                   <Map className="w-5 h-5 text-primary" />
                   Geographic Selection
                 </h3>
-                <div className="flex items-center gap-2">
-                  <div className="flex flex-col gap-1.5">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Select 
+                    value={selectedStateCode || "all"} 
+                    onValueChange={handleDropdownSelect}
+                  >
+                    <SelectTrigger className="w-[180px] h-8 bg-background border-border shadow-sm" data-testid="select-state">
+                      <Map className="w-3.5 h-3.5 mr-2 text-muted-foreground" />
+                      <SelectValue placeholder="Select State" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Entire United States</SelectItem>
+                      <Separator className="my-1" />
+                      {states.map(state => (
+                        <SelectItem key={state.code} value={state.code}>
+                          {state.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  
+                  {selectedStateCode && metros.length > 0 && (
                     <Select 
-                      value={selectedStateCode || "all"} 
-                      onValueChange={handleDropdownSelect}
+                      value={selectedMetroName || "state"} 
+                      onValueChange={handleMetroSelect}
                     >
-                      <SelectTrigger className="w-[180px] h-8 bg-background border-border shadow-sm">
-                        <Map className="w-3.5 h-3.5 mr-2 text-muted-foreground" />
-                        <SelectValue placeholder="Select State" />
+                      <SelectTrigger className="w-[200px] h-8 bg-background border-border shadow-sm" data-testid="select-metro">
+                        <MapPin className="w-3.5 h-3.5 mr-2 text-muted-foreground" />
+                        <SelectValue placeholder="Select Metro" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">Entire United States</SelectItem>
+                        <SelectItem value="state">State Overview</SelectItem>
                         <Separator className="my-1" />
-                        {states.map(state => (
-                          <SelectItem key={state.code} value={state.code}>
-                            {state.name}
+                        {metros.map(metro => (
+                          <SelectItem key={metro.name} value={metro.name}>
+                            {metro.name.replace(/, [A-Z]{2}$/, '')}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
+                  )}
+
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button variant="ghost" size="sm" className="h-8 gap-2">
@@ -239,13 +294,15 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Charts Section */}
           <div className="lg:col-span-5 h-[450px] lg:h-full flex flex-col space-y-4">
             <div className="flex flex-col bg-card/50 p-4 rounded-xl border border-border/60 gap-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-lg flex items-center gap-2">
                   <TrendingUp className="w-5 h-5 text-primary" />
                   Market Trends
+                  {isMetroMode && (
+                    <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">Metro</span>
+                  )}
                 </h3>
                 
                 <div className="flex items-center gap-2">
@@ -260,7 +317,7 @@ export default function Dashboard() {
                         <HousingTrendChart 
                           data={stats} 
                           metric={metric} 
-                          selectedStateName={selectedStateName}
+                          selectedStateName={displayTitle}
                           isLoading={statsLoading}
                           movingAverages={movingAverages}
                           startDate={startDate}
@@ -334,7 +391,7 @@ export default function Dashboard() {
               <HousingTrendChart 
                 data={stats} 
                 metric={metric} 
-                selectedStateName={selectedStateName}
+                selectedStateName={displayTitle}
                 isLoading={statsLoading}
                 movingAverages={movingAverages}
                 startDate={startDate}

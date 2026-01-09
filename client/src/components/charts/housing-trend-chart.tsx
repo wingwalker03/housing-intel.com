@@ -1,14 +1,19 @@
-import { useMemo, useEffect, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 // @ts-ignore
 import Plot from 'react-plotly.js';
 import Plotly from 'plotly.js-dist-min';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
-import { HousingStat } from '@/hooks/use-housing';
+
+interface ChartDataPoint {
+  date: string;
+  medianHomeValue: number;
+  yoyChange: number;
+}
 
 interface HousingTrendChartProps {
-  data: HousingStat[];
+  data: ChartDataPoint[];
   metric: 'medianHomeValue' | 'yoyChange';
   selectedStateName?: string;
   isLoading?: boolean;
@@ -17,6 +22,7 @@ interface HousingTrendChartProps {
     ma24: boolean;
     ma60: boolean;
   };
+  startDate?: string;
 }
 
 export function HousingTrendChart({ 
@@ -25,8 +31,8 @@ export function HousingTrendChart({
   selectedStateName,
   isLoading,
   movingAverages = { ma12: false, ma24: false, ma60: false },
-  startDate // New prop to handle filtering while keeping full data for MA
-}: HousingTrendChartProps & { startDate?: string }) {
+  startDate
+}: HousingTrendChartProps) {
   
   const processedData = useMemo(() => {
     // 1. Data processing for Moving Averages (using FULL dataset)

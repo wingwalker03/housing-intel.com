@@ -2,9 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { api, buildUrl } from "@shared/routes";
 import { z } from "zod";
 
-// Re-export types for convenience
 export type HousingStat = z.infer<typeof api.housing.list.responses[200]>[number];
 export type StateInfo = z.infer<typeof api.housing.states.responses[200]>[number];
+export type MetroStat = z.infer<typeof api.metro.list.responses[200]>[number];
+export type MetroInfo = z.infer<typeof api.metro.byState.responses[200]>[number];
 
 export interface HousingFilters {
   stateCode?: string;
@@ -12,15 +13,19 @@ export interface HousingFilters {
   endDate?: string;
 }
 
+export interface MetroFilters {
+  stateCode?: string;
+  metroName?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
 export function useHousingStats(filters?: HousingFilters) {
-  // Create a stable query key based on filters
   const queryKey = [api.housing.list.path, filters];
 
   return useQuery({
     queryKey,
     queryFn: async () => {
-      // Build URL with query params
-      // Since filters might be undefined, we cast to Record<string, string> cautiously or filter out undefineds
       const params: Record<string, string> = {};
       if (filters?.stateCode) params.stateCode = filters.stateCode;
       if (filters?.startDate) params.startDate = filters.startDate;
@@ -44,6 +49,43 @@ export function useStates() {
       if (!res.ok) throw new Error("Failed to fetch states");
       
       return api.housing.states.responses[200].parse(await res.json());
+    },
+  });
+}
+
+export function useMetroStats(filters?: MetroFilters) {
+  const queryKey = [api.metro.list.path, filters];
+
+  return useQuery({
+    queryKey,
+    enabled: !!filters?.metroName,
+    queryFn: async () => {
+      const params: Record<string, string> = {};
+      if (filters?.stateCode) params.stateCode = filters.stateCode;
+      if (filters?.metroName) params.metroName = filters.metroName;
+      if (filters?.startDate) params.startDate = filters.startDate;
+      if (filters?.endDate) params.endDate = filters.endDate;
+
+      const url = `${api.metro.list.path}?${new URLSearchParams(params)}`;
+      
+      const res = await fetch(url, { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to fetch metro stats");
+      
+      return api.metro.list.responses[200].parse(await res.json());
+    },
+  });
+}
+
+export function useMetrosByState(stateCode?: string) {
+  return useQuery({
+    queryKey: [api.metro.byState.path, stateCode],
+    enabled: !!stateCode,
+    queryFn: async () => {
+      const url = `${api.metro.byState.path}?stateCode=${stateCode}`;
+      const res = await fetch(url, { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to fetch metros");
+      
+      return api.metro.byState.responses[200].parse(await res.json());
     },
   });
 }

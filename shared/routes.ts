@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { insertHousingStatSchema, housingStats } from './schema';
+import { insertHousingStatSchema, housingStats, metroStats } from './schema';
 
 export const errorSchemas = {
   validation: z.object({
@@ -44,6 +44,31 @@ export const api = {
       },
     },
   },
+  metro: {
+    list: {
+      method: 'GET' as const,
+      path: '/api/metro',
+      input: z.object({
+        stateCode: z.string().optional(),
+        metroName: z.string().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+      }).optional(),
+      responses: {
+        200: z.array(z.custom<typeof metroStats.$inferSelect>()),
+      },
+    },
+    byState: {
+      method: 'GET' as const,
+      path: '/api/metro/by-state',
+      input: z.object({
+        stateCode: z.string(),
+      }),
+      responses: {
+        200: z.array(z.object({ name: z.string() })),
+      },
+    },
+  },
 };
 
 export function buildUrl(path: string, params?: Record<string, string | number>): string {
@@ -60,3 +85,5 @@ export function buildUrl(path: string, params?: Record<string, string | number>)
 
 export type HousingStat = z.infer<typeof api.housing.list.responses[200]>[number];
 export type StateInfo = z.infer<typeof api.housing.states.responses[200]>[number];
+export type MetroStat = z.infer<typeof api.metro.list.responses[200]>[number];
+export type MetroInfo = z.infer<typeof api.metro.byState.responses[200]>[number];
