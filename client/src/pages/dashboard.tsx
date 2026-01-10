@@ -3,8 +3,7 @@ import { useHousingStats, useStates, useMetroStats } from "@/hooks/use-housing";
 import DrillDownMap from "@/components/maps/drill-down-map";
 import { HousingTrendChart } from "@/components/charts/housing-trend-chart";
 import { StatCard } from "@/components/ui/card-stats";
-import { getCBSAsByState, getCBSADisplayName } from "@/data/cbsa-utils";
-import { lookupZillowMetroByName } from "@/data/metro-crosswalk";
+import metroPointsData from "@/data/metro_points.json";
 import { 
   Select, 
   SelectContent, 
@@ -30,6 +29,22 @@ import {
 import { Button } from "@/components/ui/button";
 import { Building2, TrendingUp, Map, Info, Maximize2, ArrowLeft, MapPin } from "lucide-react";
 import { format, subYears, isSameMonth } from "date-fns";
+
+interface MetroPoint {
+  id: string;
+  lat: number;
+  lng: number;
+}
+
+const metroPoints: MetroPoint[] = metroPointsData as MetroPoint[];
+
+function metroMatchesState(metroId: string, stateCode: string): boolean {
+  const commaIdx = metroId.lastIndexOf(', ');
+  if (commaIdx === -1) return false;
+  const statePart = metroId.substring(commaIdx + 2).trim();
+  const states = statePart.split('-').map(s => s.trim().toUpperCase());
+  return states.includes(stateCode.toUpperCase());
+}
 
 export default function Dashboard() {
   const [selectedStateCode, setSelectedStateCode] = useState<string | undefined>(undefined);
@@ -59,21 +74,16 @@ export default function Dashboard() {
     startDate: undefined,
   });
 
-  const zillowMetroName = useMemo(() => {
-    if (!selectedMetroName) return undefined;
-    return lookupZillowMetroByName(selectedMetroName);
-  }, [selectedMetroName]);
-
   const { data: metroStats = [], isLoading: metroStatsLoading } = useMetroStats({
     stateCode: selectedStateCode,
-    metroName: zillowMetroName,
+    metroName: selectedMetroName,
   });
 
   const { data: states = [] } = useStates();
   
-  const cbsaMetros = useMemo(() => {
+  const filteredMetros = useMemo(() => {
     if (!selectedStateCode) return [];
-    return getCBSAsByState(selectedStateCode);
+    return metroPoints.filter(metro => metroMatchesState(metro.id, selectedStateCode));
   }, [selectedStateCode]);
 
   const isMetroMode = !!selectedMetroName;
@@ -106,10 +116,10 @@ export default function Dashboard() {
       setSelectedMetroName(undefined);
       setSelectedMetroId(undefined);
     } else {
-      const cbsa = cbsaMetros.find(m => m.properties.CBSAFP === value);
-      if (cbsa) {
-        setSelectedMetroName(cbsa.properties.NAME);
-        setSelectedMetroId(cbsa.properties.CBSAFP);
+      const metro = filteredMetros.find(m => m.id === value);
+      if (metro) {
+        setSelectedMetroName(metro.id);
+        setSelectedMetroId(metro.id);
       }
     }
   };
@@ -274,7 +284,7 @@ export default function Dashboard() {
                     </SelectContent>
                   </Select>
                   
-                  {selectedStateCode && cbsaMetros.length > 0 && (
+                  {selectedStateCode && filteredMetros.length > 0 && (
                     <Select 
                       value={selectedMetroId || "state"} 
                       onValueChange={handleMetroDropdownSelect}
@@ -286,9 +296,9 @@ export default function Dashboard() {
                       <SelectContent>
                         <SelectItem value="state">State Overview</SelectItem>
                         <Separator className="my-1" />
-                        {cbsaMetros.map(metro => (
-                          <SelectItem key={metro.properties.CBSAFP} value={metro.properties.CBSAFP}>
-                            {getCBSADisplayName(metro)}
+                        {filteredMetros.map(metro => (
+                          <SelectItem key={metro.id} value={metro.id}>
+                            {metro.id}
                           </SelectItem>
                         ))}
                       </SelectContent>

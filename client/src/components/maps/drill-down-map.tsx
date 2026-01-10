@@ -3,13 +3,22 @@ import {
   ComposableMap, 
   Geographies, 
   Geography, 
-  ZoomableGroup 
+  ZoomableGroup,
+  Marker
 } from "react-simple-maps";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, RotateCcw } from "lucide-react";
-import { getCBSAsByState, getCBSADisplayName, type CBSAFeature } from "@/data/cbsa-utils";
+import metroPointsData from "@/data/metro_points.json";
 
 const US_STATES_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
+
+interface MetroPoint {
+  id: string;
+  lat: number;
+  lng: number;
+}
+
+const metroPoints: MetroPoint[] = metroPointsData as MetroPoint[];
 
 const fipsToAbbr: Record<string, string> = {
   "01": "AL", "02": "AK", "04": "AZ", "05": "AR", "06": "CA", "08": "CO", "09": "CT", "10": "DE",
@@ -75,6 +84,16 @@ const stateZoomConfig: Record<string, { center: [number, number]; zoom: number }
   "WY": { center: [-107.5, 43], zoom: 4.5 }
 };
 
+function metroMatchesState(metroId: string, stateCode: string): boolean {
+  const commaIdx = metroId.lastIndexOf(', ');
+  if (commaIdx === -1) return false;
+  
+  const statePart = metroId.substring(commaIdx + 2).trim();
+  const states = statePart.split('-').map(s => s.trim().toUpperCase());
+  
+  return states.includes(stateCode.toUpperCase());
+}
+
 interface DrillDownMapProps {
   selectedStateCode?: string;
   selectedStateName?: string;
@@ -96,7 +115,7 @@ function DrillDownMap({
 }: DrillDownMapProps) {
   const [statesData, setStatesData] = useState<any>(null);
   const [hoveredState, setHoveredState] = useState<string | null>(null);
-  const [hoveredMetro, setHoveredMetro] = useState<{ name: string; x: number; y: number } | null>(null);
+  const [hoveredMetro, setHoveredMetro] = useState<{ id: string; x: number; y: number } | null>(null);
 
   useEffect(() => {
     fetch(US_STATES_URL)
@@ -108,9 +127,9 @@ function DrillDownMap({
     ? stateZoomConfig[selectedStateCode] || { center: [-96, 38] as [number, number], zoom: 1 }
     : { center: [-96, 38] as [number, number], zoom: 1 };
 
-  const cbsaFeatures = useMemo(() => {
+  const filteredMetros = useMemo(() => {
     if (!selectedStateCode) return [];
-    return getCBSAsByState(selectedStateCode);
+    return metroPoints.filter(metro => metroMatchesState(metro.id, selectedStateCode));
   }, [selectedStateCode]);
 
   const isMetroMode = !!selectedStateCode;
@@ -124,28 +143,25 @@ function DrillDownMap({
     onMetroSelect(undefined, undefined);
   };
 
-  const handleCBSAClick = (feature: CBSAFeature) => {
-    const name = feature.properties.NAME;
-    const id = feature.properties.CBSAFP;
-    onMetroSelect(name, id);
+  const handleMarkerClick = (metro: MetroPoint) => {
+    onMetroSelect(metro.id, metro.id);
   };
 
-  const handleMetroMouseEnter = (feature: CBSAFeature, event: React.MouseEvent) => {
-    const displayName = getCBSADisplayName(feature);
+  const handleMarkerMouseEnter = (metro: MetroPoint, event: React.MouseEvent) => {
     setHoveredMetro({
-      name: displayName,
+      id: metro.id,
       x: event.clientX,
       y: event.clientY
     });
   };
 
-  const handleMetroMouseMove = (event: React.MouseEvent) => {
+  const handleMarkerMouseMove = (event: React.MouseEvent) => {
     if (hoveredMetro) {
       setHoveredMetro(prev => prev ? { ...prev, x: event.clientX, y: event.clientY } : null);
     }
   };
 
-  const handleMetroMouseLeave = () => {
+  const handleMarkerMouseLeave = () => {
     setHoveredMetro(null);
   };
 
@@ -198,20 +214,18 @@ function DrillDownMap({
         )}
         <div className="bg-background/80 backdrop-blur px-3 py-1.5 rounded-lg border border-border shadow-sm">
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-            {selectedMetroName 
-              ? getCBSADisplayName({ properties: { NAME: selectedMetroName } } as CBSAFeature)
-              : selectedStateName || "United States"}
+            {selectedMetroName || selectedStateName || "United States"}
           </span>
         </div>
       </div>
 
-      {selectedStateCode && !selectedMetroName && cbsaFeatures.length > 0 && (
+      {selectedStateCode && !selectedMetroName && filteredMetros.length > 0 && (
         <div className="absolute bottom-4 left-4 z-10 bg-background/90 backdrop-blur px-3 py-2 rounded-lg border border-border shadow-sm max-w-[200px]">
           <span className="text-xs font-medium text-muted-foreground block mb-1">
-            {cbsaFeatures.length} Metro Area{cbsaFeatures.length !== 1 ? 's' : ''}
+            {filteredMetros.length} Metro Area{filteredMetros.length !== 1 ? 's' : ''}
           </span>
           <span className="text-[10px] text-muted-foreground/70">
-            Click regions to view metro data
+            Click markers to view metro data
           </span>
         </div>
       )}
@@ -225,7 +239,7 @@ function DrillDownMap({
             transform: 'translateY(-100%)'
           }}
         >
-          <p className="font-semibold text-sm whitespace-nowrap">{hoveredMetro.name}</p>
+          <p className="font-semibold text-sm whitespace-nowrap">{hoveredMetro.id}</p>
           <p className="text-xs text-muted-foreground">Click to view housing data</p>
         </div>
       )}
@@ -265,21 +279,21 @@ function DrillDownMap({
                           geography={geo}
                           style={{
                             default: {
-                              fill: "transparent",
+                              fill: "hsl(var(--muted) / 0.3)",
                               stroke: "hsl(var(--primary))",
                               strokeWidth: 1.5,
                               outline: "none",
                               pointerEvents: "none" as const
                             },
                             hover: {
-                              fill: "transparent",
+                              fill: "hsl(var(--muted) / 0.3)",
                               stroke: "hsl(var(--primary))",
                               strokeWidth: 1.5,
                               outline: "none",
                               pointerEvents: "none" as const
                             },
                             pressed: {
-                              fill: "transparent",
+                              fill: "hsl(var(--muted) / 0.3)",
                               outline: "none",
                               pointerEvents: "none" as const
                             },
@@ -351,46 +365,31 @@ function DrillDownMap({
             )}
           </Geographies>
 
-          {isMetroMode && cbsaFeatures.map((feature) => {
-            const isSelectedMetro = selectedMetroId === feature.properties.CBSAFP;
+          {isMetroMode && filteredMetros.map((metro) => {
+            const isSelectedMetro = selectedMetroId === metro.id;
+            const markerSize = isSelectedMetro ? 8 : 5;
             
             return (
-              <Geography
-                key={feature.properties.CBSAFP}
-                geography={feature}
-                onClick={() => handleCBSAClick(feature)}
-                onMouseEnter={(e) => handleMetroMouseEnter(feature, e as unknown as React.MouseEvent)}
-                onMouseMove={(e) => handleMetroMouseMove(e as unknown as React.MouseEvent)}
-                onMouseLeave={handleMetroMouseLeave}
-                style={{
-                  default: {
-                    fill: isSelectedMetro 
-                      ? "hsl(var(--primary) / 0.35)" 
-                      : "hsl(var(--primary) / 0.15)",
-                    stroke: isSelectedMetro 
-                      ? "hsl(var(--primary))" 
-                      : "hsl(var(--primary) / 0.5)",
-                    strokeWidth: isSelectedMetro ? 1.5 : 0.5,
-                    outline: "none",
+              <Marker
+                key={metro.id}
+                coordinates={[metro.lng, metro.lat]}
+                onClick={() => handleMarkerClick(metro)}
+                onMouseEnter={(e) => handleMarkerMouseEnter(metro, e as unknown as React.MouseEvent)}
+                onMouseMove={(e) => handleMarkerMouseMove(e as unknown as React.MouseEvent)}
+                onMouseLeave={handleMarkerMouseLeave}
+              >
+                <circle
+                  r={markerSize}
+                  fill={isSelectedMetro ? "hsl(var(--primary))" : "hsl(var(--primary) / 0.7)"}
+                  stroke={isSelectedMetro ? "hsl(var(--background))" : "hsl(var(--primary))"}
+                  strokeWidth={isSelectedMetro ? 2 : 1}
+                  style={{
                     cursor: "pointer",
-                    pointerEvents: "auto" as const,
-                    transition: "all 150ms ease"
-                  },
-                  hover: {
-                    fill: "hsl(var(--primary) / 0.4)",
-                    stroke: "hsl(var(--primary))",
-                    strokeWidth: 1.5,
-                    outline: "none",
-                    cursor: "pointer",
-                    pointerEvents: "auto" as const
-                  },
-                  pressed: {
-                    fill: "hsl(var(--primary) / 0.5)",
-                    outline: "none",
-                    pointerEvents: "auto" as const
-                  },
-                }}
-              />
+                    transition: "all 150ms ease",
+                    pointerEvents: "auto"
+                  }}
+                />
+              </Marker>
             );
           })}
         </ZoomableGroup>
