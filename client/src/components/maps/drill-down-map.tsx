@@ -285,10 +285,15 @@ function DrillDownMap({
             return (
               <Tooltip key={feature.properties.CBSAFP}>
                 <TooltipTrigger asChild>
-                  <g style={{ cursor: "pointer" }}>
+                  <g 
+                    style={{ cursor: "pointer" }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCBSAClick(feature);
+                    }}
+                  >
                     <Geography
                       geography={feature}
-                      onClick={() => handleCBSAClick(feature)}
                       style={{
                         default: {
                           fill: isSelectedMetro 
@@ -299,15 +304,13 @@ function DrillDownMap({
                             : "hsl(var(--primary) / 0.4)",
                           strokeWidth: isSelectedMetro ? 1.5 : 0.5,
                           outline: "none",
-                          cursor: "pointer",
                           transition: "all 200ms ease"
                         },
                         hover: {
-                          fill: "hsl(var(--primary) / 0.2)",
+                          fill: "hsl(var(--primary) / 0.25)",
                           stroke: "hsl(var(--primary))",
                           strokeWidth: 1.5,
                           outline: "none",
-                          cursor: "pointer"
                         },
                         pressed: {
                           fill: "hsl(var(--primary) / 0.3)",
@@ -315,23 +318,20 @@ function DrillDownMap({
                         },
                       }}
                     />
-                    <Marker 
-                      coordinates={[centroid.lng, centroid.lat]}
-                      onClick={() => handleCBSAClick(feature)}
-                    >
+                    <Marker coordinates={[centroid.lng, centroid.lat]}>
                       <circle
                         r={circleRadius}
                         fill={isSelectedMetro ? "hsl(var(--primary))" : "hsl(var(--background))"}
                         stroke="hsl(var(--primary))"
                         strokeWidth={isSelectedMetro ? 0.4 : 0.3}
-                        style={{ cursor: "pointer" }}
                         className="metro-circle"
+                        style={{ pointerEvents: "none" }}
                       />
                     </Marker>
                   </g>
                 </TooltipTrigger>
-                <TooltipContent>
-                  <p className="font-semibold">{displayName}</p>
+                <TooltipContent side="top" sideOffset={5} className="z-50 bg-background/95 backdrop-blur border shadow-md px-3 py-1.5 pointer-events-none">
+                  <p className="font-semibold text-sm">{displayName}</p>
                   <p className="text-xs text-muted-foreground">Click to view housing data</p>
                 </TooltipContent>
               </Tooltip>
