@@ -330,7 +330,7 @@ function DrillDownMap({
                     </Marker>
                   </g>
                 </TooltipTrigger>
-                <TooltipContent side="top" sideOffset={5} className="z-50 bg-background/95 backdrop-blur border shadow-md px-3 py-1.5 pointer-events-none">
+                <TooltipContent side="top" sideOffset={5} className="z-[100] bg-popover text-popover-foreground border shadow-md px-3 py-1.5 pointer-events-none">
                   <p className="font-semibold text-sm">{displayName}</p>
                   <p className="text-xs text-muted-foreground">Click to view housing data</p>
                 </TooltipContent>
