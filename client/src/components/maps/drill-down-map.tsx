@@ -367,7 +367,7 @@ function DrillDownMap({
 
           {isMetroMode && filteredMetros.map((metro) => {
             const isSelectedMetro = selectedMetroId === metro.id;
-            const markerSize = isSelectedMetro ? 8 : 5;
+            const markerSize = isSelectedMetro ? 4 : 2.5;
             
             return (
               <Marker
@@ -382,7 +382,7 @@ function DrillDownMap({
                   r={markerSize}
                   fill={isSelectedMetro ? "hsl(var(--primary))" : "hsl(var(--primary) / 0.7)"}
                   stroke={isSelectedMetro ? "hsl(var(--background))" : "hsl(var(--primary))"}
-                  strokeWidth={isSelectedMetro ? 2 : 1}
+                  strokeWidth={isSelectedMetro ? 1 : 0.5}
                   style={{
                     cursor: "pointer",
                     transition: "all 150ms ease",
