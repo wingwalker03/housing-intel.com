@@ -3,13 +3,11 @@ import {
   ComposableMap, 
   Geographies, 
   Geography, 
-  Marker,
   ZoomableGroup 
 } from "react-simple-maps";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, RotateCcw } from "lucide-react";
-import { getCBSAsByState, getCBSADisplayName, getCBSACentroid, type CBSAFeature } from "@/data/cbsa-utils";
+import { getCBSAsByState, getCBSADisplayName, type CBSAFeature } from "@/data/cbsa-utils";
 
 const US_STATES_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 
@@ -97,6 +95,8 @@ function DrillDownMap({
   onReset
 }: DrillDownMapProps) {
   const [statesData, setStatesData] = useState<any>(null);
+  const [hoveredState, setHoveredState] = useState<string | null>(null);
+  const [hoveredMetro, setHoveredMetro] = useState<{ name: string; x: number; y: number } | null>(null);
 
   useEffect(() => {
     fetch(US_STATES_URL)
@@ -113,6 +113,8 @@ function DrillDownMap({
     return getCBSAsByState(selectedStateCode);
   }, [selectedStateCode]);
 
+  const isMetroMode = !!selectedStateCode;
+
   const handleBackToNational = () => {
     onStateSelect(undefined, undefined);
     onMetroSelect(undefined, undefined);
@@ -126,6 +128,25 @@ function DrillDownMap({
     const name = feature.properties.NAME;
     const id = feature.properties.CBSAFP;
     onMetroSelect(name, id);
+  };
+
+  const handleMetroMouseEnter = (feature: CBSAFeature, event: React.MouseEvent) => {
+    const displayName = getCBSADisplayName(feature);
+    setHoveredMetro({
+      name: displayName,
+      x: event.clientX,
+      y: event.clientY
+    });
+  };
+
+  const handleMetroMouseMove = (event: React.MouseEvent) => {
+    if (hoveredMetro) {
+      setHoveredMetro(prev => prev ? { ...prev, x: event.clientX, y: event.clientY } : null);
+    }
+  };
+
+  const handleMetroMouseLeave = () => {
+    setHoveredMetro(null);
   };
 
   if (!statesData) {
@@ -195,6 +216,27 @@ function DrillDownMap({
         </div>
       )}
 
+      {hoveredMetro && (
+        <div 
+          className="fixed z-[200] bg-popover text-popover-foreground border shadow-lg px-3 py-2 rounded-md pointer-events-none"
+          style={{ 
+            left: hoveredMetro.x + 12, 
+            top: hoveredMetro.y - 10,
+            transform: 'translateY(-100%)'
+          }}
+        >
+          <p className="font-semibold text-sm whitespace-nowrap">{hoveredMetro.name}</p>
+          <p className="text-xs text-muted-foreground">Click to view housing data</p>
+        </div>
+      )}
+
+      {!isMetroMode && hoveredState && (
+        <div className="absolute bottom-4 right-4 z-10 bg-background/90 backdrop-blur px-3 py-2 rounded-lg border border-border shadow-sm">
+          <span className="text-sm font-medium">{hoveredState}</span>
+          <span className="text-xs text-muted-foreground block">Click to explore</span>
+        </div>
+      )}
+
       <ComposableMap 
         projection="geoAlbersUsa" 
         style={{ width: "100%", height: "100%", maxHeight: "100%" }}
@@ -215,126 +257,140 @@ function DrillDownMap({
                   const isSelected = selectedStateCode === stateAbbr;
                   const isOtherState = selectedStateCode && !isSelected;
 
-                  return (
-                    <Tooltip key={geo.rsmKey}>
-                      <TooltipTrigger asChild>
+                  if (isMetroMode) {
+                    if (isSelected) {
+                      return (
                         <Geography
+                          key={geo.rsmKey}
                           geography={geo}
-                          onClick={() => {
-                            if (!selectedStateCode) {
-                              onStateSelect(stateAbbr, stateName);
-                            }
-                          }}
                           style={{
                             default: {
-                              fill: isSelected 
-                                ? "hsl(var(--primary) / 0.2)" 
-                                : isOtherState 
-                                  ? "hsl(var(--muted) / 0.2)" 
-                                  : "hsl(var(--muted) / 0.8)",
-                              stroke: isSelected 
-                                ? "hsl(var(--primary))" 
-                                : "hsl(var(--muted-foreground) / 0.15)",
-                              strokeWidth: isSelected ? 1 : 0.25,
+                              fill: "transparent",
+                              stroke: "hsl(var(--primary))",
+                              strokeWidth: 1.5,
                               outline: "none",
-                              transition: "all 350ms ease",
-                              cursor: selectedStateCode ? "default" : "pointer"
+                              pointerEvents: "none" as const
                             },
                             hover: {
-                              fill: isSelected 
-                                ? "hsl(var(--primary) / 0.2)" 
-                                : isOtherState 
-                                  ? "hsl(var(--muted) / 0.2)" 
-                                  : "hsl(var(--primary) / 0.6)",
-                              stroke: isSelected 
-                                ? "hsl(var(--primary))" 
-                                : "hsl(var(--background))",
-                              strokeWidth: isSelected ? 1.5 : 1,
+                              fill: "transparent",
+                              stroke: "hsl(var(--primary))",
+                              strokeWidth: 1.5,
                               outline: "none",
-                              cursor: selectedStateCode ? "default" : "pointer",
-                              filter: selectedStateCode ? "none" : "brightness(1.1)"
+                              pointerEvents: "none" as const
                             },
                             pressed: {
-                              fill: "hsl(var(--primary))",
+                              fill: "transparent",
                               outline: "none",
+                              pointerEvents: "none" as const
                             },
                           }}
                         />
-                      </TooltipTrigger>
-                      {!selectedStateCode && (
-                        <TooltipContent>
-                          <p className="font-semibold">{stateName}</p>
-                          <p className="text-xs text-muted-foreground">Click to explore metro areas</p>
-                        </TooltipContent>
-                      )}
-                    </Tooltip>
+                      );
+                    }
+                    return (
+                      <Geography
+                        key={geo.rsmKey}
+                        geography={geo}
+                        style={{
+                          default: {
+                            fill: "hsl(var(--muted) / 0.15)",
+                            stroke: "hsl(var(--muted-foreground) / 0.1)",
+                            strokeWidth: 0.25,
+                            outline: "none",
+                            pointerEvents: "none" as const
+                          },
+                          hover: {
+                            fill: "hsl(var(--muted) / 0.15)",
+                            stroke: "hsl(var(--muted-foreground) / 0.1)",
+                            strokeWidth: 0.25,
+                            outline: "none",
+                            pointerEvents: "none" as const
+                          },
+                          pressed: {
+                            fill: "hsl(var(--muted) / 0.15)",
+                            outline: "none",
+                            pointerEvents: "none" as const
+                          },
+                        }}
+                      />
+                    );
+                  }
+
+                  return (
+                    <Geography
+                      key={geo.rsmKey}
+                      geography={geo}
+                      onClick={() => onStateSelect(stateAbbr, stateName)}
+                      onMouseEnter={() => setHoveredState(stateName)}
+                      onMouseLeave={() => setHoveredState(null)}
+                      style={{
+                        default: {
+                          fill: "hsl(var(--muted) / 0.8)",
+                          stroke: "hsl(var(--muted-foreground) / 0.15)",
+                          strokeWidth: 0.25,
+                          outline: "none",
+                          cursor: "pointer",
+                          transition: "all 200ms ease"
+                        },
+                        hover: {
+                          fill: "hsl(var(--primary) / 0.6)",
+                          stroke: "hsl(var(--primary))",
+                          strokeWidth: 1,
+                          outline: "none",
+                          cursor: "pointer"
+                        },
+                        pressed: {
+                          fill: "hsl(var(--primary))",
+                          outline: "none",
+                        },
+                      }}
+                    />
                   );
                 })}
               </>
             )}
           </Geographies>
 
-          {selectedStateCode && cbsaFeatures.map((feature) => {
+          {isMetroMode && cbsaFeatures.map((feature) => {
             const isSelectedMetro = selectedMetroId === feature.properties.CBSAFP;
-            const displayName = getCBSADisplayName(feature);
-            const centroid = getCBSACentroid(feature);
-            const currentZoom = zoomConfig.zoom;
-            const baseRadius = Math.max(3, 8 / currentZoom);
-            const circleRadius = isSelectedMetro ? baseRadius * 1.3 : baseRadius;
             
             return (
-              <Tooltip key={feature.properties.CBSAFP}>
-                <TooltipTrigger asChild>
-                  <g 
-                    style={{ cursor: "pointer" }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleCBSAClick(feature);
-                    }}
-                  >
-                    <Geography
-                      geography={feature}
-                      style={{
-                        default: {
-                          fill: isSelectedMetro 
-                            ? "hsl(var(--primary) / 0.2)" 
-                            : "hsl(var(--primary) / 0.08)",
-                          stroke: isSelectedMetro 
-                            ? "hsl(var(--primary))" 
-                            : "hsl(var(--primary) / 0.4)",
-                          strokeWidth: isSelectedMetro ? 1.5 : 0.5,
-                          outline: "none",
-                          transition: "all 200ms ease"
-                        },
-                        hover: {
-                          fill: "hsl(var(--primary) / 0.25)",
-                          stroke: "hsl(var(--primary))",
-                          strokeWidth: 1.5,
-                          outline: "none",
-                        },
-                        pressed: {
-                          fill: "hsl(var(--primary) / 0.3)",
-                          outline: "none",
-                        },
-                      }}
-                    />
-                    <Marker coordinates={[centroid.lng, centroid.lat]}>
-                      <circle
-                        r={circleRadius}
-                        fill={isSelectedMetro ? "hsl(var(--primary))" : "hsl(var(--background))"}
-                        stroke="hsl(var(--primary))"
-                        strokeWidth={isSelectedMetro ? 0.4 : 0.3}
-                        className="metro-circle"
-                        style={{ pointerEvents: "none" }}
-                      />
-                    </Marker>
-                  </g>
-                </TooltipTrigger>
-                <TooltipContent side="top" sideOffset={5} className="z-[100] bg-popover text-popover-foreground border shadow-md px-3 py-1.5 pointer-events-none">
-                  <p className="font-semibold text-sm">{displayName}</p>
-                  <p className="text-xs text-muted-foreground">Click to view housing data</p>
-                </TooltipContent>
-              </Tooltip>
+              <Geography
+                key={feature.properties.CBSAFP}
+                geography={feature}
+                onClick={() => handleCBSAClick(feature)}
+                onMouseEnter={(e) => handleMetroMouseEnter(feature, e as unknown as React.MouseEvent)}
+                onMouseMove={(e) => handleMetroMouseMove(e as unknown as React.MouseEvent)}
+                onMouseLeave={handleMetroMouseLeave}
+                style={{
+                  default: {
+                    fill: isSelectedMetro 
+                      ? "hsl(var(--primary) / 0.35)" 
+                      : "hsl(var(--primary) / 0.15)",
+                    stroke: isSelectedMetro 
+                      ? "hsl(var(--primary))" 
+                      : "hsl(var(--primary) / 0.5)",
+                    strokeWidth: isSelectedMetro ? 1.5 : 0.5,
+                    outline: "none",
+                    cursor: "pointer",
+                    pointerEvents: "auto" as const,
+                    transition: "all 150ms ease"
+                  },
+                  hover: {
+                    fill: "hsl(var(--primary) / 0.4)",
+                    stroke: "hsl(var(--primary))",
+                    strokeWidth: 1.5,
+                    outline: "none",
+                    cursor: "pointer",
+                    pointerEvents: "auto" as const
+                  },
+                  pressed: {
+                    fill: "hsl(var(--primary) / 0.5)",
+                    outline: "none",
+                    pointerEvents: "auto" as const
+                  },
+                }}
+              />
             );
           })}
         </ZoomableGroup>

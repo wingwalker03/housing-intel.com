@@ -4,6 +4,7 @@ import DrillDownMap from "@/components/maps/drill-down-map";
 import { HousingTrendChart } from "@/components/charts/housing-trend-chart";
 import { StatCard } from "@/components/ui/card-stats";
 import { getCBSAsByState, getCBSADisplayName } from "@/data/cbsa-utils";
+import { lookupZillowMetroByName } from "@/data/metro-crosswalk";
 import { 
   Select, 
   SelectContent, 
@@ -58,9 +59,14 @@ export default function Dashboard() {
     startDate: undefined,
   });
 
+  const zillowMetroName = useMemo(() => {
+    if (!selectedMetroName) return undefined;
+    return lookupZillowMetroByName(selectedMetroName);
+  }, [selectedMetroName]);
+
   const { data: metroStats = [], isLoading: metroStatsLoading } = useMetroStats({
     stateCode: selectedStateCode,
-    metroName: selectedMetroName,
+    metroName: zillowMetroName,
   });
 
   const { data: states = [] } = useStates();
@@ -349,14 +355,24 @@ export default function Dashboard() {
                     </DialogTrigger>
                     <DialogContent className="max-w-[90vw] w-full h-[80vh] flex flex-col p-0">
                       <div className="flex-1 min-h-0">
-                        <HousingTrendChart 
-                          data={stats} 
-                          metric={metric} 
-                          selectedStateName={displayTitle}
-                          isLoading={statsLoading}
-                          movingAverages={movingAverages}
-                          startDate={startDate}
-                        />
+                        {isMetroMode && !metroStatsLoading && metroStats.length === 0 ? (
+                          <div className="w-full h-full flex flex-col items-center justify-center text-center p-8">
+                            <MapPin className="w-12 h-12 text-muted-foreground/40 mb-4" />
+                            <h3 className="text-lg font-semibold text-foreground mb-2">No Data Available</h3>
+                            <p className="text-sm text-muted-foreground max-w-md">
+                              Housing data is not available for this metro area.
+                            </p>
+                          </div>
+                        ) : (
+                          <HousingTrendChart 
+                            data={stats} 
+                            metric={metric} 
+                            selectedStateName={displayTitle}
+                            isLoading={statsLoading}
+                            movingAverages={movingAverages}
+                            startDate={startDate}
+                          />
+                        )}
                       </div>
                     </DialogContent>
                   </Dialog>
@@ -423,14 +439,35 @@ export default function Dashboard() {
             </div>
             
             <div className="flex-1 min-h-0 bg-card/50 p-4 rounded-xl border border-border/60">
-              <HousingTrendChart 
-                data={stats} 
-                metric={metric} 
-                selectedStateName={displayTitle}
-                isLoading={statsLoading}
-                movingAverages={movingAverages}
-                startDate={startDate}
-              />
+              {isMetroMode && !metroStatsLoading && metroStats.length === 0 ? (
+                <div className="w-full h-full flex flex-col items-center justify-center text-center p-8">
+                  <MapPin className="w-12 h-12 text-muted-foreground/40 mb-4" />
+                  <h3 className="text-lg font-semibold text-foreground mb-2">No Data Available</h3>
+                  <p className="text-sm text-muted-foreground max-w-md">
+                    Housing data is not available for this metro area. 
+                    Try selecting a different metro area or go back to view state-level data.
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleBackToState}
+                    className="mt-4"
+                    data-testid="button-no-data-back"
+                  >
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Back to {selectedStateName}
+                  </Button>
+                </div>
+              ) : (
+                <HousingTrendChart 
+                  data={stats} 
+                  metric={metric} 
+                  selectedStateName={displayTitle}
+                  isLoading={statsLoading}
+                  movingAverages={movingAverages}
+                  startDate={startDate}
+                />
+              )}
             </div>
           </div>
         </div>
