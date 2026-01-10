@@ -58,7 +58,7 @@ export function useMetroStats(filters?: MetroFilters) {
 
   return useQuery({
     queryKey,
-    enabled: !!filters?.metroName,
+    enabled: !!filters?.stateCode || !!filters?.metroName,
     queryFn: async () => {
       const params: Record<string, string> = {};
       if (filters?.stateCode) params.stateCode = filters.stateCode;

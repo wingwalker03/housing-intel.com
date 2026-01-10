@@ -94,11 +94,17 @@ function metroMatchesState(metroId: string, stateCode: string): boolean {
   return states.includes(stateCode.toUpperCase());
 }
 
+interface MetroDataPoint {
+  metroName: string;
+  yoyChange: number;
+}
+
 interface DrillDownMapProps {
   selectedStateCode?: string;
   selectedStateName?: string;
   selectedMetroName?: string;
   selectedMetroId?: string;
+  metroData?: MetroDataPoint[];
   onStateSelect: (code: string | undefined, name: string | undefined) => void;
   onMetroSelect: (metroName: string | undefined, metroId: string | undefined) => void;
   onReset: () => void;
@@ -109,13 +115,44 @@ function DrillDownMap({
   selectedStateName,
   selectedMetroName,
   selectedMetroId,
+  metroData = [],
   onStateSelect, 
   onMetroSelect,
   onReset
 }: DrillDownMapProps) {
   const [statesData, setStatesData] = useState<any>(null);
   const [hoveredState, setHoveredState] = useState<string | null>(null);
-  const [hoveredMetro, setHoveredMetro] = useState<{ id: string; x: number; y: number } | null>(null);
+  const [hoveredMetro, setHoveredMetro] = useState<{ id: string; x: number; y: number; yoy?: number } | null>(null);
+
+  const getMetroColor = (metroId: string) => {
+    const data = metroData.find(m => m.metroName === metroId);
+    if (!data) return "hsl(var(--primary) / 0.7)";
+    
+    const yoy = data.yoyChange;
+    // Map YoY change to a red-green gradient
+    // Assume -10% to +10% as a typical range for visualization, clamp if needed
+    const normalized = Math.max(-10, Math.min(10, yoy));
+    
+    if (normalized > 0) {
+      // Green gradient: darkness increases as growth increases (lightness decreases)
+      const lightness = 60 - (normalized * 3);
+      return `hsl(142, 76%, ${lightness}%)`;
+    } else {
+      // Red gradient: darkness increases as decline increases (lightness decreases)
+      const lightness = 60 - (Math.abs(normalized) * 3);
+      return `hsl(0, 84%, ${lightness}%)`;
+    }
+  };
+
+  const handleMarkerMouseEnter = (metro: MetroPoint, event: React.MouseEvent) => {
+    const data = metroData.find(m => m.metroName === metro.id);
+    setHoveredMetro({
+      id: metro.id,
+      x: event.clientX,
+      y: event.clientY,
+      yoy: data?.yoyChange
+    });
+  };
 
   useEffect(() => {
     fetch(US_STATES_URL)
@@ -145,14 +182,6 @@ function DrillDownMap({
 
   const handleMarkerClick = (metro: MetroPoint) => {
     onMetroSelect(metro.id, metro.id);
-  };
-
-  const handleMarkerMouseEnter = (metro: MetroPoint, event: React.MouseEvent) => {
-    setHoveredMetro({
-      id: metro.id,
-      x: event.clientX,
-      y: event.clientY
-    });
   };
 
   const handleMarkerMouseMove = (event: React.MouseEvent) => {
@@ -240,6 +269,11 @@ function DrillDownMap({
           }}
         >
           <p className="font-semibold text-sm whitespace-nowrap">{hoveredMetro.id}</p>
+          {hoveredMetro.yoy !== undefined && (
+            <p className={hoveredMetro.yoy >= 0 ? "text-emerald-500 text-xs font-medium" : "text-red-500 text-xs font-medium"}>
+              {hoveredMetro.yoy >= 0 ? '+' : ''}{hoveredMetro.yoy.toFixed(1)}% YoY Growth
+            </p>
+          )}
           <p className="text-xs text-muted-foreground">Click to view housing data</p>
         </div>
       )}
@@ -248,6 +282,30 @@ function DrillDownMap({
         <div className="absolute bottom-4 right-4 z-10 bg-background/90 backdrop-blur px-3 py-2 rounded-lg border border-border shadow-sm">
           <span className="text-sm font-medium">{hoveredState}</span>
           <span className="text-xs text-muted-foreground block">Click to explore</span>
+        </div>
+      )}
+
+      {selectedStateCode && !selectedMetroName && (
+        <div className="absolute bottom-4 right-4 z-10 bg-background/90 backdrop-blur px-3 py-2 rounded-lg border border-border shadow-sm">
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] uppercase font-bold text-muted-foreground mb-1">YoY Growth Legend</span>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(0, 84%, 30%)' }} />
+              <span className="text-[10px]">-10% or more</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(0, 84%, 60%)' }} />
+              <span className="text-[10px]">Decline</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(142, 76%, 60%)' }} />
+              <span className="text-[10px]">Growth</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(142, 76%, 30%)' }} />
+              <span className="text-[10px]">+10% or more</span>
+            </div>
+          </div>
         </div>
       )}
 
@@ -368,6 +426,7 @@ function DrillDownMap({
           {isMetroMode && filteredMetros.map((metro) => {
             const isSelectedMetro = selectedMetroId === metro.id;
             const markerSize = isSelectedMetro ? 4 : 2.5;
+            const fillColor = getMetroColor(metro.id);
             
             return (
               <Marker
@@ -380,8 +439,8 @@ function DrillDownMap({
               >
                 <circle
                   r={markerSize}
-                  fill={isSelectedMetro ? "hsl(var(--primary))" : "hsl(var(--primary) / 0.7)"}
-                  stroke={isSelectedMetro ? "hsl(var(--background))" : "hsl(var(--primary))"}
+                  fill={fillColor}
+                  stroke={isSelectedMetro ? "hsl(var(--background))" : fillColor}
                   strokeWidth={isSelectedMetro ? 1 : 0.5}
                   style={{
                     cursor: "pointer",
