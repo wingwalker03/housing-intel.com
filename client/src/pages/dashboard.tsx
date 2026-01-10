@@ -70,40 +70,6 @@ export default function Dashboard() {
     return getCBSAsByState(selectedStateCode);
   }, [selectedStateCode]);
 
-  const { data: allStateMetroStats = [] } = useMetroStats({
-    stateCode: selectedStateCode,
-    metroName: undefined,
-  });
-
-  const metroYoYData = useMemo(() => {
-    const yoyMap: { [metroName: string]: number | undefined } = {};
-    const metroGroups: { [name: string]: typeof allStateMetroStats } = {};
-    
-    allStateMetroStats.forEach(stat => {
-      if (!metroGroups[stat.metroName]) {
-        metroGroups[stat.metroName] = [];
-      }
-      metroGroups[stat.metroName].push(stat);
-    });
-    
-    Object.entries(metroGroups).forEach(([name, stats]) => {
-      if (stats.length > 0) {
-        const sorted = [...stats].sort((a, b) => 
-          new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
-        yoyMap[name] = sorted[0].yoyChange;
-        const normalizedName = name
-          .replace(/\s*(Metro|Micro)\s*Area\s*$/i, "")
-          .replace(/,\s*[A-Z]{2}(-[A-Z]{2})*$/, "")
-          .toLowerCase()
-          .trim();
-        yoyMap[normalizedName] = sorted[0].yoyChange;
-      }
-    });
-    
-    return yoyMap;
-  }, [allStateMetroStats]);
-
   const isMetroMode = !!selectedMetroName;
   const stats = isMetroMode ? metroStats : stateStats;
   const statsLoading = isMetroMode ? metroStatsLoading : stateStatsLoading;
@@ -340,7 +306,6 @@ export default function Dashboard() {
                           selectedStateName={selectedStateName}
                           selectedMetroName={selectedMetroName}
                           selectedMetroId={selectedMetroId}
-                          metroYoYData={metroYoYData}
                           onStateSelect={handleStateSelect}
                           onMetroSelect={handleMetroSelect}
                           onReset={handleResetAll}
@@ -357,7 +322,6 @@ export default function Dashboard() {
                 selectedStateName={selectedStateName}
                 selectedMetroName={selectedMetroName}
                 selectedMetroId={selectedMetroId}
-                metroYoYData={metroYoYData}
                 onStateSelect={handleStateSelect}
                 onMetroSelect={handleMetroSelect}
                 onReset={handleResetAll}
