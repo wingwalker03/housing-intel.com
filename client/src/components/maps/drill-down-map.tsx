@@ -315,14 +315,17 @@ function DrillDownMap({
                         },
                       }}
                     />
-                    <Marker coordinates={[centroid.lng, centroid.lat]}>
+                    <Marker 
+                      coordinates={[centroid.lng, centroid.lat]}
+                      onClick={() => handleCBSAClick(feature)}
+                    >
                       <circle
                         r={isSelectedMetro ? 6 : 4}
-                        fill={isSelectedMetro ? "hsl(var(--destructive))" : "hsl(var(--primary))"}
-                        stroke="#fff"
-                        strokeWidth={1}
-                        className="transition-all duration-200"
-                        style={{ cursor: "pointer", pointerEvents: "none" }}
+                        fill={isSelectedMetro ? "hsl(var(--primary))" : "hsl(var(--background))"}
+                        stroke="hsl(var(--primary))"
+                        strokeWidth={1.5}
+                        className="transition-all duration-200 hover:fill-primary/20"
+                        style={{ cursor: "pointer" }}
                       />
                     </Marker>
                   </g>
