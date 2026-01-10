@@ -11,6 +11,25 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, RotateCcw } from "lucide-react";
 import { getCBSAsByState, getCBSADisplayName, getCBSACentroid, type CBSAFeature } from "@/data/cbsa-utils";
 
+function getYoYColor(yoyChange: number | undefined): { fill: string; stroke: string } {
+  if (yoyChange === undefined) {
+    return { fill: "hsl(var(--muted) / 0.3)", stroke: "hsl(var(--muted-foreground) / 0.5)" };
+  }
+  if (yoyChange > 5) {
+    return { fill: "hsl(142 76% 36% / 0.25)", stroke: "hsl(142 76% 36%)" };
+  } else if (yoyChange > 2) {
+    return { fill: "hsl(142 76% 36% / 0.15)", stroke: "hsl(142 76% 36% / 0.7)" };
+  } else if (yoyChange > 0) {
+    return { fill: "hsl(142 76% 36% / 0.08)", stroke: "hsl(142 76% 36% / 0.5)" };
+  } else if (yoyChange > -2) {
+    return { fill: "hsl(0 84% 60% / 0.08)", stroke: "hsl(0 84% 60% / 0.5)" };
+  } else if (yoyChange > -5) {
+    return { fill: "hsl(0 84% 60% / 0.15)", stroke: "hsl(0 84% 60% / 0.7)" };
+  } else {
+    return { fill: "hsl(0 84% 60% / 0.25)", stroke: "hsl(0 84% 60%)" };
+  }
+}
+
 const US_STATES_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 
 const fipsToAbbr: Record<string, string> = {
@@ -77,11 +96,16 @@ const stateZoomConfig: Record<string, { center: [number, number]; zoom: number }
   "WY": { center: [-107.5, 43], zoom: 4.5 }
 };
 
+interface MetroYoYData {
+  [metroName: string]: number | undefined;
+}
+
 interface DrillDownMapProps {
   selectedStateCode?: string;
   selectedStateName?: string;
   selectedMetroName?: string;
   selectedMetroId?: string;
+  metroYoYData?: MetroYoYData;
   onStateSelect: (code: string | undefined, name: string | undefined) => void;
   onMetroSelect: (metroName: string | undefined, metroId: string | undefined) => void;
   onReset: () => void;
@@ -92,6 +116,7 @@ function DrillDownMap({
   selectedStateName,
   selectedMetroName,
   selectedMetroId,
+  metroYoYData = {},
   onStateSelect, 
   onMetroSelect,
   onReset
@@ -274,72 +299,129 @@ function DrillDownMap({
             )}
           </Geographies>
 
-          {selectedStateCode && cbsaFeatures.map((feature) => {
-            const isSelectedMetro = selectedMetroId === feature.properties.CBSAFP;
-            const displayName = getCBSADisplayName(feature);
-            const centroid = getCBSACentroid(feature);
+          {selectedStateCode && (() => {
+            const sortedBySize = [...cbsaFeatures].sort((a, b) => b.properties.ALAND - a.properties.ALAND);
+            const topMetroIds = new Set(sortedBySize.slice(0, 5).map(f => f.properties.CBSAFP));
+            const currentZoom = zoomConfig.zoom;
+            const metroCount = cbsaFeatures.length;
+            const totalStateArea = cbsaFeatures.reduce((sum, f) => sum + f.properties.ALAND, 0);
+            const avgAreaPerMetro = metroCount > 0 ? totalStateArea / metroCount : 1e9;
+            const areaFactor = Math.min(1.5, Math.max(0.5, Math.sqrt(avgAreaPerMetro / 1e9)));
+            const densityFactor = Math.max(0.5, 1.2 / Math.sqrt(Math.max(1, metroCount / 8)));
+            const baseRadius = Math.max(0.8, (2 / currentZoom) * densityFactor * areaFactor);
             
-            return (
-              <Tooltip key={feature.properties.CBSAFP}>
-                <TooltipTrigger asChild>
-                  <g>
-                    <Geography
-                      geography={feature}
-                      onClick={() => handleCBSAClick(feature)}
-                      style={{
-                        default: {
-                          fill: isSelectedMetro 
-                            ? "hsl(var(--primary) / 0.15)" 
-                            : "hsl(var(--primary) / 0.05)",
-                          stroke: isSelectedMetro 
-                            ? "hsl(var(--primary))" 
-                            : "hsl(var(--primary) / 0.3)",
-                          strokeWidth: isSelectedMetro ? 1.5 : 0.5,
-                          outline: "none",
-                          cursor: "pointer",
-                          transition: "all 200ms ease"
-                        },
-                        hover: {
-                          fill: isSelectedMetro 
-                            ? "hsl(var(--primary) / 0.25)" 
-                            : "hsl(var(--primary) / 0.15)",
-                          stroke: "hsl(var(--primary))",
-                          strokeWidth: 1.5,
-                          outline: "none",
-                          cursor: "pointer",
-                          filter: "brightness(1.1)"
-                        },
-                        pressed: {
-                          fill: "hsl(var(--primary) / 0.3)",
-                          outline: "none",
-                        },
-                      }}
-                    />
-                    <Marker 
-                      coordinates={[centroid.lng, centroid.lat]}
-                      onClick={() => handleCBSAClick(feature)}
-                    >
-                      <circle
-                        r={isSelectedMetro ? 6 : 4}
-                        fill={isSelectedMetro ? "hsl(var(--primary))" : "hsl(var(--background))"}
-                        stroke="hsl(var(--primary))"
-                        strokeWidth={1.5}
-                        className="transition-all duration-200 hover:fill-primary/20"
-                        style={{ cursor: "pointer" }}
+            return cbsaFeatures.map((feature) => {
+              const isSelectedMetro = selectedMetroId === feature.properties.CBSAFP;
+              const displayName = getCBSADisplayName(feature);
+              const centroid = getCBSACentroid(feature);
+              const isTopMetro = topMetroIds.has(feature.properties.CBSAFP);
+              const metroName = feature.properties.NAME;
+              const normalizedName = displayName.toLowerCase().trim();
+              const yoyValue = metroYoYData[metroName] ?? metroYoYData[normalizedName];
+              const colors = getYoYColor(yoyValue);
+              const circleRadius = isSelectedMetro ? baseRadius * 1.4 : baseRadius;
+              
+              return (
+                <Tooltip key={feature.properties.CBSAFP}>
+                  <TooltipTrigger asChild>
+                    <g style={{ cursor: "pointer" }}>
+                      <Geography
+                        geography={feature}
+                        onClick={() => handleCBSAClick(feature)}
+                        style={{
+                          default: {
+                            fill: isSelectedMetro 
+                              ? "hsl(var(--primary) / 0.15)" 
+                              : "hsl(var(--primary) / 0.05)",
+                            stroke: isSelectedMetro 
+                              ? "hsl(var(--primary))" 
+                              : "hsl(var(--primary) / 0.3)",
+                            strokeWidth: isSelectedMetro ? 1.5 : 0.5,
+                            outline: "none",
+                            cursor: "pointer",
+                            transition: "all 200ms ease"
+                          },
+                          hover: {
+                            fill: isSelectedMetro 
+                              ? "hsl(var(--primary) / 0.25)" 
+                              : "hsl(var(--primary) / 0.15)",
+                            stroke: "hsl(var(--primary))",
+                            strokeWidth: 1.5,
+                            outline: "none",
+                            cursor: "pointer",
+                            filter: "brightness(1.1)"
+                          },
+                          pressed: {
+                            fill: "hsl(var(--primary) / 0.3)",
+                            outline: "none",
+                          },
+                        }}
                       />
-                    </Marker>
-                  </g>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="font-semibold">{displayName}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {feature.properties.LSAD === "M1" ? "Metro Area" : "Micro Area"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">Click to view housing data</p>
-                </TooltipContent>
-              </Tooltip>
-            );
-          })}
+                      <Marker 
+                        coordinates={[centroid.lng, centroid.lat]}
+                        onClick={() => handleCBSAClick(feature)}
+                      >
+                        <defs>
+                          <filter id={`shadow-${feature.properties.CBSAFP}`} x="-50%" y="-50%" width="200%" height="200%">
+                            <feDropShadow dx="0" dy="0.3" stdDeviation="0.4" floodColor="rgba(0,0,0,0.3)" />
+                          </filter>
+                          <radialGradient id={`gradient-${feature.properties.CBSAFP}`} cx="30%" cy="30%">
+                            <stop offset="0%" stopColor="hsl(var(--background))" stopOpacity="1" />
+                            <stop offset="100%" stopColor={colors.fill} stopOpacity="0.8" />
+                          </radialGradient>
+                        </defs>
+                        <circle
+                          r={circleRadius}
+                          fill={isSelectedMetro ? colors.stroke : `url(#gradient-${feature.properties.CBSAFP})`}
+                          stroke={colors.stroke}
+                          strokeWidth={0.5}
+                          filter={`url(#shadow-${feature.properties.CBSAFP})`}
+                          style={{ 
+                            cursor: "pointer",
+                            transition: "all 200ms ease",
+                          }}
+                          className="metro-circle"
+                        />
+                        <circle
+                          r={circleRadius * 1.6}
+                          fill="transparent"
+                          stroke={colors.stroke}
+                          strokeWidth={0.2}
+                          strokeOpacity={0.4}
+                          style={{ 
+                            cursor: "pointer",
+                            pointerEvents: "none"
+                          }}
+                        />
+                        {isTopMetro && !isSelectedMetro && (
+                          <text
+                            y={circleRadius + 2}
+                            textAnchor="middle"
+                            style={{
+                              fontSize: `${Math.max(1.5, 3 / Math.sqrt(currentZoom))}px`,
+                              fill: "hsl(var(--foreground))",
+                              fontWeight: 500,
+                              pointerEvents: "none",
+                              textShadow: "0 0 2px hsl(var(--background)), 0 0 4px hsl(var(--background))"
+                            }}
+                          >
+                            {displayName.length > 12 ? displayName.substring(0, 12) + "..." : displayName}
+                          </text>
+                        )}
+                      </Marker>
+                    </g>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="font-semibold">{displayName}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {feature.properties.LSAD === "M1" ? "Metro Area" : "Micro Area"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">Click to view housing data</p>
+                  </TooltipContent>
+                </Tooltip>
+              );
+            });
+          })()}
         </ZoomableGroup>
       </ComposableMap>
 
