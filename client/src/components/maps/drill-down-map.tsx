@@ -279,7 +279,7 @@ function DrillDownMap({
             const displayName = getCBSADisplayName(feature);
             const centroid = getCBSACentroid(feature);
             const currentZoom = zoomConfig.zoom;
-            const baseRadius = Math.max(4, 12 / currentZoom);
+            const baseRadius = Math.max(3, 8 / currentZoom);
             const circleRadius = isSelectedMetro ? baseRadius * 1.3 : baseRadius;
             
             return (
