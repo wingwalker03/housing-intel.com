@@ -49,8 +49,8 @@ function metroMatchesState(metroId: string, stateCode: string): boolean {
 
 // Google Sheets CSV Export URLs (must be published to web as CSV)
 const DATA_URLS = {
-  METRO_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-A8x_v8uI-J5yP7YkK6zUeD8j6vYwP-mS9Xv8zI-G6vYwP-mS9Xv8zI/pub?output=csv", // Placeholder - User should provide actual
-  STATE_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-A8x_v8uI-J5yP7YkK6zUeD8j6vYwP-mS9Xv8zI-G6vYwP-mS9Xv8zI/pub?output=csv"  // Placeholder - User should provide actual
+  METRO_CSV_URL: "/data/metro_zhvi_LONG_1767920463349.csv", 
+  STATE_CSV_URL: "/data/state_zhvi_LONG_copy_paste.csv.csv"
 };
 
 export default function Dashboard() {
@@ -129,15 +129,13 @@ export default function Dashboard() {
 
   const { data: states = [] } = useStates();
 
+  const filteredMetros = useMemo(() => {
+    if (!selectedStateCode) return [];
+    return metroPoints.filter(metro => metroMatchesState(metro.id, selectedStateCode));
+  }, [selectedStateCode]);
+
   const isMetroMode = !!selectedMetroName;
   
-  // Update housing stats hook to use stateCsvData if national/state view
-  // Note: For now, the existing useHousingStats and useMetroStats hooks are still used
-  // but we are also parsing CSV data locally for the map. 
-  // The user requested to replace the source. 
-  // I will replace the logic that used to use useHousingStats/useMetroStats 
-  // to use the in-memory CSV data instead for the charts/stats.
-
   const stats = useMemo(() => {
     const rawData = isMetroMode ? metroCsvData : stateCsvData;
     if (!rawData.length) return [];
@@ -248,7 +246,7 @@ export default function Dashboard() {
       setSelectedMetroName(undefined);
       setSelectedMetroId(undefined);
     } else {
-      const metro = filteredMetros.find(m => m.id === value);
+      const metro = filteredMetros.find((m: any) => m.id === value);
       if (metro) {
         setSelectedMetroName(metro.id);
         setSelectedMetroId(metro.id);
@@ -518,7 +516,7 @@ export default function Dashboard() {
                     </DialogTrigger>
                     <DialogContent className="max-w-[90vw] w-full h-[80vh] flex flex-col p-0">
                       <div className="flex-1 min-h-0">
-                        {isMetroMode && !metroStatsLoading && metroStats.length === 0 ? (
+                        {isMetroMode && statsLoading === false && stats.length === 0 ? (
                           <div className="w-full h-full flex flex-col items-center justify-center text-center p-8">
                             <MapPin className="w-12 h-12 text-muted-foreground/40 mb-4" />
                             <h3 className="text-lg font-semibold text-foreground mb-2">No Data Available</h3>
@@ -602,7 +600,7 @@ export default function Dashboard() {
             </div>
             
             <div className="flex-1 min-h-0 bg-card/50 p-4 rounded-xl border border-border/60">
-              {isMetroMode && !metroStatsLoading && metroStats.length === 0 ? (
+              {isMetroMode && statsLoading === false && stats.length === 0 ? (
                 <div className="w-full h-full flex flex-col items-center justify-center text-center p-8">
                   <MapPin className="w-12 h-12 text-muted-foreground/40 mb-4" />
                   <h3 className="text-lg font-semibold text-foreground mb-2">No Data Available</h3>
