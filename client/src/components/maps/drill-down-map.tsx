@@ -188,6 +188,18 @@ function DrillDownMap({
     ? stateZoomConfig[selectedStateCode] || { center: [-96, 38] as [number, number], zoom: 1 }
     : { center: [-96, 38] as [number, number], zoom: 1 };
 
+  // Calculate base marker size based on zoom level to keep them legible but relative
+  const baseMarkerSize = useMemo(() => {
+    if (!selectedStateCode) return 2.5;
+    // Lower zoom (larger states) -> smaller markers relative to coordinate space
+    // Higher zoom (smaller states) -> larger markers relative to coordinate space
+    const zoom = zoomConfig.zoom;
+    if (zoom >= 10) return 0.4; // Tiny states/DC
+    if (zoom >= 6) return 0.8;  // Small states
+    if (zoom >= 4.5) return 1.2; // Medium states
+    return 2.0; // Large states (TX, CA)
+  }, [selectedStateCode, zoomConfig.zoom]);
+
   const filteredMetros = useMemo(() => {
     if (!selectedStateCode) return [];
     return metroPoints.filter(metro => metroMatchesState(metro.id, selectedStateCode));
@@ -449,7 +461,7 @@ function DrillDownMap({
 
           {isMetroMode && filteredMetros.map((metro) => {
             const isSelectedMetro = selectedMetroId === metro.id;
-            const markerSize = isSelectedMetro ? 4 : 2.5;
+            const markerSize = isSelectedMetro ? baseMarkerSize * 1.5 : baseMarkerSize;
             const fillColor = getMetroColor(metro.id);
             const strokeColor = isSelectedMetro ? "hsl(var(--background))" : getStrokeColor(metro.id);
             
