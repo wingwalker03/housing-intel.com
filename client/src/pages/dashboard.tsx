@@ -111,14 +111,13 @@ export default function Dashboard() {
 
     metroCsvData.forEach(row => {
       const rawName = row.metro || "";
-      const name = rawName.replace(/"/g, '').trim(); // Clean quotes and whitespace
+      const name = rawName.replace(/"/g, '').trim(); 
       if (!name) return;
       if (!metroGroups[name]) metroGroups[name] = [];
       metroGroups[name].push({ ...row, metro: name });
     });
 
     Object.entries(metroGroups).forEach(([metroName, rows]) => {
-      // Sort rows by date
       rows.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
       
       const latest = rows[rows.length - 1];
@@ -127,7 +126,6 @@ export default function Dashboard() {
       
       const targetDate = subYears(latestDate, 1);
       
-      // Find row exactly 12 months ago or nearest earlier
       let twelveMonthsAgoRow = null;
       for (let i = rows.length - 1; i >= 0; i--) {
         const d = new Date(rows[i].date);
@@ -147,14 +145,22 @@ export default function Dashboard() {
           const yoy = ((latestVal / oldVal) - 1) * 100;
           lookup[metroName] = yoy;
           
-          // Also store under a "normalized" key to handle potential mismatches
-          // e.g. "Abilene, TX" -> "ABILENE, TX"
+          // Debugging name transformation
+          const parts = metroName.split(",");
+          if (parts.length >= 2) {
+             const city = parts[0].trim();
+             const states = parts[1].trim();
+             const primaryState = states.split("-")[0].trim();
+             const simplified = `${city}, ${primaryState}`;
+             lookup[simplified] = yoy;
+             lookup[simplified.toUpperCase()] = yoy;
+          }
           lookup[metroName.toUpperCase()] = yoy;
         }
       }
     });
 
-    console.log("YoY Lookup Keys:", Object.keys(lookup).slice(0, 10));
+    console.log("YoY Lookup Keys Sample:", Object.keys(lookup).slice(0, 20));
     return lookup;
   }, [metroCsvData]);
 

@@ -169,7 +169,7 @@ function DrillDownMap({
 
   const handleMarkerMouseEnter = (metro: MetroPoint, event: React.MouseEvent) => {
     const yoy = metroYoYLookup[metro.id] ?? metroYoYLookup[metro.id.toUpperCase()];
-    console.log(`Hovering metro: ${metro.id}, YoY found: ${yoy}`);
+    console.log(`Hovering metro.id: "${metro.id}", YoY found: ${yoy}`);
     setHoveredMetro({
       id: metro.id,
       x: event.clientX,
