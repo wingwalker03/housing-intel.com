@@ -192,7 +192,7 @@ export default function Dashboard() {
 
     if (isMetroMode) {
       filtered = filtered.filter((row: any) => row.metroName === selectedMetroName);
-    } else if (selectedStateCode) {
+    } else if (selectedStateCode && selectedStateCode !== "US") {
       filtered = filtered.filter((row: any) => row.stateCode === selectedStateCode);
     } else {
       filtered = filtered.filter((row: any) => row.stateCode === "US");
