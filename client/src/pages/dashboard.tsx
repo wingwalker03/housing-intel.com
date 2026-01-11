@@ -1,5 +1,4 @@
 import { useState, useMemo, useEffect } from "react";
-import { useHousingStats, useStates, useMetroStats } from "@/hooks/use-housing";
 import DrillDownMap from "@/components/maps/drill-down-map";
 import { HousingTrendChart } from "@/components/charts/housing-trend-chart";
 import { StatCard } from "@/components/ui/card-stats";
@@ -47,6 +46,21 @@ function metroMatchesState(metroId: string, stateCode: string): boolean {
   return states.includes(stateCode.toUpperCase());
 }
 
+const STATE_NAME_TO_CODE: Record<string, string> = {
+  "Alabama": "AL", "Alaska": "AK", "Arizona": "AZ", "Arkansas": "AR", "California": "CA",
+  "Colorado": "CO", "Connecticut": "CT", "Delaware": "DE", "District of Columbia": "DC",
+  "Florida": "FL", "Georgia": "GA", "Hawaii": "HI", "Idaho": "ID", "Illinois": "IL",
+  "Indiana": "IN", "Iowa": "IA", "Kansas": "KS", "Kentucky": "KY", "Louisiana": "LA",
+  "Maine": "ME", "Maryland": "MD", "Massachusetts": "MA", "Michigan": "MI", "Minnesota": "MN",
+  "Mississippi": "MS", "Missouri": "MO", "Montana": "MT", "Nebraska": "NE", "Nevada": "NV",
+  "New Hampshire": "NH", "New Jersey": "NJ", "New Mexico": "NM", "New York": "NY",
+  "North Carolina": "NC", "North Dakota": "ND", "Ohio": "OH", "Oklahoma": "OK", "Oregon": "OR",
+  "Pennsylvania": "PA", "Rhode Island": "RI", "South Carolina": "SC", "South Dakota": "SD",
+  "Tennessee": "TN", "Texas": "TX", "Utah": "UT", "Vermont": "VT", "Virginia": "VA",
+  "Washington": "WA", "West Virginia": "WV", "Wisconsin": "WI", "Wyoming": "WY",
+  "United States": "US"
+};
+
 // Google Sheets CSV Export URLs (must be published to web as CSV)
 const DATA_URLS = {
   METRO_CSV_URL: "/data/metro_zhvi_LONG_1767920463349.csv", 
@@ -90,7 +104,7 @@ export default function Dashboard() {
           stateRes.text()
         ]);
 
-        const parseCsv = (csv: string): Promise<any[]> => {
+        const parseMetroCsv = (csv: string): Promise<any[]> => {
           return new Promise((resolve, reject) => {
             parse(csv, { columns: true, skip_empty_lines: true }, (err, data) => {
               if (err) reject(err);
@@ -99,9 +113,22 @@ export default function Dashboard() {
           });
         };
 
+        const parseStateCsv = (csv: string): Promise<any[]> => {
+          return new Promise((resolve, reject) => {
+            parse(csv, { 
+              columns: ['stateName', 'date', 'value'], 
+              delimiter: '\t',
+              skip_empty_lines: true 
+            }, (err, data) => {
+              if (err) reject(err);
+              else resolve(data);
+            });
+          });
+        };
+
         const [metroData, stateData] = await Promise.all([
-          parseCsv(metroCsv),
-          parseCsv(stateCsv)
+          parseMetroCsv(metroCsv),
+          parseStateCsv(stateCsv)
         ]);
 
         setMetroCsvData(metroData);
@@ -127,7 +154,19 @@ export default function Dashboard() {
     }
   }, [timeRange]);
 
-  const { data: states = [] } = useStates();
+  const states = useMemo((): { code: string; name: string }[] => {
+    if (!stateCsvData.length) return [];
+    const stateSet = new Set<string>();
+    stateCsvData.forEach((row: any) => {
+      if (row.stateName && row.stateName !== "United States") {
+        stateSet.add(row.stateName);
+      }
+    });
+    return Array.from(stateSet)
+      .map(name => ({ code: STATE_NAME_TO_CODE[name] || "", name }))
+      .filter(s => s.code)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [stateCsvData]);
 
   const filteredMetros = useMemo(() => {
     if (!selectedStateCode) return [];
@@ -140,21 +179,26 @@ export default function Dashboard() {
     const rawData = isMetroMode ? metroCsvData : stateCsvData;
     if (!rawData.length) return [];
 
-    let filtered = rawData.map(row => ({
-      date: row.date,
-      medianHomeValue: parseFloat(row.value || row.medianHomeValue || "0"),
-      yoyChange: parseFloat(row.yoyChange || "0"),
-      stateCode: row.stateCode || (row.metro ? row.metro.split(',')[1]?.trim() : ""),
-      metroName: row.metro || ""
-    }));
+    let filtered = rawData.map((row: any) => {
+      const stateCode = row.stateCode || STATE_NAME_TO_CODE[row.stateName] || (row.metro ? row.metro.split(',')[1]?.trim() : "");
+      return {
+        date: row.date || "",
+        medianHomeValue: parseFloat(row.value || row.medianHomeValue || "0"),
+        yoyChange: parseFloat(row.yoyChange || "0"),
+        stateCode,
+        metroName: row.metro || ""
+      };
+    }).filter((row: any) => row.date);
 
     if (isMetroMode) {
-      filtered = filtered.filter(row => row.metroName === selectedMetroName);
+      filtered = filtered.filter((row: any) => row.metroName === selectedMetroName);
     } else if (selectedStateCode) {
-      filtered = filtered.filter(row => row.stateCode === selectedStateCode);
+      filtered = filtered.filter((row: any) => row.stateCode === selectedStateCode);
+    } else {
+      filtered = filtered.filter((row: any) => row.stateCode === "US");
     }
 
-    return filtered.sort((a, b) => a.date.localeCompare(b.date));
+    return filtered.sort((a: any, b: any) => (a.date || "").localeCompare(b.date || ""));
   }, [isMetroMode, selectedMetroName, selectedStateCode, metroCsvData, stateCsvData]);
 
   const statsLoading = isLoadingData;
