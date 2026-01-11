@@ -94,7 +94,7 @@ export default function Dashboard() {
   const [metroCsvData, setMetroCsvData] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch("/attached_assets/metro_zhvi_LONG_1767920463349.csv")
+    fetch("/data/metro_zhvi_LONG_1767920463349.csv")
       .then(res => res.text())
       .then(csv => {
         parse(csv, { columns: true, skip_empty_lines: true }, (err, data) => {
