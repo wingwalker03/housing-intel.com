@@ -1,9 +1,10 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useHousingStats, useStates, useMetroStats } from "@/hooks/use-housing";
 import DrillDownMap from "@/components/maps/drill-down-map";
 import { HousingTrendChart } from "@/components/charts/housing-trend-chart";
 import { StatCard } from "@/components/ui/card-stats";
 import metroPointsData from "@/data/metro_points.json";
+import { parse } from "csv-parse/browser/esm";
 import { 
   Select, 
   SelectContent, 
@@ -89,6 +90,64 @@ export default function Dashboard() {
   const isMetroMode = !!selectedMetroName;
   const stats = isMetroMode ? metroStats : stateStats;
   const statsLoading = isMetroMode ? metroStatsLoading : stateStatsLoading;
+
+  const [metroCsvData, setMetroCsvData] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/attached_assets/metro_zhvi_LONG_1767920463349.csv")
+      .then(res => res.text())
+      .then(csv => {
+        parse(csv, { columns: true, skip_empty_lines: true }, (err, data) => {
+          if (!err) setMetroCsvData(data);
+        });
+      });
+  }, []);
+
+  const metroYoYLookup = useMemo(() => {
+    if (metroCsvData.length === 0) return {};
+
+    const lookup: Record<string, number> = {};
+    const metroGroups: Record<string, any[]> = {};
+
+    metroCsvData.forEach(row => {
+      if (!metroGroups[row.metro]) metroGroups[row.metro] = [];
+      metroGroups[row.metro].push(row);
+    });
+
+    Object.entries(metroGroups).forEach(([metroName, rows]) => {
+      // Sort rows by date
+      rows.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      
+      const latest = rows[rows.length - 1];
+      const latestVal = parseFloat(latest.value);
+      const latestDate = new Date(latest.date);
+      
+      const targetDate = subYears(latestDate, 1);
+      
+      // Find row exactly 12 months ago or nearest earlier
+      let twelveMonthsAgoRow = null;
+      for (let i = rows.length - 1; i >= 0; i--) {
+        const d = new Date(rows[i].date);
+        if (isSameMonth(d, targetDate)) {
+          twelveMonthsAgoRow = rows[i];
+          break;
+        }
+        if (d < targetDate) {
+          twelveMonthsAgoRow = rows[i];
+          break;
+        }
+      }
+
+      if (twelveMonthsAgoRow) {
+        const oldVal = parseFloat(twelveMonthsAgoRow.value);
+        if (oldVal > 0) {
+          lookup[metroName] = ((latestVal / oldVal) - 1) * 100;
+        }
+      }
+    });
+
+    return lookup;
+  }, [metroCsvData]);
 
   const handleStateSelect = (code: string | undefined, name: string | undefined) => {
     setSelectedStateCode(code);
@@ -322,6 +381,7 @@ export default function Dashboard() {
                           selectedStateName={selectedStateName}
                           selectedMetroName={selectedMetroName}
                           selectedMetroId={selectedMetroId}
+                          metroYoYLookup={metroYoYLookup}
                           onStateSelect={handleStateSelect}
                           onMetroSelect={handleMetroSelect}
                           onReset={handleResetAll}
@@ -338,6 +398,7 @@ export default function Dashboard() {
                 selectedStateName={selectedStateName}
                 selectedMetroName={selectedMetroName}
                 selectedMetroId={selectedMetroId}
+                metroYoYLookup={metroYoYLookup}
                 onStateSelect={handleStateSelect}
                 onMetroSelect={handleMetroSelect}
                 onReset={handleResetAll}
