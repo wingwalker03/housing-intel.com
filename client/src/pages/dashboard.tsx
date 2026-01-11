@@ -47,6 +47,12 @@ function metroMatchesState(metroId: string, stateCode: string): boolean {
   return states.includes(stateCode.toUpperCase());
 }
 
+// Google Sheets CSV Export URLs (must be published to web as CSV)
+const DATA_URLS = {
+  METRO_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-A8x_v8uI-J5yP7YkK6zUeD8j6vYwP-mS9Xv8zI-G6vYwP-mS9Xv8zI/pub?output=csv", // Placeholder - User should provide actual
+  STATE_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-A8x_v8uI-J5yP7YkK6zUeD8j6vYwP-mS9Xv8zI-G6vYwP-mS9Xv8zI/pub?output=csv"  // Placeholder - User should provide actual
+};
+
 export default function Dashboard() {
   const [selectedStateCode, setSelectedStateCode] = useState<string | undefined>(undefined);
   const [selectedStateName, setSelectedStateName] = useState<string | undefined>(undefined);
@@ -60,6 +66,57 @@ export default function Dashboard() {
     ma60: false
   });
 
+  const [metroCsvData, setMetroCsvData] = useState<any[]>([]);
+  const [stateCsvData, setStateCsvData] = useState<any[]>([]);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+  const [dataError, setDataError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoadingData(true);
+        setDataError(null);
+
+        const [metroRes, stateRes] = await Promise.all([
+          fetch(DATA_URLS.METRO_CSV_URL),
+          fetch(DATA_URLS.STATE_CSV_URL)
+        ]);
+
+        if (!metroRes.ok) throw new Error(`Failed to fetch metro data: ${metroRes.status} ${metroRes.statusText}`);
+        if (!stateRes.ok) throw new Error(`Failed to fetch state data: ${stateRes.status} ${stateRes.statusText}`);
+
+        const [metroCsv, stateCsv] = await Promise.all([
+          metroRes.text(),
+          stateRes.text()
+        ]);
+
+        const parseCsv = (csv: string): Promise<any[]> => {
+          return new Promise((resolve, reject) => {
+            parse(csv, { columns: true, skip_empty_lines: true }, (err, data) => {
+              if (err) reject(err);
+              else resolve(data);
+            });
+          });
+        };
+
+        const [metroData, stateData] = await Promise.all([
+          parseCsv(metroCsv),
+          parseCsv(stateCsv)
+        ]);
+
+        setMetroCsvData(metroData);
+        setStateCsvData(stateData);
+      } catch (err: any) {
+        console.error("Data loading error:", err);
+        setDataError(err.message || "An unknown error occurred while loading data.");
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const startDate = useMemo(() => {
     const now = new Date();
     switch (timeRange) {
@@ -70,38 +127,39 @@ export default function Dashboard() {
     }
   }, [timeRange]);
 
-  const { data: stateStats = [], isLoading: stateStatsLoading } = useHousingStats({
-    stateCode: selectedStateCode,
-    startDate: undefined,
-  });
-
-  const { data: metroStats = [], isLoading: metroStatsLoading } = useMetroStats({
-    stateCode: selectedStateCode,
-    metroName: selectedMetroName,
-  });
-
   const { data: states = [] } = useStates();
-  
-  const filteredMetros = useMemo(() => {
-    if (!selectedStateCode) return [];
-    return metroPoints.filter(metro => metroMatchesState(metro.id, selectedStateCode));
-  }, [selectedStateCode]);
 
   const isMetroMode = !!selectedMetroName;
-  const stats = isMetroMode ? metroStats : stateStats;
-  const statsLoading = isMetroMode ? metroStatsLoading : stateStatsLoading;
+  
+  // Update housing stats hook to use stateCsvData if national/state view
+  // Note: For now, the existing useHousingStats and useMetroStats hooks are still used
+  // but we are also parsing CSV data locally for the map. 
+  // The user requested to replace the source. 
+  // I will replace the logic that used to use useHousingStats/useMetroStats 
+  // to use the in-memory CSV data instead for the charts/stats.
 
-  const [metroCsvData, setMetroCsvData] = useState<any[]>([]);
+  const stats = useMemo(() => {
+    const rawData = isMetroMode ? metroCsvData : stateCsvData;
+    if (!rawData.length) return [];
 
-  useEffect(() => {
-    fetch("/data/metro_zhvi_LONG_1767920463349.csv")
-      .then(res => res.text())
-      .then(csv => {
-        parse(csv, { columns: true, skip_empty_lines: true }, (err, data) => {
-          if (!err) setMetroCsvData(data);
-        });
-      });
-  }, []);
+    let filtered = rawData.map(row => ({
+      date: row.date,
+      medianHomeValue: parseFloat(row.value || row.medianHomeValue || "0"),
+      yoyChange: parseFloat(row.yoyChange || "0"),
+      stateCode: row.stateCode || (row.metro ? row.metro.split(',')[1]?.trim() : ""),
+      metroName: row.metro || ""
+    }));
+
+    if (isMetroMode) {
+      filtered = filtered.filter(row => row.metroName === selectedMetroName);
+    } else if (selectedStateCode) {
+      filtered = filtered.filter(row => row.stateCode === selectedStateCode);
+    }
+
+    return filtered.sort((a, b) => a.date.localeCompare(b.date));
+  }, [isMetroMode, selectedMetroName, selectedStateCode, metroCsvData, stateCsvData]);
+
+  const statsLoading = isLoadingData;
 
   const metroYoYLookup = useMemo(() => {
     if (metroCsvData.length === 0) return {};
@@ -255,6 +313,25 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-20 dark">
+      {isLoadingData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur">
+          <div className="flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <p className="text-lg font-medium">Loading data...</p>
+          </div>
+        </div>
+      )}
+
+      {dataError && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur">
+          <div className="bg-destructive/10 border border-destructive p-6 rounded-xl max-w-md text-center">
+            <h3 className="text-xl font-bold text-destructive mb-2">Error Loading Data</h3>
+            <p className="text-muted-foreground mb-4">{dataError}</p>
+            <Button onClick={() => window.location.reload()}>Retry</Button>
+          </div>
+        </div>
+      )}
+      
       <header className="sticky top-0 z-30 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
