@@ -110,8 +110,11 @@ export default function Dashboard() {
     const metroGroups: Record<string, any[]> = {};
 
     metroCsvData.forEach(row => {
-      if (!metroGroups[row.metro]) metroGroups[row.metro] = [];
-      metroGroups[row.metro].push(row);
+      const rawName = row.metro || "";
+      const name = rawName.replace(/"/g, '').trim(); // Clean quotes and whitespace
+      if (!name) return;
+      if (!metroGroups[name]) metroGroups[name] = [];
+      metroGroups[name].push({ ...row, metro: name });
     });
 
     Object.entries(metroGroups).forEach(([metroName, rows]) => {
@@ -141,11 +144,17 @@ export default function Dashboard() {
       if (twelveMonthsAgoRow) {
         const oldVal = parseFloat(twelveMonthsAgoRow.value);
         if (oldVal > 0) {
-          lookup[metroName] = ((latestVal / oldVal) - 1) * 100;
+          const yoy = ((latestVal / oldVal) - 1) * 100;
+          lookup[metroName] = yoy;
+          
+          // Also store under a "normalized" key to handle potential mismatches
+          // e.g. "Abilene, TX" -> "ABILENE, TX"
+          lookup[metroName.toUpperCase()] = yoy;
         }
       }
     });
 
+    console.log("YoY Lookup Keys:", Object.keys(lookup).slice(0, 10));
     return lookup;
   }, [metroCsvData]);
 

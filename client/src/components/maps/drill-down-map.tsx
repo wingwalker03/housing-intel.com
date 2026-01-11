@@ -125,8 +125,10 @@ function DrillDownMap({
   const [hoveredMetro, setHoveredMetro] = useState<{ id: string; x: number; y: number; yoy?: number } | null>(null);
 
   const getMetroColor = (metroId: string) => {
-    const yoy = metroYoYLookup[metroId];
-    if (yoy === undefined) return "hsl(var(--primary) / 0.7)";
+    const yoy = metroYoYLookup[metroId] ?? metroYoYLookup[metroId.toUpperCase()];
+    if (yoy === undefined) {
+      return "hsl(var(--primary) / 0.7)";
+    }
     
     // Legend categories: ≤ -10% = dark red, (-10%, 0%) = red, (0%, +10%) = green, ≥ +10% = dark green.
     // We implement smooth gradients within each range.
@@ -166,7 +168,8 @@ function DrillDownMap({
   };
 
   const handleMarkerMouseEnter = (metro: MetroPoint, event: React.MouseEvent) => {
-    const yoy = metroYoYLookup[metro.id];
+    const yoy = metroYoYLookup[metro.id] ?? metroYoYLookup[metro.id.toUpperCase()];
+    console.log(`Hovering metro: ${metro.id}, YoY found: ${yoy}`);
     setHoveredMetro({
       id: metro.id,
       x: event.clientX,
