@@ -1,7 +1,16 @@
 import { useState, useMemo, useEffect } from "react";
+import { useRoute, useLocation } from "wouter";
 import DrillDownMap from "@/components/maps/drill-down-map";
 import { HousingTrendChart } from "@/components/charts/housing-trend-chart";
 import { StatCard } from "@/components/ui/card-stats";
+import { SEOContent } from "@/components/seo/seo-content";
+import { 
+  stateNameToSlug, 
+  slugToStateName, 
+  metroNameToSlug, 
+  slugToMetroName,
+  STATE_NAME_TO_CODE as SLUG_STATE_NAME_TO_CODE
+} from "@/lib/slugs";
 import metroPointsData from "@/data/metro_points.json";
 import { parse } from "csv-parse/browser/esm";
 import { 
@@ -71,6 +80,10 @@ const DATA_URLS = {
 };
 
 export default function Dashboard() {
+  const [, setLocation] = useLocation();
+  const [matchState, paramsState] = useRoute("/state/:stateSlug");
+  const [matchMetro, paramsMetro] = useRoute("/metro/:metroSlug");
+
   const [selectedStateCode, setSelectedStateCode] = useState<string | undefined>(undefined);
   const [selectedStateName, setSelectedStateName] = useState<string | undefined>(undefined);
   const [selectedMetroName, setSelectedMetroName] = useState<string | undefined>(undefined);
@@ -87,6 +100,7 @@ export default function Dashboard() {
   const [stateCsvData, setStateCsvData] = useState<any[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [dataError, setDataError] = useState<string | null>(null);
+  const [routeInitialized, setRouteInitialized] = useState(false);
 
   const { toast } = useToast();
   const [email, setEmail] = useState("");
@@ -150,6 +164,61 @@ export default function Dashboard() {
 
     fetchData();
   }, []);
+
+  const allMetroNames = useMemo(() => {
+    return metroPoints.map(m => m.id);
+  }, []);
+
+  useEffect(() => {
+    if (isLoadingData || routeInitialized) return;
+    
+    if (matchMetro && paramsMetro?.metroSlug) {
+      const metroName = slugToMetroName(paramsMetro.metroSlug, allMetroNames);
+      if (metroName) {
+        const commaIdx = metroName.lastIndexOf(', ');
+        if (commaIdx !== -1) {
+          const statePart = metroName.substring(commaIdx + 2).trim();
+          const primaryStateCode = statePart.split('-')[0].trim().toUpperCase();
+          const stName = Object.entries(STATE_NAME_TO_CODE).find(([, code]) => code === primaryStateCode)?.[0];
+          setSelectedStateCode(primaryStateCode);
+          setSelectedStateName(stName);
+          setSelectedMetroName(metroName);
+          setSelectedMetroId(metroName);
+        }
+      }
+    } else if (matchState && paramsState?.stateSlug) {
+      const stName = slugToStateName(paramsState.stateSlug);
+      const stCode = SLUG_STATE_NAME_TO_CODE[stName];
+      if (stCode) {
+        setSelectedStateCode(stCode);
+        setSelectedStateName(stName);
+      }
+    }
+    
+    setRouteInitialized(true);
+  }, [isLoadingData, matchState, matchMetro, paramsState, paramsMetro, allMetroNames, routeInitialized]);
+
+  useEffect(() => {
+    if (!routeInitialized) return;
+    
+    if (selectedMetroName) {
+      const slug = metroNameToSlug(selectedMetroName);
+      const newPath = `/metro/${slug}`;
+      if (window.location.pathname !== newPath) {
+        setLocation(newPath, { replace: false });
+      }
+    } else if (selectedStateName) {
+      const slug = stateNameToSlug(selectedStateName);
+      const newPath = `/state/${slug}`;
+      if (window.location.pathname !== newPath) {
+        setLocation(newPath, { replace: false });
+      }
+    } else {
+      if (window.location.pathname !== '/') {
+        setLocation('/', { replace: false });
+      }
+    }
+  }, [selectedMetroName, selectedStateName, routeInitialized, setLocation]);
 
   const startDate = useMemo(() => {
     const now = new Date();
@@ -360,6 +429,12 @@ export default function Dashboard() {
     setSelectedMetroName(undefined);
     setSelectedMetroId(undefined);
   };
+
+  const seoType = useMemo(() => {
+    if (selectedMetroName) return "metro" as const;
+    if (selectedStateName) return "state" as const;
+    return "national" as const;
+  }, [selectedMetroName, selectedStateName]);
 
   const handleForecastSubmit = async () => {
     if (!email || !email.includes("@")) {
@@ -799,6 +874,17 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+        
+        <SEOContent
+          type={seoType}
+          stateName={selectedStateName}
+          stateCode={selectedStateCode}
+          metroName={selectedMetroName}
+          latestValue={latestStat?.medianHomeValue}
+          yoyChange={valueYoY}
+          historicalHigh={historicalHigh}
+          dataYears={timeRange === '5y' ? 5 : timeRange === '10y' ? 10 : timeRange === '20y' ? 20 : 25}
+        />
       </main>
     </div>
   );

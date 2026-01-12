@@ -9,8 +9,10 @@ import Dashboard from "@/pages/dashboard";
 function Router() {
   return (
     <Switch>
-      {/* Primary Route */}
+      {/* SEO Routes */}
       <Route path="/" component={Dashboard} />
+      <Route path="/state/:stateSlug" component={Dashboard} />
+      <Route path="/metro/:metroSlug" component={Dashboard} />
       
       {/* Fallback to 404 */}
       <Route component={NotFound} />
