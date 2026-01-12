@@ -230,6 +230,15 @@ export default function Dashboard() {
             metroName: ""
           }))
           .sort((a, b) => a.date.localeCompare(b.date));
+
+        // Calculate YoY change for aggregated US data
+        for (let i = 12; i < filtered.length; i++) {
+          const currentVal = filtered[i].medianHomeValue;
+          const prevVal = filtered[i-12].medianHomeValue;
+          if (prevVal > 0) {
+            filtered[i].yoyChange = ((currentVal - prevVal) / prevVal) * 100;
+          }
+        }
       }
     }
 
