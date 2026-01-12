@@ -708,14 +708,39 @@ export default function Dashboard() {
                   </Button>
                 </div>
               ) : (
-                <HousingTrendChart 
-                  data={stats} 
-                  metric={metric} 
-                  selectedStateName={displayTitle}
-                  isLoading={statsLoading}
-                  movingAverages={movingAverages}
-                  startDate={startDate}
-                />
+                <div className="h-full flex flex-col gap-4">
+                  <div className="flex-1 min-h-0">
+                    <HousingTrendChart 
+                      data={stats} 
+                      metric={metric} 
+                      selectedStateName={displayTitle}
+                      isLoading={statsLoading}
+                      movingAverages={movingAverages}
+                      startDate={startDate}
+                    />
+                  </div>
+                  
+                  {isMetroMode && !statsLoading && (
+                    <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 mt-2">
+                      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div className="space-y-1 text-center sm:text-left">
+                          <h4 className="font-semibold text-sm">Detailed 12-Month Forecast</h4>
+                          <p className="text-xs text-muted-foreground">
+                            Enter your email for a detailed 12 month forecast in housing prices in {selectedMetroName}.
+                          </p>
+                        </div>
+                        <div className="flex w-full sm:w-auto items-center gap-2">
+                          <input 
+                            type="email" 
+                            placeholder="your@email.com" 
+                            className="flex h-9 w-full sm:w-60 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                          />
+                          <Button size="sm">Get Forecast</Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </div>
