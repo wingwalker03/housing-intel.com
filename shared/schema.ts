@@ -20,10 +20,20 @@ export const metroStats = pgTable("metro_stats", {
   yoyChange: real("yoy_change").notNull(),
 });
 
+export const leadEmails = pgTable("lead_emails", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull(),
+  metroName: text("metro_name").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const insertHousingStatSchema = createInsertSchema(housingStats).omit({ id: true });
 export const insertMetroStatSchema = createInsertSchema(metroStats).omit({ id: true });
+export const insertLeadEmailSchema = createInsertSchema(leadEmails).omit({ id: true, createdAt: true });
 
 export type HousingStat = typeof housingStats.$inferSelect;
 export type InsertHousingStat = z.infer<typeof insertHousingStatSchema>;
 export type MetroStat = typeof metroStats.$inferSelect;
 export type InsertMetroStat = z.infer<typeof insertMetroStatSchema>;
+export type LeadEmail = typeof leadEmails.$inferSelect;
+export type InsertLeadEmail = z.infer<typeof insertLeadEmailSchema>;

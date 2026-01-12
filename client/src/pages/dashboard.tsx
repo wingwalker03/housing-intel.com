@@ -30,6 +30,9 @@ import { Button } from "@/components/ui/button";
 import { Building2, TrendingUp, Map, Info, Maximize2, ArrowLeft, MapPin } from "lucide-react";
 import { format, subYears, isSameMonth } from "date-fns";
 
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+
 interface MetroPoint {
   id: string;
   lat: number;
@@ -84,6 +87,10 @@ export default function Dashboard() {
   const [stateCsvData, setStateCsvData] = useState<any[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [dataError, setDataError] = useState<string | null>(null);
+
+  const { toast } = useToast();
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -352,6 +359,38 @@ export default function Dashboard() {
     setSelectedStateName(undefined);
     setSelectedMetroName(undefined);
     setSelectedMetroId(undefined);
+  };
+
+  const handleForecastSubmit = async () => {
+    if (!email || !email.includes("@")) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await apiRequest("POST", "/api/leads", {
+        email,
+        metroName: selectedMetroName
+      });
+      toast({
+        title: "Success!",
+        description: "Your forecast is on the way.",
+      });
+      setEmail("");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save your email. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const latestStat = stats.length > 0 ? stats[stats.length - 1] : null;
@@ -737,11 +776,19 @@ export default function Dashboard() {
                             <input 
                               type="email" 
                               placeholder="Enter your email address" 
-                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary placeholder:text-muted-foreground/60"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              disabled={isSubmitting}
+                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary placeholder:text-muted-foreground/60 disabled:opacity-50"
                             />
                           </div>
-                          <Button size="default" className="h-10 px-8 font-semibold shadow-sm hover:shadow-md transition-all">
-                            Get Forecast
+                          <Button 
+                            size="default" 
+                            className="h-10 px-8 font-semibold shadow-sm hover:shadow-md transition-all"
+                            onClick={handleForecastSubmit}
+                            disabled={isSubmitting}
+                          >
+                            {isSubmitting ? "Sending..." : "Get Forecast"}
                           </Button>
                         </div>
                       </div>

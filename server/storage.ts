@@ -1,5 +1,15 @@
 import { db } from "./db";
-import { housingStats, metroStats, type HousingStat, type InsertHousingStat, type MetroStat, type InsertMetroStat } from "@shared/schema";
+import { 
+  housingStats, 
+  metroStats, 
+  leadEmails,
+  type HousingStat, 
+  type InsertHousingStat, 
+  type MetroStat, 
+  type InsertMetroStat,
+  type LeadEmail,
+  type InsertLeadEmail
+} from "@shared/schema";
 import { eq, and, gte, lte, desc } from "drizzle-orm";
 
 export interface IStorage {
@@ -10,6 +20,7 @@ export interface IStorage {
   getMetrosByState(stateCode: string): Promise<{ name: string }[]>;
   seedMetroData(data: InsertMetroStat[]): Promise<void>;
   clearMetroData(): Promise<void>;
+  saveLeadEmail(data: InsertLeadEmail): Promise<LeadEmail>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -75,6 +86,11 @@ export class DatabaseStorage implements IStorage {
 
   async clearMetroData(): Promise<void> {
     await db.delete(metroStats);
+  }
+
+  async saveLeadEmail(data: InsertLeadEmail): Promise<LeadEmail> {
+    const [result] = await db.insert(leadEmails).values(data).returning();
+    return result;
   }
 }
 

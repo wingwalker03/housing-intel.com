@@ -2,7 +2,7 @@ import type { Express } from "express";
 import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
-import { insertHousingStatSchema } from "@shared/schema";
+import { insertHousingStatSchema, insertLeadEmailSchema } from "@shared/schema";
 import multer from "multer";
 import { parse } from "csv-parse";
 import fs from "fs";
@@ -18,6 +18,16 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  app.post("/api/leads", async (req, res) => {
+    try {
+      const data = insertLeadEmailSchema.parse(req.body);
+      const lead = await storage.saveLeadEmail(data);
+      res.json(lead);
+    } catch (err: any) {
+      res.status(400).json({ message: err.message || "Failed to save lead" });
+    }
+  });
+
   app.get(api.housing.list.path, async (req, res) => {
     const input = api.housing.list.input.parse(req.query);
     const data = await storage.getHousingStats(
