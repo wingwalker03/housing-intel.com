@@ -722,25 +722,25 @@ export default function Dashboard() {
                   
                   {isMetroMode && !statsLoading && (
                     <div className="bg-primary/5 border border-primary/20 rounded-xl p-5 mt-4 shadow-inner">
-                      <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                      <div className="flex flex-col gap-4">
                         <div className="space-y-2 text-center md:text-left">
                           <div className="flex items-center justify-center md:justify-start gap-2">
                             <TrendingUp className="w-5 h-5 text-primary" />
                             <h4 className="font-bold text-base tracking-tight">Detailed 12-Month Forecast</h4>
                           </div>
-                          <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
+                          <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">
                             Get exclusive insights on projected housing prices in <span className="text-foreground font-medium">{selectedMetroName}</span> sent directly to your inbox.
                           </p>
                         </div>
-                        <div className="flex flex-col sm:flex-row w-full md:w-auto items-stretch sm:items-center gap-3">
-                          <div className="relative flex-1 sm:w-72">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                          <div className="relative flex-1 max-w-md">
                             <input 
                               type="email" 
                               placeholder="Enter your email address" 
                               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary placeholder:text-muted-foreground/60"
                             />
                           </div>
-                          <Button size="default" className="h-10 px-6 font-semibold shadow-sm hover:shadow-md transition-all">
+                          <Button size="default" className="h-10 px-8 font-semibold shadow-sm hover:shadow-md transition-all">
                             Get Forecast
                           </Button>
                         </div>
