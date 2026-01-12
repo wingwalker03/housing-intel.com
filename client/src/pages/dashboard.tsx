@@ -180,7 +180,12 @@ export default function Dashboard() {
     if (!rawData.length) return [];
 
     let filtered = rawData.map((row: any) => {
-      const stateCode = row.stateCode || STATE_NAME_TO_CODE[row.stateName] || (row.metro ? row.metro.split(',')[1]?.trim() : "");
+      let stateName = row.stateName;
+      // Handle potential trailing whitespace or specific US representation
+      if (stateName) stateName = stateName.trim();
+      
+      const stateCode = row.stateCode || STATE_NAME_TO_CODE[stateName] || (row.metro ? row.metro.split(',')[1]?.trim() : "");
+      
       return {
         date: row.date || "",
         medianHomeValue: parseFloat(row.value || row.medianHomeValue || "0"),
@@ -190,12 +195,42 @@ export default function Dashboard() {
       };
     }).filter((row: any) => row.date);
 
+    // Compute YoY changes if they are 0
+    for (let i = 12; i < filtered.length; i++) {
+      if (filtered[i].yoyChange === 0 && filtered[i-12].medianHomeValue > 0) {
+        filtered[i].yoyChange = ((filtered[i].medianHomeValue - filtered[i-12].medianHomeValue) / filtered[i-12].medianHomeValue) * 100;
+      }
+    }
+
     if (isMetroMode) {
       filtered = filtered.filter((row: any) => row.metroName === selectedMetroName);
     } else if (selectedStateCode && selectedStateCode !== "US") {
       filtered = filtered.filter((row: any) => row.stateCode === selectedStateCode);
     } else {
-      filtered = filtered.filter((row: any) => row.stateCode === "US");
+      // If no state selected, and no "US" code found, we aggregate all states for the date
+      const usData = filtered.filter((row: any) => row.stateCode === "US");
+      if (usData.length > 0) {
+        filtered = usData;
+      } else {
+        // Fallback: Aggregate national data by averaging all states per date
+        const dateGroups: Record<string, { sum: number, count: number }> = {};
+        filtered.forEach(row => {
+          if (row.stateCode !== "US" && row.stateCode !== "") {
+            if (!dateGroups[row.date]) dateGroups[row.date] = { sum: 0, count: 0 };
+            dateGroups[row.date].sum += row.medianHomeValue;
+            dateGroups[row.date].count += 1;
+          }
+        });
+        filtered = Object.entries(dateGroups)
+          .map(([date, data]) => ({
+            date,
+            medianHomeValue: data.sum / data.count,
+            yoyChange: 0, 
+            stateCode: "US",
+            metroName: ""
+          }))
+          .sort((a, b) => a.date.localeCompare(b.date));
+      }
     }
 
     return filtered.sort((a: any, b: any) => (a.date || "").localeCompare(b.date || ""));
