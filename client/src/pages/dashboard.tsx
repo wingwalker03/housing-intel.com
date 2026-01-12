@@ -73,7 +73,7 @@ export default function Dashboard() {
   const [selectedMetroName, setSelectedMetroName] = useState<string | undefined>(undefined);
   const [selectedMetroId, setSelectedMetroId] = useState<string | undefined>(undefined);
   const [metric, setMetric] = useState<'medianHomeValue' | 'yoyChange'>('medianHomeValue');
-  const [timeRange, setTimeRange] = useState<'5y' | '10y' | '20y' | 'all'>('all');
+  const [timeRange, setTimeRange] = useState<'5y' | '10y' | '20y' | 'all'>('10y');
   const [movingAverages, setMovingAverages] = useState({
     ma12: false,
     ma24: false,
