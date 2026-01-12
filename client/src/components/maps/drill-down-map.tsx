@@ -190,14 +190,18 @@ function DrillDownMap({
 
   // Calculate base marker size based on zoom level to keep them legible but relative
   const baseMarkerSize = useMemo(() => {
-    if (!selectedStateCode) return 2.5;
+    // Check if we are on a mobile device (rough check via window width)
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const multiplier = isMobile ? 2.5 : 1.0;
+
+    if (!selectedStateCode) return 2.5 * multiplier;
     // Lower zoom (larger states) -> smaller markers relative to coordinate space
     // Higher zoom (smaller states) -> larger markers relative to coordinate space
     const zoom = zoomConfig.zoom;
-    if (zoom >= 10) return 0.4; // Tiny states/DC
-    if (zoom >= 6) return 0.8;  // Small states
-    if (zoom >= 4.5) return 1.2; // Medium states
-    return 2.0; // Large states (TX, CA)
+    if (zoom >= 10) return 0.4 * multiplier; // Tiny states/DC
+    if (zoom >= 6) return 0.8 * multiplier;  // Small states
+    if (zoom >= 4.5) return 1.2 * multiplier; // Medium states
+    return 2.0 * multiplier; // Large states (TX, CA)
   }, [selectedStateCode, zoomConfig.zoom]);
 
   const filteredMetros = useMemo(() => {
