@@ -458,7 +458,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <StatCard 
             title="Current Median Value"
-            value={latestStat ? `$${latestStat.medianHomeValue.toLocaleString()}` : "---"}
+            value={latestStat ? `$${Math.round(latestStat.medianHomeValue).toLocaleString()}` : "---"}
             trend={valueYoY}
             trendLabel="vs 12 months ago"
             icon="currency"
@@ -475,7 +475,7 @@ export default function Dashboard() {
           />
           <StatCard 
             title="Historical High"
-            value={latestStat ? `$${historicalHigh.toLocaleString()}` : "---"}
+            value={latestStat ? `$${Math.round(historicalHigh).toLocaleString()}` : "---"}
             trend={diffFromHigh}
             trendLabel="from all-time high"
             icon="percent"
