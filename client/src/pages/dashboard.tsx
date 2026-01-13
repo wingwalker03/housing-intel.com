@@ -35,9 +35,10 @@ import {
   DialogHeader,
   DialogTitle 
 } from "@/components/ui/dialog";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, TrendingUp, Map, Info, Maximize2, ArrowLeft, MapPin } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Building2, TrendingUp, Map, Info, Maximize2, ArrowLeft, MapPin, Calculator } from "lucide-react";
 import { format, subYears, isSameMonth } from "date-fns";
 
 import { apiRequest } from "@/lib/queryClient";
@@ -448,6 +449,27 @@ export default function Dashboard() {
     setSelectedMetroId(undefined);
   };
 
+  const [buyYear, setBuyYear] = useState<string>("2015");
+  const [buyPrice, setBuyPrice] = useState<string>("300000");
+
+  const calculatorResult = useMemo(() => {
+    if (!selectedMetroName || !stats.length) return null;
+
+    const currentVal = stats[stats.length - 1].medianHomeValue;
+    const yearData = stats.find(s => s.date.startsWith(buyYear));
+
+    if (!yearData) return { error: "No price data available for this year" };
+
+    const priceAtBuy = yearData.medianHomeValue;
+    const multiplier = currentVal / priceAtBuy;
+    const estimatedValue = parseFloat(buyPrice) * multiplier;
+
+    return {
+      value: estimatedValue,
+      appreciation: ((estimatedValue - parseFloat(buyPrice)) / parseFloat(buyPrice)) * 100
+    };
+  }, [selectedMetroName, stats, buyYear, buyPrice]);
+
   const rankings = useMemo(() => {
     if (isLoadingData) return { top: [], bottom: [] };
 
@@ -697,49 +719,111 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          <Card className="bg-card/50 border-border/60">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-emerald-500" />
-                Top 5 Fastest Growing {selectedStateCode ? "Metros" : "States"}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {rankings.top.map((item, i) => (
-                  <div key={item.name || `blank-top-${i}`} className="flex items-center justify-between text-sm p-2 rounded-lg bg-background/50 border border-border/40 min-h-[38px]">
-                    <span className="font-medium text-muted-foreground w-6">{i + 1}.</span>
-                    <span className="flex-1 truncate pr-4">{item.name}</span>
-                    <span className="font-bold text-emerald-500">
-                      {item.value !== null ? `+${item.value.toFixed(2)}%` : ""}
-                    </span>
+          {selectedMetroName ? (
+            <Card className="md:col-span-2 bg-card/50 border-border/60">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium flex items-center gap-2">
+                  <Calculator className="w-4 h-4 text-primary" />
+                  Home Value Estimator
+                </CardTitle>
+                <CardDescription>
+                  See what a home bought in {selectedMetroName} would be worth today.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+                  <div className="space-y-2">
+                    <Label htmlFor="buy-year" className="text-xs">Purchase Year</Label>
+                    <Select value={buyYear} onValueChange={setBuyYear}>
+                      <SelectTrigger id="buy-year" className="h-9 bg-background">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 25 }, (_, i) => 2025 - i).map(year => (
+                          <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                  <div className="space-y-2">
+                    <Label htmlFor="buy-price" className="text-xs">Purchase Price ($)</Label>
+                    <Input 
+                      id="buy-price"
+                      type="number"
+                      value={buyPrice}
+                      onChange={(e) => setBuyPrice(e.target.value)}
+                      className="h-9 bg-background"
+                    />
+                  </div>
+                  <div className="p-3 rounded-lg bg-primary/10 border border-primary/20 flex flex-col justify-center min-h-[60px]">
+                    {calculatorResult?.error ? (
+                      <span className="text-xs text-rose-500 font-medium leading-tight">
+                        {calculatorResult.error}
+                      </span>
+                    ) : (
+                      <>
+                        <span className="text-[10px] uppercase font-bold text-primary/70 leading-none mb-1">Estimated Value Today</span>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-xl font-bold text-primary">
+                            {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(calculatorResult?.value || 0)}
+                          </span>
+                          <span className={`text-xs font-medium ${calculatorResult!.appreciation >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                            ({calculatorResult!.appreciation >= 0 ? '+' : ''}{calculatorResult?.appreciation.toFixed(1)}%)
+                          </span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <>
+              <Card className="bg-card/50 border-border/60">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-emerald-500" />
+                    Top 5 Fastest Growing {selectedStateCode ? "Metros" : "States"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {rankings.top.map((item, i) => (
+                      <div key={item.name || `blank-top-${i}`} className="flex items-center justify-between text-sm p-2 rounded-lg bg-background/50 border border-border/40 min-h-[38px]">
+                        <span className="font-medium text-muted-foreground w-6">{i + 1}.</span>
+                        <span className="flex-1 truncate pr-4">{item.name}</span>
+                        <span className="font-bold text-emerald-500">
+                          {item.value !== null ? `+${item.value.toFixed(2)}%` : ""}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
 
-          <Card className="bg-card/50 border-border/60">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-rose-500 rotate-180" />
-                Top 5 Declining {selectedStateCode ? "Metros" : "States"}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {rankings.bottom.map((item, i) => (
-                  <div key={item.name || `blank-bottom-${i}`} className="flex items-center justify-between text-sm p-2 rounded-lg bg-background/50 border border-border/40 min-h-[38px]">
-                    <span className="font-medium text-muted-foreground w-6">{i + 1}.</span>
-                    <span className="flex-1 truncate pr-4">{item.name}</span>
-                    <span className="font-bold text-rose-500">
-                      {item.value !== null ? `${item.value.toFixed(2)}%` : ""}
-                    </span>
+              <Card className="bg-card/50 border-border/60">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-rose-500 rotate-180" />
+                    Top 5 Declining {selectedStateCode ? "Metros" : "States"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {rankings.bottom.map((item, i) => (
+                      <div key={item.name || `blank-bottom-${i}`} className="flex items-center justify-between text-sm p-2 rounded-lg bg-background/50 border border-border/40 min-h-[38px]">
+                        <span className="font-medium text-muted-foreground w-6">{i + 1}.</span>
+                        <span className="flex-1 truncate pr-4">{item.name}</span>
+                        <span className="font-bold text-rose-500">
+                          {item.value !== null ? `${item.value.toFixed(2)}%` : ""}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            </>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-auto lg:h-[650px]">
