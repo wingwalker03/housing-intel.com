@@ -331,6 +331,10 @@ export default function Dashboard() {
       }
     }
 
+    // Filter data to only include dates from January 2001 onwards
+    const cutoffDate = "2001-01-01";
+    filtered = filtered.filter((row: any) => row.date >= cutoffDate);
+
     return filtered.sort((a: any, b: any) => (a.date || "").localeCompare(b.date || ""));
   }, [isMetroMode, selectedMetroName, selectedStateCode, metroCsvData, stateCsvData]);
 
