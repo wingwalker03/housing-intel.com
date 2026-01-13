@@ -495,9 +495,21 @@ export default function Dashboard() {
     }
 
     const sorted = items.sort((a, b) => b.value - a.value);
+    const top = sorted.slice(0, 5);
+    const bottom = [...sorted].reverse().slice(0, 5);
+
+    // Pad with blank items if less than 5
+    const pad = (list: any[]) => {
+      const padded = [...list];
+      while (padded.length < 5) {
+        padded.push({ name: "", value: null });
+      }
+      return padded;
+    };
+
     return {
-      top: sorted.slice(0, 5),
-      bottom: [...sorted].reverse().slice(0, 5)
+      top: pad(top),
+      bottom: pad(bottom)
     };
   }, [isLoadingData, stateCsvData, metroCsvData, selectedStateCode]);
 
@@ -695,10 +707,12 @@ export default function Dashboard() {
             <CardContent>
               <div className="space-y-2">
                 {rankings.top.map((item, i) => (
-                  <div key={item.name} className="flex items-center justify-between text-sm p-2 rounded-lg bg-background/50 border border-border/40">
+                  <div key={item.name || `blank-top-${i}`} className="flex items-center justify-between text-sm p-2 rounded-lg bg-background/50 border border-border/40 min-h-[38px]">
                     <span className="font-medium text-muted-foreground w-6">{i + 1}.</span>
                     <span className="flex-1 truncate pr-4">{item.name}</span>
-                    <span className="font-bold text-emerald-500">+{item.value.toFixed(2)}%</span>
+                    <span className="font-bold text-emerald-500">
+                      {item.value !== null ? `+${item.value.toFixed(2)}%` : ""}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -715,10 +729,12 @@ export default function Dashboard() {
             <CardContent>
               <div className="space-y-2">
                 {rankings.bottom.map((item, i) => (
-                  <div key={item.name} className="flex items-center justify-between text-sm p-2 rounded-lg bg-background/50 border border-border/40">
+                  <div key={item.name || `blank-bottom-${i}`} className="flex items-center justify-between text-sm p-2 rounded-lg bg-background/50 border border-border/40 min-h-[38px]">
                     <span className="font-medium text-muted-foreground w-6">{i + 1}.</span>
                     <span className="flex-1 truncate pr-4">{item.name}</span>
-                    <span className="font-bold text-rose-500">{item.value.toFixed(2)}%</span>
+                    <span className="font-bold text-rose-500">
+                      {item.value !== null ? `${item.value.toFixed(2)}%` : ""}
+                    </span>
                   </div>
                 ))}
               </div>
