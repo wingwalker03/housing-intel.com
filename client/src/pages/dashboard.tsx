@@ -628,7 +628,7 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-auto lg:h-[650px]">
           
-          <div className="lg:col-span-7 h-[450px] lg:h-full flex flex-col space-y-4">
+          <div className="lg:col-span-7 h-[600px] lg:h-full flex flex-col space-y-4">
             <div className="flex flex-col bg-card/50 p-4 rounded-xl border border-border/60 gap-4 h-full">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <h3 className="font-semibold text-lg flex items-center gap-2">
