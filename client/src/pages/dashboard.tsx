@@ -107,6 +107,19 @@ export default function Dashboard() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const utmParams = {
+      source: searchParams.get('utm_source'),
+      medium: searchParams.get('utm_medium'),
+      campaign: searchParams.get('utm_campaign')
+    };
+
+    if (utmParams.source || utmParams.medium || utmParams.campaign) {
+      sessionStorage.setItem('housing_intel_utm', JSON.stringify(utmParams));
+    }
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoadingData(true);
@@ -448,9 +461,16 @@ export default function Dashboard() {
 
     try {
       setIsSubmitting(true);
+      
+      const storedUtm = sessionStorage.getItem('housing_intel_utm');
+      const utm = storedUtm ? JSON.parse(storedUtm) : {};
+
       await apiRequest("POST", "/api/leads", {
         email,
-        metroName: selectedMetroName
+        metroName: selectedMetroName,
+        utmSource: utm.source || "direct",
+        utmMedium: utm.medium || null,
+        utmCampaign: utm.campaign || null
       });
       toast({
         title: "Success!",

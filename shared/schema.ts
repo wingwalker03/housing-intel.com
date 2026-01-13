@@ -24,6 +24,9 @@ export const leadEmails = pgTable("lead_emails", {
   id: serial("id").primaryKey(),
   email: text("email").notNull(),
   metroName: text("metro_name").notNull(),
+  utmSource: text("utm_source"),
+  utmMedium: text("utm_medium"),
+  utmCampaign: text("utm_campaign"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
