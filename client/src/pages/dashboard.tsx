@@ -629,7 +629,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-auto lg:h-[650px]">
           
           <div className="lg:col-span-7 h-[450px] lg:h-full flex flex-col space-y-4">
-            <div className="flex flex-col bg-card/50 p-4 rounded-xl border border-border/60 gap-4">
+            <div className="flex flex-col bg-card/50 p-4 rounded-xl border border-border/60 gap-4 h-full">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <h3 className="font-semibold text-lg flex items-center gap-2">
                   <Map className="w-5 h-5 text-primary" />
@@ -703,23 +703,23 @@ export default function Dashboard() {
                   </Dialog>
                 </div>
               </div>
-            </div>
-            <div className="flex-1 min-h-0">
-              <DrillDownMap 
-                selectedStateCode={selectedStateCode}
-                selectedStateName={selectedStateName}
-                selectedMetroName={selectedMetroName}
-                selectedMetroId={selectedMetroId}
-                metroYoYLookup={metroYoYLookup}
-                onStateSelect={handleStateSelect}
-                onMetroSelect={handleMetroSelect}
-                onReset={handleResetAll}
-              />
+              <div className="flex-1 min-h-0">
+                <DrillDownMap 
+                  selectedStateCode={selectedStateCode}
+                  selectedStateName={selectedStateName}
+                  selectedMetroName={selectedMetroName}
+                  selectedMetroId={selectedMetroId}
+                  metroYoYLookup={metroYoYLookup}
+                  onStateSelect={handleStateSelect}
+                  onMetroSelect={handleMetroSelect}
+                  onReset={handleResetAll}
+                />
+              </div>
             </div>
           </div>
 
-          <div className="lg:col-span-5 h-[550px] lg:h-full flex flex-col space-y-4">
-            <div className="flex flex-col bg-card/50 p-4 rounded-xl border border-border/60 gap-4">
+          <div className="lg:col-span-5 h-[650px] lg:h-full flex flex-col space-y-4">
+            <div className="flex flex-col bg-card/50 p-4 rounded-xl border border-border/60 gap-4 flex-1">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-lg flex items-center gap-2">
                   <TrendingUp className="w-5 h-5 text-primary" />
@@ -819,79 +819,74 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-            </div>
-            
-            <div className="flex-1 min-h-0 bg-card/50 p-4 rounded-xl border border-border/60">
-              {isMetroMode && statsLoading === false && stats.length === 0 ? (
-                <div className="w-full h-full flex flex-col items-center justify-center text-center p-8">
-                  <MapPin className="w-12 h-12 text-muted-foreground/40 mb-4" />
-                  <h3 className="text-lg font-semibold text-foreground mb-2">No Data Available</h3>
-                  <p className="text-sm text-muted-foreground max-w-md">
-                    Housing data is not available for this metro area. 
-                    Try selecting a different metro area or go back to view state-level data.
-                  </p>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={handleBackToState}
-                    className="mt-4"
-                    data-testid="button-no-data-back"
-                  >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to {selectedStateName}
-                  </Button>
-                </div>
-              ) : (
-                <div className="h-full flex flex-col gap-4">
-                  <div className="flex-1 min-h-0">
-                    <HousingTrendChart 
-                      data={stats} 
-                      metric={metric} 
-                      selectedStateName={displayTitle}
-                      isLoading={statsLoading}
-                      movingAverages={movingAverages}
-                      startDate={startDate}
-                    />
+
+              <div className="flex-1 min-h-0">
+                {isMetroMode && statsLoading === false && stats.length === 0 ? (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-center p-8">
+                    <MapPin className="w-12 h-12 text-muted-foreground/40 mb-4" />
+                    <h3 className="text-lg font-semibold text-foreground mb-2">No Data Available</h3>
+                    <p className="text-sm text-muted-foreground max-w-md">
+                      Housing data is not available for this metro area. 
+                    </p>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleBackToState}
+                      className="mt-4"
+                      data-testid="button-no-data-back"
+                    >
+                      <ArrowLeft className="w-4 h-4 mr-2" />
+                      Back to {selectedStateName}
+                    </Button>
                   </div>
-                  
-                  {isMetroMode && !statsLoading && (
-                    <div className="bg-primary/5 border border-primary/20 rounded-xl p-5 mt-4 shadow-inner">
-                      <div className="flex flex-col gap-4">
-                        <div className="space-y-2 text-center md:text-left">
-                          <div className="flex items-center justify-center md:justify-start gap-2">
-                            <TrendingUp className="w-5 h-5 text-primary" />
-                            <h4 className="font-bold text-base tracking-tight">Detailed 12-Month Forecast</h4>
-                          </div>
-                          <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">
-                            Get exclusive insights on projected housing prices in <span className="text-foreground font-medium">{selectedMetroName}</span> sent directly to your inbox.
-                          </p>
-                        </div>
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                          <div className="relative flex-1 max-w-md">
-                            <input 
-                              type="email" 
-                              placeholder="Enter your email address" 
-                              value={email}
-                              onChange={(e) => setEmail(e.target.value)}
-                              disabled={isSubmitting}
-                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary placeholder:text-muted-foreground/60 disabled:opacity-50"
-                            />
-                          </div>
-                          <Button 
-                            size="default" 
-                            className="h-10 px-8 font-semibold shadow-sm hover:shadow-md transition-all"
-                            onClick={handleForecastSubmit}
-                            disabled={isSubmitting}
-                          >
-                            {isSubmitting ? "Sending..." : "Get Forecast"}
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
+                ) : (
+                  <HousingTrendChart 
+                    data={stats} 
+                    metric={metric} 
+                    selectedStateName={displayTitle}
+                    isLoading={statsLoading}
+                    movingAverages={movingAverages}
+                    startDate={startDate}
+                  />
+                )}
+              </div>
             </div>
+
+            {isMetroMode && !statsLoading && (
+              <div className="bg-primary/5 border border-primary/20 rounded-xl p-5 shadow-inner shrink-0">
+                <div className="flex flex-col gap-4">
+                  <div className="space-y-2 text-center md:text-left">
+                    <div className="flex items-center justify-center md:justify-start gap-2">
+                      <TrendingUp className="w-5 h-5 text-primary" />
+                      <h4 className="font-bold text-base tracking-tight">Detailed 12-Month Forecast</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Get exclusive insights on projected housing prices in <span className="text-foreground font-medium">{selectedMetroName}</span> sent directly to your inbox.
+                    </p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    <div className="relative flex-1">
+                      <input 
+                        type="email" 
+                        placeholder="Enter your email" 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        disabled={isSubmitting}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary placeholder:text-muted-foreground/60 disabled:opacity-50"
+                      />
+                    </div>
+                    <Button 
+                      size="default" 
+                      className="h-10 px-6 font-semibold shadow-sm hover:shadow-md transition-all shrink-0"
+                      onClick={handleForecastSubmit}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Sending..." : "Get Forecast"}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
         
