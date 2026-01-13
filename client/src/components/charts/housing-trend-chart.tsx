@@ -140,13 +140,43 @@ export function HousingTrendChart({
       })
     });
   } else {
-    // YoY Growth metric - handle green/red split
-    const positiveGrowth = processedData.values.map(v => v >= 0 ? v : null);
-    const negativeGrowth = processedData.values.map(v => v < 0 ? v : null);
+    // YoY Growth metric - handle green/red split with crossover connection
+    // To connect the segments, we include the point immediately following a sign change 
+    // in both positive and negative traces.
+    
+    const dates = processedData.dates;
+    const values = processedData.values;
+    
+    const positiveGrowth: (number | null)[] = [];
+    const negativeGrowth: (number | null)[] = [];
+
+    for (let i = 0; i < values.length; i++) {
+      const v = values[i];
+      const prevV = i > 0 ? values[i - 1] : null;
+      const nextV = i < values.length - 1 ? values[i + 1] : null;
+
+      // Logic for positive trace:
+      // Include if current is positive
+      // OR if current is negative but PREVIOUS or NEXT is positive (crossover connection)
+      if (v >= 0 || (prevV !== null && prevV >= 0) || (nextV !== null && nextV >= 0)) {
+        positiveGrowth.push(v);
+      } else {
+        positiveGrowth.push(null);
+      }
+
+      // Logic for negative trace:
+      // Include if current is negative
+      // OR if current is positive but PREVIOUS or NEXT is negative (crossover connection)
+      if (v < 0 || (prevV !== null && prevV < 0) || (nextV !== null && nextV < 0)) {
+        negativeGrowth.push(v);
+      } else {
+        negativeGrowth.push(null);
+      }
+    }
 
     // Green for positive
     traces.push({
-      x: processedData.dates,
+      x: dates,
       y: positiveGrowth,
       type: 'scatter',
       mode: 'lines',
@@ -158,7 +188,7 @@ export function HousingTrendChart({
 
     // Red for negative
     traces.push({
-      x: processedData.dates,
+      x: dates,
       y: negativeGrowth,
       type: 'scatter',
       mode: 'lines',
