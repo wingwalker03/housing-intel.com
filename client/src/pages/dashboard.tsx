@@ -495,8 +495,8 @@ export default function Dashboard() {
     }
 
     const sorted = items.sort((a, b) => b.value - a.value);
-    const top = sorted.slice(0, 5);
-    const bottom = [...sorted].reverse().slice(0, 5);
+    const top = sorted.filter(item => item.value > 0).slice(0, 5);
+    const bottom = sorted.filter(item => item.value < 0).reverse().slice(0, 5);
 
     // Pad with blank items if less than 5
     const pad = (list: any[]) => {
