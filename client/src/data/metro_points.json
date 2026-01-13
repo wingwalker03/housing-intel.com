@@ -1,5 +1,20 @@
 [
   {
+    "id": "Bowie, MD",
+    "lat": 39.0068,
+    "lng": -76.7791
+  },
+  {
+    "id": "Franklin, TN",
+    "lat": 35.9251,
+    "lng": -86.8689
+  },
+  {
+    "id": "Murfreesboro, TN",
+    "lat": 35.8456,
+    "lng": -86.3903
+  },
+  {
     "id": "Aberdeen, SD",
     "lat": 45.466109,
     "lng": -98.485642
