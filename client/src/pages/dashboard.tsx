@@ -646,7 +646,11 @@ export default function Dashboard() {
       
       <header className="sticky top-0 z-30 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div 
+            className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity" 
+            onClick={handleResetAll}
+            data-testid="link-home"
+          >
             <div className="p-2 bg-primary/10 rounded-lg">
               <Building2 className="w-5 h-5 text-primary" />
             </div>
@@ -760,19 +764,19 @@ export default function Dashboard() {
                       <span className="text-xs text-rose-500 font-medium leading-tight">
                         {calculatorResult.error}
                       </span>
-                    ) : (
+                    ) : calculatorResult ? (
                       <>
                         <span className="text-[10px] uppercase font-bold text-primary/70 leading-none mb-1">Estimated Value Today</span>
                         <div className="flex items-baseline gap-2">
                           <span className="text-xl font-bold text-primary">
-                            {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(calculatorResult?.value || 0)}
+                            {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(calculatorResult.value)}
                           </span>
-                          <span className={`text-xs font-medium ${calculatorResult!.appreciation >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
-                            ({calculatorResult!.appreciation >= 0 ? '+' : ''}{calculatorResult?.appreciation.toFixed(1)}%)
+                          <span className={`text-xs font-medium ${calculatorResult.appreciation >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                            ({calculatorResult.appreciation >= 0 ? '+' : ''}{calculatorResult.appreciation.toFixed(1)}%)
                           </span>
                         </div>
                       </>
-                    )}
+                    ) : null}
                   </div>
                 </div>
               </CardContent>
