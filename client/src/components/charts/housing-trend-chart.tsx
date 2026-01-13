@@ -117,13 +117,15 @@ export function HousingTrendChart({
   const isValueMetric = metric === 'medianHomeValue';
   const mainColor = isValueMetric ? "#3b82f6" : "#8b5cf6"; // Blue-500 or Violet-500
 
-  const traces: any[] = [
-    {
+  const traces: any[] = [];
+
+  if (isValueMetric) {
+    traces.push({
       x: processedData.dates,
       y: processedData.values,
       type: 'scatter',
       mode: 'lines',
-      name: isValueMetric ? 'Price' : 'Growth',
+      name: 'Price',
       line: {
         color: mainColor,
         width: 2,
@@ -133,13 +135,56 @@ export function HousingTrendChart({
       hoverinfo: 'text',
       text: processedData.values.map((v, i) => {
         const dateStr = new Date(processedData.dates[i]).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-        const valStr = isValueMetric 
-          ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v)
-          : `${v.toFixed(2)}%`;
+        const valStr = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v);
         return `${dateStr}<br>${valStr}`;
       })
-    }
-  ];
+    });
+  } else {
+    // YoY Growth metric - handle green/red split
+    const positiveGrowth = processedData.values.map(v => v >= 0 ? v : null);
+    const negativeGrowth = processedData.values.map(v => v < 0 ? v : null);
+
+    // Green for positive
+    traces.push({
+      x: processedData.dates,
+      y: positiveGrowth,
+      type: 'scatter',
+      mode: 'lines',
+      name: 'Positive Growth',
+      line: { color: '#10b981', width: 2 }, // Green-500
+      connectgaps: false,
+      hoverinfo: 'skip'
+    });
+
+    // Red for negative
+    traces.push({
+      x: processedData.dates,
+      y: negativeGrowth,
+      type: 'scatter',
+      mode: 'lines',
+      name: 'Negative Growth',
+      line: { color: '#ef4444', width: 2 }, // Red-500
+      connectgaps: false,
+      hoverinfo: 'skip'
+    });
+
+    // Unified hover trace for YoY
+    traces.push({
+      x: processedData.dates,
+      y: processedData.values,
+      type: 'scatter',
+      mode: 'lines',
+      name: 'Growth',
+      line: { width: 0 },
+      hoverinfo: 'text',
+      text: processedData.values.map((v, i) => {
+        const dateStr = new Date(processedData.dates[i]).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+        const valStr = `${v.toFixed(2)}%`;
+        return `${dateStr}<br>${valStr}`;
+      }),
+      showlegend: false
+    });
+  }
 
   if (movingAverages.ma12 && processedData.ma12) {
     traces.push({
