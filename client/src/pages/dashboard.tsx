@@ -35,6 +35,7 @@ import {
   DialogHeader,
   DialogTitle 
 } from "@/components/ui/dialog";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Building2, TrendingUp, Map, Info, Maximize2, ArrowLeft, MapPin } from "lucide-react";
 import { format, subYears, isSameMonth } from "date-fns";
@@ -447,6 +448,59 @@ export default function Dashboard() {
     setSelectedMetroId(undefined);
   };
 
+  const rankings = useMemo(() => {
+    if (isLoadingData) return { top: [], bottom: [] };
+
+    const getLatestYoY = (rows: any[]) => {
+      if (!rows.length) return 0;
+      const sorted = [...rows].sort((a, b) => b.date.localeCompare(a.date));
+      const latest = sorted[0];
+      const targetDate = subYears(new Date(latest.date), 1);
+      const prev = sorted.find(s => isSameMonth(new Date(s.date), targetDate));
+      if (latest.value && prev && prev.value) {
+        return ((parseFloat(latest.value) / parseFloat(prev.value)) - 1) * 100;
+      }
+      return 0;
+    };
+
+    let items: { name: string; value: number }[] = [];
+
+    if (!selectedStateCode || selectedStateCode === "US") {
+      // National: Group by state
+      const stateGroups: Record<string, any[]> = {};
+      stateCsvData.forEach(row => {
+        if (!stateGroups[row.stateName]) stateGroups[row.stateName] = [];
+        stateGroups[row.stateName].push(row);
+      });
+      items = Object.entries(stateGroups)
+        .filter(([name]) => name !== "United States")
+        .map(([name, rows]) => ({
+          name,
+          value: getLatestYoY(rows)
+        }));
+    } else {
+      // State: Group by metro
+      const metroGroups: Record<string, any[]> = {};
+      metroCsvData.forEach(row => {
+        const metroName = row.metro || "";
+        if (metroMatchesState(metroName, selectedStateCode)) {
+          if (!metroGroups[metroName]) metroGroups[metroName] = [];
+          metroGroups[metroName].push(row);
+        }
+      });
+      items = Object.entries(metroGroups).map(([name, rows]) => ({
+        name,
+        value: getLatestYoY(rows)
+      }));
+    }
+
+    const sorted = items.sort((a, b) => b.value - a.value);
+    return {
+      top: sorted.slice(0, 5),
+      bottom: [...sorted].reverse().slice(0, 5)
+    };
+  }, [isLoadingData, stateCsvData, metroCsvData, selectedStateCode]);
+
   const seoType = useMemo(() => {
     if (selectedMetroName) return "metro" as const;
     if (selectedStateName) return "state" as const;
@@ -628,6 +682,48 @@ export default function Dashboard() {
             icon="percent"
             isLoading={statsLoading}
           />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <Card className="bg-card/50 border-border/60">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-emerald-500" />
+                Top 5 Fastest Growing {selectedStateCode ? "Metros" : "States"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {rankings.top.map((item, i) => (
+                  <div key={item.name} className="flex items-center justify-between text-sm p-2 rounded-lg bg-background/50 border border-border/40">
+                    <span className="font-medium text-muted-foreground w-6">{i + 1}.</span>
+                    <span className="flex-1 truncate pr-4">{item.name}</span>
+                    <span className="font-bold text-emerald-500">+{item.value.toFixed(2)}%</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-card/50 border-border/60">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-rose-500 rotate-180" />
+                Top 5 Declining {selectedStateCode ? "Metros" : "States"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {rankings.bottom.map((item, i) => (
+                  <div key={item.name} className="flex items-center justify-between text-sm p-2 rounded-lg bg-background/50 border border-border/40">
+                    <span className="font-medium text-muted-foreground w-6">{i + 1}.</span>
+                    <span className="flex-1 truncate pr-4">{item.name}</span>
+                    <span className="font-bold text-rose-500">{item.value.toFixed(2)}%</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-auto lg:h-[650px]">
