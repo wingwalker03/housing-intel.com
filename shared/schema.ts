@@ -40,3 +40,35 @@ export type MetroStat = typeof metroStats.$inferSelect;
 export type InsertMetroStat = z.infer<typeof insertMetroStatSchema>;
 export type LeadEmail = typeof leadEmails.$inferSelect;
 export type InsertLeadEmail = z.infer<typeof insertLeadEmailSchema>;
+
+export * from "./models/chat";
+
+// Weekly Market Briefs
+export const weeklyMarketBriefs = pgTable("weekly_market_briefs", {
+  id: serial("id").primaryKey(),
+  marketType: text("market_type").notNull(), // 'state' | 'metro'
+  marketSlug: text("market_slug").notNull(),
+  weekStart: date("week_start").notNull(),
+  weekEnd: date("week_end").notNull(),
+  title: text("title").notNull(),
+  metaDescription: text("meta_description").notNull(),
+  briefHtml: text("brief_html").notNull(),
+  sources: text("sources").notNull(), // JSON string array of sources
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const newsCache = pgTable("news_cache", {
+  id: serial("id").primaryKey(),
+  marketType: text("market_type").notNull(),
+  marketSlug: text("market_slug").notNull(),
+  fetchedAt: timestamp("fetched_at").defaultNow().notNull(),
+  sources: text("sources").notNull(), // JSON string array
+});
+
+export const insertWeeklyMarketBriefSchema = createInsertSchema(weeklyMarketBriefs).omit({ id: true, createdAt: true });
+export const insertNewsCacheSchema = createInsertSchema(newsCache).omit({ id: true, fetchedAt: true });
+
+export type WeeklyMarketBrief = typeof weeklyMarketBriefs.$inferSelect;
+export type InsertWeeklyMarketBrief = z.infer<typeof insertWeeklyMarketBriefSchema>;
+export type NewsCache = typeof newsCache.$inferSelect;
+export type InsertNewsCache = z.infer<typeof insertNewsCacheSchema>;

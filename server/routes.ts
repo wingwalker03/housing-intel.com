@@ -10,7 +10,13 @@ import path from "path";
 
 import { eq, and, gte, lte } from "drizzle-orm";
 import { db } from "./db";
-import { metroStats } from "@shared/schema";
+import { metroStats, weeklyMarketBriefs } from "@shared/schema";
+import { 
+  generateBriefForMarket, 
+  runWeeklyBriefs, 
+  getBriefByWeek, 
+  getBriefArchive 
+} from "./newsbriefs";
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -88,6 +94,9 @@ ${urls}
   </sitemap>
   <sitemap>
     <loc>https://housing-market-stats.replit.app/sitemap-metros.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://housing-market-stats.replit.app/sitemap-news.xml</loc>
   </sitemap>
 </sitemapindex>`);
   });
@@ -196,6 +205,167 @@ ${urls}
   });
 
   seedFromAttachedCsv().catch(console.error);
+
+  // Admin endpoints for weekly news briefs
+  app.post("/api/admin/newsbriefs/run-weekly", async (req, res) => {
+    const adminToken = req.headers["x-admin-token"];
+    if (adminToken !== process.env.ADMIN_TOKEN) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    try {
+      const result = await runWeeklyBriefs();
+      res.json(result);
+    } catch (err: any) {
+      console.error("Weekly briefs error:", err);
+      res.status(500).json({ error: err.message || "Failed to run weekly briefs" });
+    }
+  });
+
+  app.post("/api/admin/newsbriefs/run-one", async (req, res) => {
+    const adminToken = req.headers["x-admin-token"];
+    if (adminToken !== process.env.ADMIN_TOKEN) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { marketType, marketSlug } = req.body;
+    if (!marketType || !marketSlug) {
+      return res.status(400).json({ error: "marketType and marketSlug are required" });
+    }
+
+    try {
+      const result = await generateBriefForMarket(marketType, marketSlug);
+      res.json(result);
+    } catch (err: any) {
+      console.error("Single brief error:", err);
+      res.status(500).json({ error: err.message || "Failed to generate brief" });
+    }
+  });
+
+  // Public endpoints for news briefs
+  app.get("/news/:marketType/:slug/week/:weekStart", async (req, res) => {
+    const { marketType, slug, weekStart } = req.params;
+    const brief = await getBriefByWeek(marketType, slug, weekStart);
+    
+    if (!brief) {
+      return res.status(404).json({ error: "Brief not found" });
+    }
+
+    const sources = JSON.parse(brief.sources || "[]");
+    const baseUrl = process.env.SITE_BASE_URL || "https://housing-market-stats.replit.app";
+    const marketUrl = marketType === "state" ? `${baseUrl}/state/${slug}` : `${baseUrl}/metro/${slug}`;
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${brief.title}</title>
+  <meta name="description" content="${brief.metaDescription}">
+  <meta property="og:title" content="${brief.title}">
+  <meta property="og:description" content="${brief.metaDescription}">
+  <link rel="canonical" href="${baseUrl}/news/${marketType}/${slug}/week/${weekStart}">
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }
+    h1 { color: #1a1a1a; }
+    .meta { color: #666; font-size: 0.9em; margin-bottom: 20px; }
+    .sources { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
+    .sources h3 { font-size: 1em; color: #333; }
+    .sources ul { padding-left: 20px; }
+    .sources li { margin-bottom: 8px; }
+    .sources a { color: #0066cc; }
+    .back-link { margin-top: 30px; }
+    .back-link a { color: #0066cc; }
+  </style>
+</head>
+<body>
+  <article>
+    <h1>${brief.title}</h1>
+    <p class="meta">Week of ${brief.weekStart} to ${brief.weekEnd}</p>
+    ${brief.briefHtml}
+    <div class="sources">
+      <h3>Sources</h3>
+      <ul>
+        ${sources.map((s: any) => `<li><a href="${s.url}" target="_blank" rel="noopener">${s.title}</a> - ${s.publisher} (${s.date})</li>`).join("")}
+      </ul>
+    </div>
+    <div class="back-link">
+      <a href="${marketUrl}">View full ${marketType === "state" ? "state" : "metro"} market data</a>
+    </div>
+  </article>
+</body>
+</html>`;
+
+    res.header("Content-Type", "text/html");
+    res.send(html);
+  });
+
+  app.get("/news/:marketType/:slug", async (req, res) => {
+    const { marketType, slug } = req.params;
+    const briefs = await getBriefArchive(marketType, slug);
+    
+    const baseUrl = process.env.SITE_BASE_URL || "https://housing-market-stats.replit.app";
+    const marketUrl = marketType === "state" ? `${baseUrl}/state/${slug}` : `${baseUrl}/metro/${slug}`;
+    const displayName = slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${displayName} Housing News Archive | Housing Intel</title>
+  <meta name="description" content="Weekly housing market news briefs for ${displayName}. Stay updated on real estate trends, home prices, and market conditions.">
+  <link rel="canonical" href="${baseUrl}/news/${marketType}/${slug}">
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }
+    h1 { color: #1a1a1a; }
+    .brief-list { list-style: none; padding: 0; }
+    .brief-list li { padding: 15px; border-bottom: 1px solid #eee; }
+    .brief-list a { color: #0066cc; font-weight: 500; text-decoration: none; }
+    .brief-list a:hover { text-decoration: underline; }
+    .brief-date { color: #666; font-size: 0.9em; margin-top: 5px; }
+    .back-link { margin-top: 30px; }
+    .back-link a { color: #0066cc; }
+  </style>
+</head>
+<body>
+  <h1>${displayName} Housing News Archive</h1>
+  ${briefs.length === 0 ? "<p>No news briefs available yet.</p>" : `
+  <ul class="brief-list">
+    ${briefs.map(b => `
+      <li>
+        <a href="/news/${marketType}/${slug}/week/${b.weekStart}">${b.title}</a>
+        <div class="brief-date">Week of ${b.weekStart}</div>
+      </li>
+    `).join("")}
+  </ul>`}
+  <div class="back-link">
+    <a href="${marketUrl}">View full ${marketType === "state" ? "state" : "metro"} market data</a>
+  </div>
+</body>
+</html>`;
+
+    res.header("Content-Type", "text/html");
+    res.send(html);
+  });
+
+  // Sitemap for news briefs
+  app.get("/sitemap-news.xml", async (req, res) => {
+    const briefs = await db.select().from(weeklyMarketBriefs);
+    const baseUrl = process.env.SITE_BASE_URL || "https://housing-market-stats.replit.app";
+    
+    const urls = briefs.map(b => `  <url>
+    <loc>${baseUrl}/news/${b.marketType}/${b.marketSlug}/week/${b.weekStart}</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>`).join("\n");
+
+    res.header("Content-Type", "application/xml");
+    res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>`);
+  });
 
   return httpServer;
 }
