@@ -215,6 +215,31 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!routeInitialized) return;
+
+    let title = "US Housing Market Overview - Historical Trends & Forecasts";
+    let description = "Analyze historical home values and year-over-year growth across the United States. Interactive map and time-series data for all states and major metros.";
+
+    if (selectedMetroName) {
+      title = `${selectedMetroName} Housing Market - Value Appreciation & Growth`;
+      description = `Real estate data for ${selectedMetroName}. Track historical appreciation, current median home values, and growth forecasts for the ${selectedMetroName} housing market.`;
+    } else if (selectedStateName) {
+      title = `${selectedStateName} Housing Market - Trends, Prices & Forecasts`;
+      description = `Explore the housing market in ${selectedStateName}. View historical median home values, growth trends, and fastest-growing cities in ${selectedStateName}.`;
+    }
+
+    document.title = title;
+    
+    let metaDescription = document.querySelector('meta[name="description"]');
+    if (!metaDescription) {
+      metaDescription = document.createElement('meta');
+      metaDescription.setAttribute('name', 'description');
+      document.head.appendChild(metaDescription);
+    }
+    metaDescription.setAttribute('content', description);
+  }, [selectedStateName, selectedMetroName, routeInitialized]);
+
+  useEffect(() => {
+    if (!routeInitialized) return;
     
     if (selectedMetroName) {
       const slug = metroNameToSlug(selectedMetroName);
@@ -769,10 +794,10 @@ export default function Dashboard() {
                         <span className="text-[10px] uppercase font-bold text-primary/70 leading-none mb-1">Estimated Value Today</span>
                         <div className="flex items-baseline gap-2">
                           <span className="text-xl font-bold text-primary">
-                            {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(calculatorResult.value)}
+                            {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(calculatorResult.value || 0)}
                           </span>
-                          <span className={`text-xs font-medium ${calculatorResult.appreciation >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
-                            ({calculatorResult.appreciation >= 0 ? '+' : ''}{calculatorResult.appreciation.toFixed(1)}%)
+                          <span className={`text-xs font-medium ${(calculatorResult.appreciation || 0) >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                            ({(calculatorResult.appreciation || 0) >= 0 ? '+' : ''}{(calculatorResult.appreciation || 0).toFixed(1)}%)
                           </span>
                         </div>
                       </>
