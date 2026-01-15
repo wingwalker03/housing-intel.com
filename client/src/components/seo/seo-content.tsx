@@ -65,6 +65,29 @@ export function SEOContent({
       <p>Use the interactive map and charts above to compare nearby metros, view longer historical trends, and see how this market stacks up against others across the country.</p>
     `;
 
+    const stateSummary = `
+      <p>The ${stateName} housing market continues to be a focal point for regional economic health and investment potential. With a current state-wide median home value of ${valueStr}, ${stateName} has seen a ${yoyStr} shift in property values over the last year. This comprehensive overview analyzes data across all major ${stateName} metros—from urban hubs to suburban enclaves—to provide a clear picture of the state's residential real estate trajectory. As we move through ${currentYear}, the market in ${stateName} is showing signs of ${momentum}, influenced by local employment rates, migration patterns, and inventory availability that varies significantly by county.</p>
+
+      <h3>What’s happening in ${stateName}</h3>
+      <p>Across ${stateName}, the market is moving at ${yoyStr} year-over-year. While some pockets of the state are seeing rapid appreciation due to localized demand, others are beginning to stabilize after several years of historic growth. The current median value of ${valueStr} represents the latest snapshot in a dynamic environment where inventory levels and interest rates continue to play a pivotal role in shaping consumer behavior. We are seeing ${trendDirection} in major hubs, while secondary markets are offering a different value proposition for long-term investors looking for relative affordability.</p>
+
+      <h3>Why it matters for Residents and Investors</h3>
+      <p>Real estate is a primary driver of household wealth and economic stability in ${stateName}. A ${yoyStr} annual change impacts property tax revenues, consumer spending power, and the overall construction pipeline for new housing units. For residents, these shifts dictate whether the state is becoming more or less affordable relative to the national average, influencing migration patterns both into and out of ${stateName}. This data is critical for understanding the ${momentum} momentum of the regional economy and making informed decisions about buying or selling property in the current fiscal climate.</p>
+
+      <h3>Market Outlook & Long-term Trends</h3>
+      <p>Looking ahead, the ${stateName} housing market is expected to follow the trends established over the last ${dataYears} years of historical data. With values currently ${relativeToHigh} the all-time high of ${highStr}, ${stateName} remains a ${yoyChange !== undefined && yoyChange > 0 ? 'competitive' : 'steady'} region for real estate activity. Investors and homebuyers should monitor the ${momentum} trend as we progress through the year, paying close attention to how interest rate fluctuations might impact monthly payment affordability across different price points within the state.</p>
+    `;
+
+    const metroBody = `
+      <p>The ${metroName} housing market is currently sitting around ${valueStr}, with prices ${upDown} ${absYoY}% compared to this time last year. This suggests the market is ${momentum}, depending on recent buyer demand and local economic conditions that define the ${metroName} metropolitan area. As a key regional economic center, the property value trends here serve as a bellwether for the surrounding counties.</p>
+
+      <h3>Median Price Trend & YoY Change</h3>
+      <p>The current median home value of ${valueStr} reflects a ${yoyStr} year-over-year change, a figure that highlights the current pace of the ${metroName} real estate market. This ${momentum} trend is a key indicator for the ${metroName} area's market health and overall desirability. Compared to the historical peak of ${highStr}, values are currently sitting ${relativeToHigh} that level. This ${absYoY}% annual shift provides a benchmark for local property appreciation and helps homeowners understand their equity position relative to the broader regional market.</p>
+
+      <h3>Local Market Dynamics & Explanation</h3>
+      <p>In ${metroName}, buyers and sellers are navigating a market defined by ${marketCondition}. The ${yoyStr} change over the past 12 months indicates that ${yoyChange !== undefined && yoyChange > 0 ? 'demand remains robust despite broader economic headwinds, with multiple offers still common for well-priced inventory' : 'the market is finding a new equilibrium after recent peaks, offering a potentially more favorable environment for patient buyers'}. For those looking to enter the ${metroName} real estate market, these historical trends offer vital context for long-term value retention and equity growth. Understanding whether the market is ${momentum} or stabilizing is the first step in formulating a winning strategy for any real estate transaction in the area.</p>
+    `;
+
     if (type === "national") {
       return {
         title: `US Housing Market Overview ${currentYear} | Home Prices & Trends`,
@@ -79,7 +102,7 @@ export function SEOContent({
         title: `${stateName} Housing Market ${currentYear} | Home Prices & Trends | ${stateCode}`,
         description: `${stateName} housing market data: median home value ${valueStr}, ${yoyStr} YoY change. Explore ${stateName} real estate trends, metro areas, and historical price data.`,
         heading: `Housing Market Snapshot: ${stateName}`,
-        body: commonBody
+        body: stateSummary
       };
     }
 
@@ -88,7 +111,7 @@ export function SEOContent({
         title: `${metroName} Housing Market ${currentYear} | Home Prices & Real Estate Trends`,
         description: `${metroName} housing data: median home price ${valueStr}, ${yoyStr} year-over-year change. Explore ${metroName} real estate trends and historical market data.`,
         heading: `Housing Market Snapshot: ${metroName}`,
-        body: commonBody
+        body: metroBody
       };
     }
 

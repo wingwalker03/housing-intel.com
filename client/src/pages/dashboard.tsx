@@ -554,9 +554,16 @@ export default function Dashboard() {
       return padded;
     };
 
+    const linkify = (item: any, type: 'state' | 'metro') => {
+      if (!item.name) return item;
+      const slug = type === 'state' ? stateNameToSlug(item.name) : metroNameToSlug(item.name);
+      const url = `/${type}/${slug}`;
+      return { ...item, url };
+    };
+
     return {
-      top: pad(top),
-      bottom: pad(bottom)
+      top: pad(top).map(item => linkify(item, selectedStateCode && selectedStateCode !== "US" ? 'metro' : 'state')),
+      bottom: pad(bottom).map(item => linkify(item, selectedStateCode && selectedStateCode !== "US" ? 'metro' : 'state'))
     };
   }, [isLoadingData, stateCsvData, metroCsvData, selectedStateCode]);
 
@@ -820,7 +827,13 @@ export default function Dashboard() {
                     {rankings.top.map((item, i) => (
                       <div key={item.name || `blank-top-${i}`} className="flex items-center justify-between text-sm p-2 rounded-lg bg-background/50 border border-border/40 min-h-[38px]">
                         <span className="font-medium text-muted-foreground w-6">{i + 1}.</span>
-                        <span className="flex-1 truncate pr-4">{item.name}</span>
+                        {item.url ? (
+                          <a href={item.url} className="flex-1 truncate pr-4 text-primary hover:underline">
+                            {item.name}
+                          </a>
+                        ) : (
+                          <span className="flex-1 truncate pr-4">{item.name}</span>
+                        )}
                         <span className="font-bold text-emerald-500">
                           {item.value !== null ? `+${item.value.toFixed(2)}%` : ""}
                         </span>
@@ -842,7 +855,13 @@ export default function Dashboard() {
                     {rankings.bottom.map((item, i) => (
                       <div key={item.name || `blank-bottom-${i}`} className="flex items-center justify-between text-sm p-2 rounded-lg bg-background/50 border border-border/40 min-h-[38px]">
                         <span className="font-medium text-muted-foreground w-6">{i + 1}.</span>
-                        <span className="flex-1 truncate pr-4">{item.name}</span>
+                        {item.url ? (
+                          <a href={item.url} className="flex-1 truncate pr-4 text-primary hover:underline">
+                            {item.name}
+                          </a>
+                        ) : (
+                          <span className="flex-1 truncate pr-4">{item.name}</span>
+                        )}
                         <span className="font-bold text-rose-500">
                           {item.value !== null ? `${item.value.toFixed(2)}%` : ""}
                         </span>
