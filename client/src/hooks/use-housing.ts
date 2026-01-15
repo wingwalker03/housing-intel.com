@@ -89,3 +89,36 @@ export function useMetrosByState(stateCode?: string) {
     },
   });
 }
+
+export interface MarketSentiment {
+  marketType: string;
+  marketSlug: string;
+  sentiment: string | null;
+  sentimentScore: number | null;
+  sentimentSummary: string | null;
+  weekStart: string;
+}
+
+export function useMarketSentiment(marketType?: string, marketSlug?: string) {
+  return useQuery<MarketSentiment | null>({
+    queryKey: ["/api/sentiment", marketType, marketSlug],
+    enabled: !!marketType && !!marketSlug,
+    queryFn: async () => {
+      const res = await fetch(`/api/sentiment/${marketType}/${marketSlug}`, { credentials: "include" });
+      if (res.status === 404) return null;
+      if (!res.ok) throw new Error("Failed to fetch sentiment");
+      return res.json();
+    },
+  });
+}
+
+export function useAllSentiments() {
+  return useQuery<MarketSentiment[]>({
+    queryKey: ["/api/sentiment"],
+    queryFn: async () => {
+      const res = await fetch("/api/sentiment", { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to fetch sentiments");
+      return res.json();
+    },
+  });
+}

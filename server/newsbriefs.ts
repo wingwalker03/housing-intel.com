@@ -184,12 +184,21 @@ async function fetchNewsWithWebSearch(marketName: string, marketType: "state" | 
   }
 }
 
+interface BriefContent {
+  title: string;
+  metaDescription: string;
+  briefHtml: string;
+  sentiment: "bullish" | "bearish" | "neutral";
+  sentimentScore: number;
+  sentimentSummary: string;
+}
+
 async function generateBriefContent(
   market: MarketData,
   sources: NewsSource[],
   weekStart: string,
   weekEnd: string
-): Promise<{ title: string; metaDescription: string; briefHtml: string }> {
+): Promise<BriefContent> {
   const formatCurrency = (val: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(val);
   const formatPercent = (val: number) => `${val >= 0 ? "+" : ""}${val.toFixed(1)}%`;
 
@@ -217,12 +226,19 @@ Requirements:
    - 2-4 bullet takeaways (use <ul><li>)
    - 1 "What to Watch" line about upcoming trends
    - Do NOT include the sources section - that will be added separately
+4. Market Sentiment Analysis:
+   - sentiment: "bullish" (prices likely rising, buyer demand strong), "bearish" (prices declining, buyer hesitation), or "neutral" (stable/mixed signals)
+   - sentimentScore: A number from -1.0 (very bearish) to 1.0 (very bullish), with 0 being neutral
+   - sentimentSummary: A 1-2 sentence explanation of the sentiment based on news and data
 
 Return JSON with this exact structure:
 {
   "title": "...",
   "metaDescription": "...",
-  "briefHtml": "..."
+  "briefHtml": "...",
+  "sentiment": "bullish" | "bearish" | "neutral",
+  "sentimentScore": 0.5,
+  "sentimentSummary": "..."
 }`;
 
   const response = await openai.chat.completions.create({
@@ -232,7 +248,21 @@ Return JSON with this exact structure:
   });
 
   const content = response.choices[0]?.message?.content || "{}";
-  return JSON.parse(content);
+  const parsed = JSON.parse(content);
+  
+  // Validate and normalize sentiment values
+  const validSentiments = ["bullish", "bearish", "neutral"];
+  const sentiment = validSentiments.includes(parsed.sentiment) ? parsed.sentiment : "neutral";
+  const sentimentScore = Math.max(-1, Math.min(1, Number(parsed.sentimentScore) || 0));
+  
+  return {
+    title: parsed.title || "",
+    metaDescription: parsed.metaDescription || "",
+    briefHtml: parsed.briefHtml || "",
+    sentiment,
+    sentimentScore,
+    sentimentSummary: parsed.sentimentSummary || "",
+  };
 }
 
 export async function generateBriefForMarket(
@@ -288,6 +318,9 @@ export async function generateBriefForMarket(
     metaDescription: escapeHtml(generated.metaDescription),
     briefHtml: sanitizeBriefHtml(generated.briefHtml),
     sources: JSON.stringify(sources),
+    sentiment: generated.sentiment,
+    sentimentScore: generated.sentimentScore,
+    sentimentSummary: escapeHtml(generated.sentimentSummary),
   };
 
   await db.insert(weeklyMarketBriefs).values(briefData);
@@ -367,4 +400,65 @@ export async function getBriefArchive(
       )
     )
     .orderBy(desc(weeklyMarketBriefs.weekStart));
+}
+
+export interface MarketSentiment {
+  marketType: string;
+  marketSlug: string;
+  sentiment: string | null;
+  sentimentScore: number | null;
+  sentimentSummary: string | null;
+  weekStart: string;
+}
+
+export async function getLatestSentiment(
+  marketType: string,
+  marketSlug: string
+): Promise<MarketSentiment | null> {
+  const [brief] = await db
+    .select({
+      marketType: weeklyMarketBriefs.marketType,
+      marketSlug: weeklyMarketBriefs.marketSlug,
+      sentiment: weeklyMarketBriefs.sentiment,
+      sentimentScore: weeklyMarketBriefs.sentimentScore,
+      sentimentSummary: weeklyMarketBriefs.sentimentSummary,
+      weekStart: weeklyMarketBriefs.weekStart,
+    })
+    .from(weeklyMarketBriefs)
+    .where(
+      and(
+        eq(weeklyMarketBriefs.marketType, marketType),
+        eq(weeklyMarketBriefs.marketSlug, marketSlug)
+      )
+    )
+    .orderBy(desc(weeklyMarketBriefs.weekStart))
+    .limit(1);
+  
+  return brief || null;
+}
+
+export async function getAllLatestSentiments(): Promise<MarketSentiment[]> {
+  // Get the most recent brief for each market
+  const briefs = await db
+    .select({
+      marketType: weeklyMarketBriefs.marketType,
+      marketSlug: weeklyMarketBriefs.marketSlug,
+      sentiment: weeklyMarketBriefs.sentiment,
+      sentimentScore: weeklyMarketBriefs.sentimentScore,
+      sentimentSummary: weeklyMarketBriefs.sentimentSummary,
+      weekStart: weeklyMarketBriefs.weekStart,
+    })
+    .from(weeklyMarketBriefs)
+    .orderBy(desc(weeklyMarketBriefs.weekStart));
+  
+  // Keep only the latest brief per market
+  const latestByMarket = new Map<string, MarketSentiment>();
+  for (const brief of briefs) {
+    const key = `${brief.marketType}:${brief.marketSlug}`;
+    if (!latestByMarket.has(key)) {
+      latestByMarket.set(key, brief);
+    }
+  }
+  
+  return Array.from(latestByMarket.values());
 }

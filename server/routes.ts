@@ -15,7 +15,9 @@ import {
   generateBriefForMarket, 
   runWeeklyBriefs, 
   getBriefByWeek, 
-  getBriefArchive 
+  getBriefArchive,
+  getLatestSentiment,
+  getAllLatestSentiments
 } from "./newsbriefs";
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -301,7 +303,12 @@ ${urls}
   <style>
     body { font-family: system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }
     h1 { color: #1a1a1a; }
-    .meta { color: #666; font-size: 0.9em; margin-bottom: 20px; }
+    .meta { color: #666; font-size: 0.9em; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .sentiment-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 16px; font-size: 0.85em; font-weight: 500; }
+    .sentiment-bullish { background: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16, 185, 129, 0.2); }
+    .sentiment-bearish { background: rgba(239, 68, 68, 0.1); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.2); }
+    .sentiment-neutral { background: rgba(100, 116, 139, 0.1); color: #475569; border: 1px solid rgba(100, 116, 139, 0.2); }
+    .sentiment-summary { font-size: 0.9em; color: #555; margin-top: 16px; padding: 12px; background: #f8f9fa; border-radius: 8px; border-left: 3px solid #0066cc; }
     .sources { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
     .sources h3 { font-size: 1em; color: #333; }
     .sources ul { padding-left: 20px; }
@@ -314,7 +321,11 @@ ${urls}
 <body>
   <article>
     <h1>${brief.title}</h1>
-    <p class="meta">Week of ${brief.weekStart} to ${brief.weekEnd}</p>
+    <div class="meta">
+      <span>Week of ${brief.weekStart} to ${brief.weekEnd}</span>
+      ${brief.sentiment ? `<span class="sentiment-badge sentiment-${brief.sentiment}">${brief.sentiment === "bullish" ? "&#x2191;" : brief.sentiment === "bearish" ? "&#x2193;" : "&#x2014;"} ${brief.sentiment.charAt(0).toUpperCase() + brief.sentiment.slice(1)}</span>` : ""}
+    </div>
+    ${brief.sentimentSummary ? `<div class="sentiment-summary"><strong>Market Sentiment:</strong> ${brief.sentimentSummary}</div>` : ""}
     ${brief.briefHtml}
     <div class="sources">
       <h3>Sources</h3>
@@ -389,6 +400,40 @@ ${urls}
 
     res.header("Content-Type", "text/html");
     res.send(html);
+  });
+
+  // Market Sentiment API endpoints
+  app.get("/api/sentiment", async (req, res) => {
+    try {
+      const sentiments = await getAllLatestSentiments();
+      res.json(sentiments);
+    } catch (err: any) {
+      console.error("Sentiment fetch error:", err);
+      res.status(500).json({ error: "Failed to fetch sentiments" });
+    }
+  });
+
+  app.get("/api/sentiment/:marketType/:slug", async (req, res) => {
+    const { marketType, slug } = req.params;
+    
+    // Validate params
+    if (!["state", "metro"].includes(marketType)) {
+      return res.status(400).json({ error: "Invalid market type" });
+    }
+    if (!/^[a-z0-9-]+$/.test(slug)) {
+      return res.status(400).json({ error: "Invalid market slug" });
+    }
+    
+    try {
+      const sentiment = await getLatestSentiment(marketType, slug);
+      if (!sentiment) {
+        return res.status(404).json({ error: "No sentiment data available" });
+      }
+      res.json(sentiment);
+    } catch (err: any) {
+      console.error("Sentiment fetch error:", err);
+      res.status(500).json({ error: "Failed to fetch sentiment" });
+    }
   });
 
   // Sitemap for news briefs

@@ -54,6 +54,9 @@ export const weeklyMarketBriefs = pgTable("weekly_market_briefs", {
   metaDescription: text("meta_description").notNull(),
   briefHtml: text("brief_html").notNull(),
   sources: text("sources").notNull(), // JSON string array of sources
+  sentiment: text("sentiment"), // 'bullish' | 'bearish' | 'neutral'
+  sentimentScore: real("sentiment_score"), // -1 to 1 scale
+  sentimentSummary: text("sentiment_summary"), // Brief explanation
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

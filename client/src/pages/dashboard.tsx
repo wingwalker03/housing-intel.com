@@ -38,7 +38,9 @@ import {
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Building2, TrendingUp, Map, Info, Maximize2, ArrowLeft, MapPin, Calculator } from "lucide-react";
+import { Building2, TrendingUp, Map, Info, Maximize2, ArrowLeft, MapPin, Calculator, Activity } from "lucide-react";
+import { SentimentBadge } from "@/components/ui/sentiment-badge";
+import { useMarketSentiment } from "@/hooks/use-housing";
 import { format, subYears, isSameMonth } from "date-fns";
 
 import { apiRequest } from "@/lib/queryClient";
@@ -107,6 +109,15 @@ export default function Dashboard() {
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Market sentiment
+  const sentimentMarketType = selectedMetroName ? "metro" : selectedStateName ? "state" : undefined;
+  const sentimentSlug = selectedMetroName 
+    ? metroNameToSlug(selectedMetroName)
+    : selectedStateName 
+      ? stateNameToSlug(selectedStateName)
+      : undefined;
+  const { data: sentiment } = useMarketSentiment(sentimentMarketType, sentimentSlug);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -717,9 +728,20 @@ export default function Dashboard() {
                 </Button>
               )}
             </div>
-            <h2 className="text-3xl font-bold font-display tracking-tight text-foreground">
-              {displayTitle}
-            </h2>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h2 className="text-3xl font-bold font-display tracking-tight text-foreground">
+                {displayTitle}
+              </h2>
+              {sentiment && (selectedStateName || selectedMetroName) && (
+                <SentimentBadge 
+                  sentiment={sentiment.sentiment}
+                  sentimentScore={sentiment.sentimentScore}
+                  sentimentSummary={sentiment.sentimentSummary}
+                  showScore
+                  data-testid="badge-market-sentiment"
+                />
+              )}
+            </div>
             <p className="text-muted-foreground">
               {displaySubtitle}
             </p>
