@@ -81,6 +81,8 @@ const DATA_URLS = {
   STATE_CSV_URL: "/data/state_zhvi_LONG_copy_paste.csv.csv"
 };
 
+import { KeywordPageMap } from "@/components/seo/keyword-map";
+
 export default function Dashboard() {
   const [, setLocation] = useLocation();
   const [matchState, paramsState] = useRoute("/state/:stateSlug");
@@ -1184,6 +1186,8 @@ export default function Dashboard() {
             </div>
           )}
         </div>
+
+        <KeywordPageMap states={states} metros={filteredMetros.length > 0 ? filteredMetros : []} />
       </main>
     </div>
   );
