@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import sanitizeHtml from "sanitize-html";
 import { db } from "./db";
 import { 
   weeklyMarketBriefs, 
@@ -7,8 +8,27 @@ import {
   metroStats,
   type InsertWeeklyMarketBrief 
 } from "@shared/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, gte } from "drizzle-orm";
 import { batchProcess } from "./replit_integrations/batch";
+
+const ALLOWED_HTML_TAGS = ["p", "h2", "h3", "ul", "li", "strong", "em", "br"];
+
+function sanitizeBriefHtml(html: string): string {
+  return sanitizeHtml(html, {
+    allowedTags: ALLOWED_HTML_TAGS,
+    allowedAttributes: {},
+    disallowedTagsMode: "discard",
+  });
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
@@ -94,6 +114,35 @@ async function getMarketData(marketType: "state" | "metro", slug: string): Promi
       yoyChange: latest.yoyChange,
     };
   }
+}
+
+async function getCachedNews(
+  marketType: string,
+  marketSlug: string
+): Promise<NewsSource[] | null> {
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 7);
+  
+  const [cached] = await db
+    .select()
+    .from(newsCache)
+    .where(
+      and(
+        eq(newsCache.marketType, marketType),
+        eq(newsCache.marketSlug, marketSlug),
+        gte(newsCache.fetchedAt, weekAgo)
+      )
+    )
+    .limit(1);
+  
+  if (cached?.sources) {
+    try {
+      return JSON.parse(cached.sources) as NewsSource[];
+    } catch {
+      return null;
+    }
+  }
+  return null;
 }
 
 async function fetchNewsWithWebSearch(marketName: string, marketType: "state" | "metro"): Promise<NewsSource[]> {
@@ -213,24 +262,31 @@ export async function generateBriefForMarket(
     return { success: false, message: `Market not found: ${marketType}/${marketSlug}` };
   }
 
-  const sources = await fetchNewsWithWebSearch(market.name, marketType);
+  // Check cache first to avoid redundant web searches
+  let sources = await getCachedNews(marketType, marketSlug);
+  
+  if (!sources) {
+    sources = await fetchNewsWithWebSearch(market.name, marketType);
+    
+    // Store in cache for future runs
+    await db.insert(newsCache).values({
+      marketType,
+      marketSlug,
+      sources: JSON.stringify(sources),
+    });
+  }
 
-  await db.insert(newsCache).values({
-    marketType,
-    marketSlug,
-    sources: JSON.stringify(sources),
-  });
+  const generated = await generateBriefContent(market, sources, weekStart, weekEnd);
 
-  const { title, metaDescription, briefHtml } = await generateBriefContent(market, sources, weekStart, weekEnd);
-
+  // Sanitize LLM output to prevent XSS
   const briefData: InsertWeeklyMarketBrief = {
     marketType,
     marketSlug,
     weekStart,
     weekEnd,
-    title,
-    metaDescription,
-    briefHtml,
+    title: escapeHtml(generated.title),
+    metaDescription: escapeHtml(generated.metaDescription),
+    briefHtml: sanitizeBriefHtml(generated.briefHtml),
     sources: JSON.stringify(sources),
   };
 

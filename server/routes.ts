@@ -229,8 +229,15 @@ ${urls}
     }
 
     const { marketType, marketSlug } = req.body;
-    if (!marketType || !marketSlug) {
-      return res.status(400).json({ error: "marketType and marketSlug are required" });
+    
+    // Validate marketType
+    if (!marketType || !["state", "metro"].includes(marketType)) {
+      return res.status(400).json({ error: "marketType must be 'state' or 'metro'" });
+    }
+    
+    // Validate marketSlug format (alphanumeric with hyphens only)
+    if (!marketSlug || !/^[a-z0-9-]+$/.test(marketSlug)) {
+      return res.status(400).json({ error: "marketSlug must be lowercase alphanumeric with hyphens" });
     }
 
     try {
@@ -245,13 +252,39 @@ ${urls}
   // Public endpoints for news briefs
   app.get("/news/:marketType/:slug/week/:weekStart", async (req, res) => {
     const { marketType, slug, weekStart } = req.params;
+    
+    // Validate params to prevent invalid queries
+    if (!["state", "metro"].includes(marketType)) {
+      return res.status(400).send("Invalid market type");
+    }
+    if (!/^[a-z0-9-]+$/.test(slug)) {
+      return res.status(400).send("Invalid market slug");
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(weekStart)) {
+      return res.status(400).send("Invalid week format");
+    }
+    
     const brief = await getBriefByWeek(marketType, slug, weekStart);
     
     if (!brief) {
       return res.status(404).json({ error: "Brief not found" });
     }
 
-    const sources = JSON.parse(brief.sources || "[]");
+    const rawSources = JSON.parse(brief.sources || "[]");
+    // Sanitize source URLs - only allow http/https
+    const sources = rawSources.filter((s: any) => {
+      try {
+        const url = new URL(s.url);
+        return url.protocol === "http:" || url.protocol === "https:";
+      } catch {
+        return false;
+      }
+    }).map((s: any) => ({
+      ...s,
+      title: String(s.title || "").replace(/[<>"'&]/g, ""),
+      publisher: String(s.publisher || "").replace(/[<>"'&]/g, ""),
+    }));
+    
     const baseUrl = process.env.SITE_BASE_URL || "https://housing-market-stats.replit.app";
     const marketUrl = marketType === "state" ? `${baseUrl}/state/${slug}` : `${baseUrl}/metro/${slug}`;
 
@@ -302,6 +335,15 @@ ${urls}
 
   app.get("/news/:marketType/:slug", async (req, res) => {
     const { marketType, slug } = req.params;
+    
+    // Validate params
+    if (!["state", "metro"].includes(marketType)) {
+      return res.status(400).send("Invalid market type");
+    }
+    if (!/^[a-z0-9-]+$/.test(slug)) {
+      return res.status(400).send("Invalid market slug");
+    }
+    
     const briefs = await getBriefArchive(marketType, slug);
     
     const baseUrl = process.env.SITE_BASE_URL || "https://housing-market-stats.replit.app";
