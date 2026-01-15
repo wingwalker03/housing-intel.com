@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /wp-admin/
+Disallow: /wp-login.php
+Disallow: /admin/
+Disallow: /*.csv$
+Disallow: /attached_assets/
+
+Sitemap: https://housing-market-stats.replit.app/sitemap.xml
