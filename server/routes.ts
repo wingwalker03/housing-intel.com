@@ -8,6 +8,10 @@ import { parse } from "csv-parse";
 import fs from "fs";
 import path from "path";
 
+import { eq, and, gte, lte } from "drizzle-orm";
+import { db } from "./db";
+import { metroStats } from "@shared/schema";
+
 const upload = multer({ storage: multer.memoryStorage() });
 
 async function seedFromAttachedCsv() {
@@ -18,6 +22,76 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  app.get("/sitemap-national.xml", (req, res) => {
+    res.header('Content-Type', 'application/xml');
+    res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://housing-market-stats.replit.app/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>`);
+  });
+
+  app.get("/sitemap-states.xml", async (req, res) => {
+    const states = await storage.getAllStates();
+    const urls = states.map(s => {
+      const slug = s.name.toLowerCase().replace(/\s+/g, '-');
+      return `  <url>
+    <loc>https://housing-market-stats.replit.app/state/${slug}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+    }).join('\n');
+
+    res.header('Content-Type', 'application/xml');
+    res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>`);
+  });
+
+  app.get("/sitemap-metros.xml", async (req, res) => {
+    const metros = await db.selectDistinct({ name: metroStats.metroName }).from(metroStats);
+    const urls = metros.map(m => {
+      const slug = m.name
+        .toLowerCase()
+        .replace(/,\s*/g, '-')
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+      return `  <url>
+    <loc>https://housing-market-stats.replit.app/metro/${slug}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>`;
+    }).join('\n');
+
+    res.header('Content-Type', 'application/xml');
+    res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>`);
+  });
+
+  app.get("/sitemap.xml", (req, res) => {
+    res.header('Content-Type', 'application/xml');
+    res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://housing-market-stats.replit.app/sitemap-national.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://housing-market-stats.replit.app/sitemap-states.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://housing-market-stats.replit.app/sitemap-metros.xml</loc>
+  </sitemap>
+</sitemapindex>`);
+  });
+
   app.post("/api/leads", async (req, res) => {
     try {
       const data = insertLeadEmailSchema.parse(req.body);
