@@ -1148,6 +1148,42 @@ export default function Dashboard() {
           historicalHigh={historicalHigh}
           dataYears={timeRange === '5y' ? 5 : timeRange === '10y' ? 10 : timeRange === '20y' ? 20 : 25}
         />
+
+        {/* Market Directory for SEO Crawlability */}
+        <div className="mt-16 pt-8 border-t border-border/40">
+          <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-6">Market Directory</h3>
+          {!selectedStateCode ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+              {states.map(state => (
+                <a 
+                  key={state.code} 
+                  href={`/state/${stateNameToSlug(state.name)}`}
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {state.name}
+                </a>
+              ))}
+            </div>
+          ) : !selectedMetroName ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              {filteredMetros.map(metro => (
+                <a 
+                  key={metro.id} 
+                  href={`/metro/${metroNameToSlug(metro.id)}`}
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {metro.id}
+                </a>
+              ))}
+            </div>
+          ) : (
+            <div className="flex gap-4">
+              <a href="/" className="text-sm text-primary hover:underline">National Overview</a>
+              <span className="text-muted-foreground">/</span>
+              <a href={`/state/${stateNameToSlug(selectedStateName || "")}`} className="text-sm text-primary hover:underline">{selectedStateName}</a>
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );
