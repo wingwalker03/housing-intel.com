@@ -59,7 +59,7 @@ export function SentimentBadge({
       <span className="capitalize">{sentiment}</span>
       {showScore && sentimentScore !== null && sentimentScore !== undefined && (
         <span className="opacity-75 text-xs ml-0.5">
-          ({formatScore(sentimentScore)})
+          ({(sentimentScore * 100).toFixed(0)})
         </span>
       )}
     </Badge>

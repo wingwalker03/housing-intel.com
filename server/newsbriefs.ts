@@ -210,7 +210,9 @@ async function generateBriefContent(
     ? `Recent news sources to reference:\n${sources.map(s => `- ${s.title} (${s.publisher}, ${s.date}): ${s.url}`).join("\n")}`
     : "No recent news sources available. Focus on general market analysis.";
 
-  const prompt = `Write a ~300 word weekly housing news brief for ${market.name} (${market.type === "state" ? "state" : "metro area"}) for the week of ${weekStart} to ${weekEnd}.
+  const prompt = `Write a weekly housing news brief for ${market.name} (${market.type === "state" ? "state" : "metro area"}) for the week of ${weekStart} to ${weekEnd}.
+
+  Target Audience: General public with a 10th grade reading level. Use simple, clear language. Avoid complex financial jargon where possible, or explain it simply if needed.
 
 Housing Intel Data for ${market.name}:
 ${dataSection}
@@ -218,9 +220,9 @@ ${dataSection}
 ${sourcesContext}
 
 Requirements:
-1. Title: Create an engaging SEO-friendly title
-2. Meta description: ~150 characters summarizing the brief
-3. Brief content in HTML format with:
+1. Title: Create an engaging SEO-friendly title (No dashes)
+2. Meta description: ~150 characters summarizing the brief (No dashes)
+3. Brief content in HTML format (approx 300 words) with:
    - Opening paragraph summarizing the week's housing news
    - "What Housing Intel Data Shows" section with our metrics analysis
    - 2-4 bullet takeaways (use <ul><li>)
@@ -229,7 +231,7 @@ Requirements:
 4. Market Sentiment Analysis:
    - sentiment: "bullish" (prices likely rising, buyer demand strong), "bearish" (prices declining, buyer hesitation), or "neutral" (stable/mixed signals)
    - sentimentScore: A number from -1.0 (very bearish) to 1.0 (very bullish), with 0 being neutral
-   - sentimentSummary: A 1-2 sentence explanation of the sentiment based on news and data
+   - sentimentSummary: A 1-2 sentence explanation of the sentiment based on news and data (No dashes)
 
 Return JSON with this exact structure:
 {
