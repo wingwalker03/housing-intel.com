@@ -323,7 +323,7 @@ ${urls}
     <h1>${brief.title}</h1>
     <div class="meta">
       <span>Week of ${brief.weekStart} to ${brief.weekEnd}</span>
-      ${brief.sentiment ? `<span class="sentiment-badge sentiment-${brief.sentiment}">${brief.sentiment === "bullish" ? "&#x2191;" : brief.sentiment === "bearish" ? "&#x2193;" : "&#x2014;"} ${brief.sentiment.charAt(0).toUpperCase() + brief.sentiment.slice(1)}</span>` : ""}
+      ${brief.sentiment ? `<span class="sentiment-badge sentiment-${brief.sentiment}">${brief.sentiment === "bullish" ? "&#x2191;" : brief.sentiment === "bearish" ? "&#x2193;" : "•"} ${brief.sentiment.charAt(0).toUpperCase() + brief.sentiment.slice(1)}</span>` : ""}
     </div>
     ${brief.sentimentSummary ? `<div class="sentiment-summary"><strong>Market Sentiment:</strong> ${brief.sentimentSummary}</div>` : ""}
     ${brief.briefHtml}
