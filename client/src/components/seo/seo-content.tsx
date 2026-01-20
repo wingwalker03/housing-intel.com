@@ -88,30 +88,50 @@ export function SEOContent({
       <p>In ${metroName}, buyers and sellers are navigating a market defined by ${marketCondition}. The ${yoyStr} change over the past 12 months indicates that ${yoyChange !== undefined && yoyChange > 0 ? 'demand remains robust despite broader economic headwinds, with multiple offers still common for well-priced inventory' : 'the market is finding a new equilibrium after recent peaks, offering a potentially more favorable environment for patient buyers'}. For those looking to enter the ${metroName} real estate market, these historical trends offer vital context for long-term value retention and equity growth. Understanding whether the market is ${momentum} or stabilizing is the first step in formulating a winning strategy for any real estate transaction in the area.</p>
     `;
 
+    const faqSection = `
+      <div class="mt-12 pt-8 border-t border-border">
+        <h2 class="text-xl font-semibold mb-6 text-foreground">Frequently Asked Questions about ${geoName} Housing</h2>
+        <div class="space-y-6">
+          <div>
+            <h4 class="font-medium text-foreground">What is the housing market forecast for ${geoName} in 2026?</h4>
+            <p class="text-muted-foreground mt-2">Based on current trends of ${yoyStr} annual growth, the ${geoName} market is expected to remain ${momentum} through 2026. While interest rates and inventory will play a role, the steady ${trendDirection} suggests a stable long-term outlook for property values.</p>
+          </div>
+          <div>
+            <h4 class="font-medium text-foreground">Is ${geoName} currently a buyer's or seller's market?</h4>
+            <p class="text-muted-foreground mt-2">With home prices sitting at ${valueStr} and moving ${upDown} by ${absYoY}% over the last year, ${geoName} is currently considered a ${marketCondition}. This means ${yoyChange !== undefined && yoyChange > 0 ? 'sellers currently have the advantage due to low inventory' : 'buyers may have more negotiating power as the market cools'}.</p>
+          </div>
+          <div>
+            <h4 class="font-medium text-foreground">What is the average home price in ${geoName}?</h4>
+            <p class="text-muted-foreground mt-2">The current median home value in ${geoName} is ${valueStr}. This represents a ${yoyStr} change from twelve months ago, reflecting the latest market dynamics in the region.</p>
+          </div>
+        </div>
+      </div>
+    `;
+
     if (type === "national") {
       return {
         title: `US Housing Market Overview ${currentYear} | Home Prices & Trends`,
         description: `Explore the US housing market with median home values at ${valueStr} and ${yoyStr} year-over-year growth. View historical trends, state comparisons, and metro area data.`,
         heading: `Housing Market Snapshot: United States`,
-        body: commonBody
+        body: commonBody + faqSection
       };
     }
 
     if (type === "state" && stateName) {
       return {
-        title: `${stateName} Housing Market ${currentYear} | Home Prices & Trends | ${stateCode}`,
-        description: `${stateName} housing market data: median home value ${valueStr}, ${yoyStr} YoY change. Explore ${stateName} real estate trends, metro areas, and historical price data.`,
+        title: `${stateName} Housing Market Forecast 2026 | Prices & Trends | ${stateCode}`,
+        description: `${stateName} housing market data: median home value ${valueStr}, ${yoyStr} YoY change. Explore ${stateName} real estate trends, metro areas, and 2026 forecast.`,
         heading: `Housing Market Snapshot: ${stateName}`,
-        body: stateSummary
+        body: stateSummary + faqSection
       };
     }
 
     if (type === "metro" && metroName) {
       return {
-        title: `${metroName} Housing Market ${currentYear} | Home Prices & Real Estate Trends`,
-        description: `${metroName} housing data: median home price ${valueStr}, ${yoyStr} year-over-year change. Explore ${metroName} real estate trends and historical market data.`,
+        title: `${metroName} Housing Market Forecast 2026 | Average Home Prices`,
+        description: `${metroName} housing data: average home price ${valueStr}, ${yoyStr} year-over-year change. Is it a buyer's or seller's market in ${metroName}?`,
         heading: `Housing Market Snapshot: ${metroName}`,
-        body: metroBody
+        body: metroBody + faqSection
       };
     }
 
@@ -126,6 +146,73 @@ export function SEOContent({
   useEffect(() => {
     document.title = content.title;
     
+    // Structured Data (Schema.org JSON-LD)
+    const scriptId = 'schema-json-ld';
+    let script = document.getElementById(scriptId) as HTMLScriptElement;
+    if (!script) {
+      script = document.createElement('script');
+      script.id = scriptId;
+      script.type = 'application/ld+json';
+      document.head.appendChild(script);
+    }
+
+    const schemaData: any = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "RealEstateListing",
+          "name": content.title,
+          "description": content.description,
+          "url": window.location.href,
+          "datePosted": new Date().toISOString(),
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": `${window.location.origin}/?q={search_term_string}`,
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": `What is the housing market forecast for ${geoName} in 2026?`,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": `Based on current trends of ${yoyStr} annual growth, the ${geoName} market is expected to remain ${momentum} through 2026.`
+              }
+            },
+            {
+              "@type": "Question",
+              "name": `Is ${geoName} currently a buyer's or seller's market?`,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": `With home prices sitting at ${valueStr} and moving ${upDown} by ${absYoY}% over the last year, ${geoName} is currently considered a ${marketCondition}.`
+              }
+            },
+            {
+              "@type": "Question",
+              "name": `What is the average home price in ${geoName}?`,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": `The current median home value in ${geoName} is ${valueStr}.`
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    if (latestValue) {
+      const listing = schemaData["@graph"].find((item: any) => item["@type"] === "RealEstateListing");
+      if (listing) {
+        listing.price = latestValue;
+        listing.priceCurrency = "USD";
+      }
+    }
+
+    script.text = JSON.stringify(schemaData);
+
     let metaDescription = document.querySelector('meta[name="description"]');
     if (!metaDescription) {
       metaDescription = document.createElement('meta');

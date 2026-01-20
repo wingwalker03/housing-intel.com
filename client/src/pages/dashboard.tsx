@@ -847,10 +847,10 @@ export default function Dashboard() {
                 <CardContent>
                   <div className="space-y-2">
                     {rankings.top.map((item, i) => (
-                      <div key={item.name || `blank-top-${i}`} className="flex items-center justify-between text-sm p-2 rounded-lg bg-background/50 border border-border/40 min-h-[38px]">
+                      <div key={item.name || `blank-top-${i}`} className="flex items-center justify-between text-sm p-2 rounded-lg bg-background/50 border border-border/40 min-h-[38px] group">
                         <span className="font-medium text-muted-foreground w-6">{i + 1}.</span>
                         {item.url ? (
-                          <a href={item.url} className="flex-1 truncate pr-4 text-primary hover:underline">
+                          <a href={item.url} className="flex-1 truncate pr-4 text-primary hover:underline decoration-primary/30 underline-offset-4 transition-colors">
                             {item.name}
                           </a>
                         ) : (
@@ -875,10 +875,10 @@ export default function Dashboard() {
                 <CardContent>
                   <div className="space-y-2">
                     {rankings.bottom.map((item, i) => (
-                      <div key={item.name || `blank-bottom-${i}`} className="flex items-center justify-between text-sm p-2 rounded-lg bg-background/50 border border-border/40 min-h-[38px]">
+                      <div key={item.name || `blank-bottom-${i}`} className="flex items-center justify-between text-sm p-2 rounded-lg bg-background/50 border border-border/40 min-h-[38px] group">
                         <span className="font-medium text-muted-foreground w-6">{i + 1}.</span>
                         {item.url ? (
-                          <a href={item.url} className="flex-1 truncate pr-4 text-primary hover:underline">
+                          <a href={item.url} className="flex-1 truncate pr-4 text-primary hover:underline decoration-primary/30 underline-offset-4 transition-colors">
                             {item.name}
                           </a>
                         ) : (
