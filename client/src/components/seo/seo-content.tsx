@@ -156,6 +156,8 @@ export function SEOContent({
       document.head.appendChild(script);
     }
 
+    const { geoName, yoyStr, momentum, valueStr, upDown, absYoY, marketCondition } = content.templateVars;
+
     const schemaData: any = {
       "@context": "https://schema.org",
       "@graph": [
