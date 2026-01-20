@@ -49,6 +49,18 @@ export function SEOContent({
     const upDown = yoyChange !== undefined ? (yoyChange >= 0 ? "up" : "down") : "changed";
     const absYoY = yoyChange !== undefined ? Math.abs(yoyChange).toFixed(1) : "0";
 
+    const templateVars = {
+      geoName,
+      yoyStr,
+      momentum,
+      valueStr,
+      upDown,
+      absYoY,
+      marketCondition,
+      trendDirection,
+      currentYear
+    };
+
     const commonBody = `
       <p>Home prices in ${geoName} are currently sitting around ${valueStr}, with prices ${upDown} ${absYoY}% compared to this time last year. This suggests the market is ${momentum}, depending on recent buyer demand and local economic conditions.</p>
 
@@ -113,7 +125,8 @@ export function SEOContent({
         title: `US Housing Market Overview ${currentYear} | Home Prices & Trends`,
         description: `Explore the US housing market with median home values at ${valueStr} and ${yoyStr} year-over-year growth. View historical trends, state comparisons, and metro area data.`,
         heading: `Housing Market Snapshot: United States`,
-        body: commonBody + faqSection
+        body: commonBody + faqSection,
+        templateVars
       };
     }
 
@@ -122,7 +135,8 @@ export function SEOContent({
         title: `${stateName} Housing Market Forecast 2026 | Prices & Trends | ${stateCode}`,
         description: `${stateName} housing market data: median home value ${valueStr}, ${yoyStr} YoY change. Explore ${stateName} real estate trends, metro areas, and 2026 forecast.`,
         heading: `Housing Market Snapshot: ${stateName}`,
-        body: stateSummary + faqSection
+        body: stateSummary + faqSection,
+        templateVars
       };
     }
 
@@ -131,7 +145,8 @@ export function SEOContent({
         title: `${metroName} Housing Market Forecast 2026 | Average Home Prices`,
         description: `${metroName} housing data: average home price ${valueStr}, ${yoyStr} year-over-year change. Is it a buyer's or seller's market in ${metroName}?`,
         heading: `Housing Market Snapshot: ${metroName}`,
-        body: metroBody + faqSection
+        body: metroBody + faqSection,
+        templateVars
       };
     }
 
@@ -139,7 +154,8 @@ export function SEOContent({
       title: "US Housing Market Dashboard",
       description: "Interactive housing market data and trends for the United States.",
       heading: "Housing Market Data",
-      body: "<p>Explore housing market statistics and trends.</p>"
+      body: "<p>Explore housing market statistics and trends.</p>",
+      templateVars
     };
   }, [type, stateName, stateCode, metroName, latestValue, yoyChange, historicalHigh, dataYears]);
 
