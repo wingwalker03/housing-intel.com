@@ -254,7 +254,7 @@ export function SEOContent({
       document.head.appendChild(ogDescription);
     }
     ogDescription.setAttribute('content', content.description);
-  }, [content.title, content.description]);
+  }, [content.title, content.description, content.templateVars, latestValue]);
 
   return (
     <section className="bg-muted/30 border-t border-border mt-12 pt-8 pb-12">

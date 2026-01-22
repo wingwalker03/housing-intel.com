@@ -22,6 +22,49 @@ import {
 
 const upload = multer({ storage: multer.memoryStorage() });
 
+const STATE_CODE_MAP: Record<string, string> = {
+  "Alabama": "AL", "Alaska": "AK", "Arizona": "AZ", "Arkansas": "AR", "California": "CA",
+  "Colorado": "CO", "Connecticut": "CT", "Delaware": "DE", "Florida": "FL", "Georgia": "GA",
+  "Hawaii": "HI", "Idaho": "ID", "Illinois": "IL", "Indiana": "IN", "Iowa": "IA",
+  "Kansas": "KS", "Kentucky": "KY", "Louisiana": "LA", "Maine": "ME", "Maryland": "MD",
+  "Massachusetts": "MA", "Michigan": "MI", "Minnesota": "MN", "Mississippi": "MS", "Missouri": "MO",
+  "Montana": "MT", "Nebraska": "NE", "Nevada": "NV", "New Hampshire": "NH", "New Jersey": "NJ",
+  "New Mexico": "NM", "New York": "NY", "North Carolina": "NC", "North Dakota": "ND", "Ohio": "OH",
+  "Oklahoma": "OK", "Oregon": "OR", "Pennsylvania": "PA", "Rhode Island": "RI", "South Carolina": "SC",
+  "South Dakota": "SD", "Tennessee": "TN", "Texas": "TX", "Utah": "UT", "Vermont": "VT",
+  "Virginia": "VA", "Washington": "WA", "West Virginia": "WV", "Wisconsin": "WI", "Wyoming": "WY",
+  "District of Columbia": "DC"
+};
+
+async function processZillowCsv(buffer: Buffer): Promise<any[]> {
+  return new Promise((resolve, reject) => {
+    const content = buffer.toString('utf-8');
+    const records: any[] = [];
+    
+    parse(content, {
+      columns: true,
+      skip_empty_lines: true,
+      trim: true,
+    })
+    .on('data', (record: any) => {
+      const stateName = record.state || record.RegionName;
+      const stateCode = STATE_CODE_MAP[stateName] || (stateName === "United States" ? "US" : null);
+      
+      if (stateCode) {
+        records.push({
+          stateCode,
+          stateName,
+          date: record.date,
+          medianHomeValue: Math.round(parseFloat(record.value)),
+          yoyChange: 0
+        });
+      }
+    })
+    .on('end', () => resolve(records))
+    .on('error', (err: Error) => reject(err));
+  });
+}
+
 async function seedFromAttachedCsv() {
   return;
 }
@@ -124,8 +167,8 @@ ${urls}
     if (!input?.stateCode && data.length > 0) {
       const dateMap = new Map<string, { sum: number, count: number }>();
       
-      data.forEach(stat => {
-        const dateStr = typeof stat.date === 'string' ? stat.date : stat.date.toISOString().split('T')[0];
+      data.forEach((stat: any) => {
+        const dateStr = typeof stat.date === 'string' ? stat.date : new Date(stat.date).toISOString().split('T')[0];
         const current = dateMap.get(dateStr) || { sum: 0, count: 0 };
         dateMap.set(dateStr, {
           sum: current.sum + stat.medianHomeValue,
