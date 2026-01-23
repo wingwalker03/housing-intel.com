@@ -73,39 +73,30 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  app.get("/sitemap-national.xml", (req, res) => {
-    res.header('Content-Type', 'application/xml');
-    res.send(`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://housing-market-stats.replit.app/</loc>
+  app.get("/sitemap.xml", async (req, res) => {
+    const baseUrl = process.env.SITE_BASE_URL || "https://housing-intel.com";
+    
+    // National URL
+    const nationalUrl = `  <url>
+    <loc>${baseUrl}/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
-  </url>
-</urlset>`);
-  });
+  </url>`;
 
-  app.get("/sitemap-states.xml", async (req, res) => {
+    // State URLs
     const states = await storage.getAllStates();
-    const urls = states.map(s => {
+    const stateUrls = states.map(s => {
       const slug = s.name.toLowerCase().replace(/\s+/g, '-');
       return `  <url>
-    <loc>https://housing-market-stats.replit.app/state/${slug}</loc>
+    <loc>${baseUrl}/state/${slug}</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>`;
     }).join('\n');
 
-    res.header('Content-Type', 'application/xml');
-    res.send(`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls}
-</urlset>`);
-  });
-
-  app.get("/sitemap-metros.xml", async (req, res) => {
+    // Metro URLs
     const metros = await db.selectDistinct({ name: metroStats.metroName }).from(metroStats);
-    const urls = metros.map(m => {
+    const metroUrls = metros.map(m => {
       const slug = m.name
         .toLowerCase()
         .replace(/,\s*/g, '-')
@@ -114,36 +105,28 @@ ${urls}
         .replace(/-+/g, '-')
         .replace(/^-|-$/g, '');
       return `  <url>
-    <loc>https://housing-market-stats.replit.app/metro/${slug}</loc>
+    <loc>${baseUrl}/metro/${slug}</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>`;
     }).join('\n');
 
+    // News URLs
+    const briefs = await db.select().from(weeklyMarketBriefs);
+    const newsUrls = briefs.map(b => `  <url>
+    <loc>${baseUrl}/news/${b.marketType}/${b.marketSlug}/week/${b.weekStart}</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>`).join("\n");
+
     res.header('Content-Type', 'application/xml');
     res.send(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls}
+${nationalUrl}
+${stateUrls}
+${metroUrls}
+${newsUrls}
 </urlset>`);
-  });
-
-  app.get("/sitemap.xml", (req, res) => {
-    res.header('Content-Type', 'application/xml');
-    res.send(`<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <sitemap>
-    <loc>https://housing-market-stats.replit.app/sitemap-national.xml</loc>
-  </sitemap>
-  <sitemap>
-    <loc>https://housing-market-stats.replit.app/sitemap-states.xml</loc>
-  </sitemap>
-  <sitemap>
-    <loc>https://housing-market-stats.replit.app/sitemap-metros.xml</loc>
-  </sitemap>
-  <sitemap>
-    <loc>https://housing-market-stats.replit.app/sitemap-news.xml</loc>
-  </sitemap>
-</sitemapindex>`);
   });
 
   app.post("/api/leads", async (req, res) => {
@@ -479,23 +462,6 @@ ${urls}
     }
   });
 
-  // Sitemap for news briefs
-  app.get("/sitemap-news.xml", async (req, res) => {
-    const briefs = await db.select().from(weeklyMarketBriefs);
-    const baseUrl = process.env.SITE_BASE_URL || "https://housing-market-stats.replit.app";
-    
-    const urls = briefs.map(b => `  <url>
-    <loc>${baseUrl}/news/${b.marketType}/${b.marketSlug}/week/${b.weekStart}</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>`).join("\n");
-
-    res.header("Content-Type", "application/xml");
-    res.send(`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls}
-</urlset>`);
-  });
 
   return httpServer;
 }
