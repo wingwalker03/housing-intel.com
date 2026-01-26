@@ -420,7 +420,6 @@ ${newsUrls}
       publisher: String(s.publisher || "").replace(/[<>"'&]/g, ""),
     }));
     
-    const baseUrl = process.env.SITE_BASE_URL || "https://housing-market-stats.replit.app";
     const marketUrl = marketType === "state" ? `${baseUrl}/state/${slug}` : `${baseUrl}/metro/${slug}`;
 
     const html = `<!DOCTYPE html>
@@ -490,7 +489,6 @@ ${newsUrls}
     
     const briefs = await getBriefArchive(marketType, slug);
     
-    const baseUrl = process.env.SITE_BASE_URL || "https://housing-market-stats.replit.app";
     const marketUrl = marketType === "state" ? `${baseUrl}/state/${slug}` : `${baseUrl}/metro/${slug}`;
     const displayName = slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 
