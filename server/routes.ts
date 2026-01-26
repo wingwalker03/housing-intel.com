@@ -83,14 +83,26 @@ export async function registerRoutes(
 ): Promise<Server> {
   const baseUrl = process.env.SITE_BASE_URL || "https://housing-intel.com";
 
-  // SSR Routes - serve static HTML for SEO, React hydrates on client
-  // These must come before the SPA catch-all
+  // SSR Routes - serve static HTML for SEO bots only
+  // Regular users get the full React SPA with interactive features
   
-  // Homepage SSR
+  // Detect search engine bots by User-Agent
+  function isSearchBot(userAgent: string | undefined): boolean {
+    if (!userAgent) return false;
+    const botPatterns = [
+      'googlebot', 'bingbot', 'slurp', 'duckduckbot', 'baiduspider',
+      'yandexbot', 'sogou', 'exabot', 'facebot', 'ia_archiver',
+      'linkedinbot', 'twitterbot', 'pinterest', 'applebot',
+      'semrushbot', 'ahrefsbot', 'mj12bot', 'dotbot'
+    ];
+    const ua = userAgent.toLowerCase();
+    return botPatterns.some(bot => ua.includes(bot));
+  }
+
+  // SSR Homepage for bots only
   app.get("/", (req, res, next) => {
-    // Skip SSR for API/asset requests or if client explicitly wants SPA
-    if (req.headers['x-requested-with'] === 'XMLHttpRequest') {
-      return next();
+    if (!isSearchBot(req.headers['user-agent'])) {
+      return next(); // Regular users get React SPA
     }
     try {
       const html = renderHomepage();
@@ -101,8 +113,11 @@ export async function registerRoutes(
     }
   });
 
-  // States listing page
+  // SSR States listing page for bots only
   app.get("/states", (req, res, next) => {
+    if (!isSearchBot(req.headers['user-agent'])) {
+      return next();
+    }
     try {
       const html = renderStatesPage();
       res.header("Content-Type", "text/html; charset=utf-8");
@@ -112,8 +127,11 @@ export async function registerRoutes(
     }
   });
 
-  // Individual state page
+  // SSR Individual state page for bots only
   app.get("/state/:slug", (req, res, next) => {
+    if (!isSearchBot(req.headers['user-agent'])) {
+      return next();
+    }
     const { slug } = req.params;
     if (!/^[a-z-]+$/.test(slug)) {
       return res.status(400).send("Invalid state slug");
@@ -121,7 +139,7 @@ export async function registerRoutes(
     try {
       const html = renderStatePage(slug);
       if (!html) {
-        return next(); // Fall through to SPA
+        return next();
       }
       res.header("Content-Type", "text/html; charset=utf-8");
       res.send(html);
@@ -130,8 +148,11 @@ export async function registerRoutes(
     }
   });
 
-  // Metros listing page
+  // SSR Metros listing page for bots only
   app.get("/metros", (req, res, next) => {
+    if (!isSearchBot(req.headers['user-agent'])) {
+      return next();
+    }
     try {
       const html = renderMetrosPage();
       res.header("Content-Type", "text/html; charset=utf-8");
@@ -141,8 +162,11 @@ export async function registerRoutes(
     }
   });
 
-  // Individual metro page
+  // SSR Individual metro page for bots only
   app.get("/metro/:slug", (req, res, next) => {
+    if (!isSearchBot(req.headers['user-agent'])) {
+      return next();
+    }
     const { slug } = req.params;
     if (!/^[a-z0-9-]+$/.test(slug)) {
       return res.status(400).send("Invalid metro slug");
@@ -150,7 +174,7 @@ export async function registerRoutes(
     try {
       const html = renderMetroPage(slug);
       if (!html) {
-        return next(); // Fall through to SPA
+        return next();
       }
       res.header("Content-Type", "text/html; charset=utf-8");
       res.send(html);
