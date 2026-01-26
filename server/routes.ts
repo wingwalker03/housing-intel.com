@@ -192,18 +192,21 @@ export async function registerRoutes(
     const nationalUrl = `  <url>
     <loc>${baseUrl}/</loc>
     <lastmod>${lastMod}</lastmod>
+    <description>Interactive US housing market dashboard featuring real-time median home values, year-over-year trends, and state-by-state comparisons.</description>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>${baseUrl}/states</loc>
     <lastmod>${lastMod}</lastmod>
+    <description>Comprehensive list of US states with detailed housing market statistics, including median home prices and growth trends for each region.</description>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>${baseUrl}/metros</loc>
     <lastmod>${lastMod}</lastmod>
+    <description>In-depth housing data for major US metropolitan areas, showcasing local market conditions and typical home values for urban centers.</description>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>`;
@@ -215,6 +218,7 @@ export async function registerRoutes(
       return `  <url>
     <loc>${baseUrl}/state/${slug}</loc>
     <lastmod>${lastMod}</lastmod>
+    <description>Latest housing market trends and median home values for ${s.name}, including local metropolitan area performance and historical price data.</description>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>`;
@@ -233,6 +237,7 @@ export async function registerRoutes(
       return `  <url>
     <loc>${baseUrl}/metro/${slug}</loc>
     <lastmod>${lastMod}</lastmod>
+    <description>Detailed real estate market statistics for ${m.name}, featuring current home prices, annual growth rates, and regional economic indicators.</description>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>`;
@@ -245,6 +250,7 @@ export async function registerRoutes(
       return `  <url>
     <loc>${baseUrl}/news/${b.marketType}/${b.marketSlug}/week/${b.weekStart}</loc>
     <lastmod>${briefDate}</lastmod>
+    <description>${b.metaDescription || `Weekly housing news update for ${b.marketSlug} for the week of ${b.weekStart}.`}</description>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>`;
