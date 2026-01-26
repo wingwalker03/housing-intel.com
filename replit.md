@@ -29,6 +29,7 @@ Preferred communication style: Simple, everyday language.
 - **Schema Validation**: Zod with drizzle-zod integration
 - **File Processing**: Multer for CSV uploads, csv-parse for parsing Zillow data
 - **Development**: tsx for TypeScript execution, Vite middleware for HMR
+- **SSR**: Server-side rendered HTML pages for SEO (/, /states, /state/:slug, /metros, /metro/:slug)
 
 ### Project Structure
 ```
@@ -37,14 +38,28 @@ Preferred communication style: Simple, everyday language.
 │   ├── hooks/           # Custom React hooks (useHousingStats, useStates)
 │   ├── pages/           # Route pages (dashboard, not-found)
 │   └── lib/             # Utilities and query client
+├── client/public/       # Static assets
+│   └── robots.txt       # Search engine directives
 ├── server/              # Express backend
-│   ├── routes.ts        # API endpoints
+│   ├── routes.ts        # API endpoints + SSR routes
+│   ├── ssr.ts           # SSR HTML template rendering
+│   ├── build-seo-data.ts # Build script for SEO data index
+│   ├── seo-data.json    # Precomputed states/metros data (generated)
 │   ├── storage.ts       # Database access layer
 │   └── db.ts            # Drizzle database connection
 └── shared/              # Shared between client/server
     ├── schema.ts        # Drizzle table definitions
     └── routes.ts        # API route type definitions
 ```
+
+### SEO Implementation
+- **Domain**: https://housing-intel.com
+- **SSR Pages**: HTML-first rendering for /, /states, /state/:slug, /metros, /metro/:slug
+- **Metadata**: Each page includes title, meta description, canonical URL, Open Graph, Twitter cards
+- **Sitemap**: /sitemap.xml with lastmod timestamps for all pages
+- **Robots**: /robots.txt with sitemap reference
+- **Internal Linking**: Strong bidirectional links between home, states, and metros
+- **Build Command**: Run `npx tsx server/build-seo-data.ts` to regenerate SEO data index
 
 ### Data Flow
 1. CSV data (Zillow format) is uploaded or seeded from attached_assets
