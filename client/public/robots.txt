@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: https://housing-market-stats.replit.app/sitemap.xml
+
+Sitemap: https://housing-intel.com/sitemap.xml

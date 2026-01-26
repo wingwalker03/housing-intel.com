@@ -19,6 +19,14 @@ import {
   getLatestSentiment,
   getAllLatestSentiments
 } from "./newsbriefs";
+import {
+  getSEOData,
+  renderHomepage,
+  renderStatesPage,
+  renderStatePage,
+  renderMetrosPage,
+  renderMetroPage,
+} from "./ssr";
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -73,14 +81,107 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  const baseUrl = process.env.SITE_BASE_URL || "https://housing-intel.com";
+
+  // SSR Routes - serve static HTML for SEO, React hydrates on client
+  // These must come before the SPA catch-all
+  
+  // Homepage SSR
+  app.get("/", (req, res, next) => {
+    // Skip SSR for API/asset requests or if client explicitly wants SPA
+    if (req.headers['x-requested-with'] === 'XMLHttpRequest') {
+      return next();
+    }
+    try {
+      const html = renderHomepage();
+      res.header("Content-Type", "text/html; charset=utf-8");
+      res.send(html);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // States listing page
+  app.get("/states", (req, res, next) => {
+    try {
+      const html = renderStatesPage();
+      res.header("Content-Type", "text/html; charset=utf-8");
+      res.send(html);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // Individual state page
+  app.get("/state/:slug", (req, res, next) => {
+    const { slug } = req.params;
+    if (!/^[a-z-]+$/.test(slug)) {
+      return res.status(400).send("Invalid state slug");
+    }
+    try {
+      const html = renderStatePage(slug);
+      if (!html) {
+        return next(); // Fall through to SPA
+      }
+      res.header("Content-Type", "text/html; charset=utf-8");
+      res.send(html);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // Metros listing page
+  app.get("/metros", (req, res, next) => {
+    try {
+      const html = renderMetrosPage();
+      res.header("Content-Type", "text/html; charset=utf-8");
+      res.send(html);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // Individual metro page
+  app.get("/metro/:slug", (req, res, next) => {
+    const { slug } = req.params;
+    if (!/^[a-z0-9-]+$/.test(slug)) {
+      return res.status(400).send("Invalid metro slug");
+    }
+    try {
+      const html = renderMetroPage(slug);
+      if (!html) {
+        return next(); // Fall through to SPA
+      }
+      res.header("Content-Type", "text/html; charset=utf-8");
+      res.send(html);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // Sitemap with lastmod
   app.get("/sitemap.xml", async (req, res) => {
-    const baseUrl = process.env.SITE_BASE_URL || "https://housing-intel.com";
+    const seoData = getSEOData();
+    const lastMod = seoData.generatedAt ? seoData.generatedAt.split('T')[0] : new Date().toISOString().split('T')[0];
     
     // National URL
     const nationalUrl = `  <url>
     <loc>${baseUrl}/</loc>
+    <lastmod>${lastMod}</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/states</loc>
+    <lastmod>${lastMod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/metros</loc>
+    <lastmod>${lastMod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>`;
 
     // State URLs
@@ -89,6 +190,7 @@ export async function registerRoutes(
       const slug = s.name.toLowerCase().replace(/\s+/g, '-');
       return `  <url>
     <loc>${baseUrl}/state/${slug}</loc>
+    <lastmod>${lastMod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>`;
@@ -106,6 +208,7 @@ export async function registerRoutes(
         .replace(/^-|-$/g, '');
       return `  <url>
     <loc>${baseUrl}/metro/${slug}</loc>
+    <lastmod>${lastMod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>`;
@@ -113,11 +216,15 @@ export async function registerRoutes(
 
     // News URLs
     const briefs = await db.select().from(weeklyMarketBriefs);
-    const newsUrls = briefs.map(b => `  <url>
+    const newsUrls = briefs.map(b => {
+      const briefDate = b.createdAt ? new Date(b.createdAt).toISOString().split('T')[0] : lastMod;
+      return `  <url>
     <loc>${baseUrl}/news/${b.marketType}/${b.marketSlug}/week/${b.weekStart}</loc>
+    <lastmod>${briefDate}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-  </url>`).join("\n");
+  </url>`;
+    }).join("\n");
 
     res.header('Content-Type', 'application/xml');
     res.send(`<?xml version="1.0" encoding="UTF-8"?>
