@@ -192,65 +192,48 @@ export async function registerRoutes(
     const nationalUrl = `  <url>
     <loc>${baseUrl}/</loc>
     <lastmod>${lastMod}</lastmod>
-    <description>Interactive US housing market dashboard featuring real-time median home values, year-over-year trends, and state-by-state comparisons.</description>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>${baseUrl}/states</loc>
     <lastmod>${lastMod}</lastmod>
-    <description>Comprehensive list of US states with detailed housing market statistics, including median home prices and growth trends for each region.</description>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>${baseUrl}/metros</loc>
     <lastmod>${lastMod}</lastmod>
-    <description>In-depth housing data for major US metropolitan areas, showcasing local market conditions and typical home values for urban centers.</description>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>`;
 
     // State URLs
-    const states = await storage.getAllStates();
-    const stateUrls = states.map(s => {
-      const slug = s.name.toLowerCase().replace(/\s+/g, '-');
+    const stateUrls = Object.values(seoData.states).map(s => {
       return `  <url>
-    <loc>${baseUrl}/state/${slug}</loc>
+    <loc>${baseUrl}/state/${s.slug}</loc>
     <lastmod>${lastMod}</lastmod>
-    <description>Latest housing market trends and median home values for ${s.name}, including local metropolitan area performance and historical price data.</description>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>`;
     }).join('\n');
 
     // Metro URLs
-    const metros = await db.selectDistinct({ name: metroStats.metroName }).from(metroStats);
-    const metroUrls = metros.map(m => {
-      const slug = m.name
-        .toLowerCase()
-        .replace(/,\s*/g, '-')
-        .replace(/\s+/g, '-')
-        .replace(/[^a-z0-9-]/g, '')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
+    const metroUrls = Object.values(seoData.metros).map(m => {
       return `  <url>
-    <loc>${baseUrl}/metro/${slug}</loc>
+    <loc>${baseUrl}/metro/${m.slug}</loc>
     <lastmod>${lastMod}</lastmod>
-    <description>Detailed real estate market statistics for ${m.name}, featuring current home prices, annual growth rates, and regional economic indicators.</description>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>`;
     }).join('\n');
 
     // News URLs
-    const briefs = await db.select().from(weeklyMarketBriefs);
     const newsUrls = briefs.map(b => {
       const briefDate = b.createdAt ? new Date(b.createdAt).toISOString().split('T')[0] : lastMod;
       return `  <url>
     <loc>${baseUrl}/news/${b.marketType}/${b.marketSlug}/week/${b.weekStart}</loc>
     <lastmod>${briefDate}</lastmod>
-    <description>${b.metaDescription || `Weekly housing news update for ${b.marketSlug} for the week of ${b.weekStart}.`}</description>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>`;
