@@ -229,6 +229,7 @@ export async function registerRoutes(
     }).join('\n');
 
     // News URLs
+    const briefs = await db.select().from(weeklyMarketBriefs);
     const newsUrls = briefs.map(b => {
       const briefDate = b.createdAt ? new Date(b.createdAt).toISOString().split('T')[0] : lastMod;
       return `  <url>
