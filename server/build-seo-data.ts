@@ -10,8 +10,14 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Polyfill for __dirname in ESM, but safe for CJS bundling
+const _filename = typeof import.meta.url !== 'undefined' 
+  ? fileURLToPath(import.meta.url) 
+  : (typeof __filename !== 'undefined' ? __filename : '');
+
+const _dirname = typeof __dirname !== 'undefined'
+  ? __dirname
+  : (_filename ? path.dirname(_filename) : process.cwd());
 
 interface StateData {
   code: string;
@@ -185,7 +191,7 @@ async function buildSEOData(): Promise<void> {
     metrosBySlug,
   };
 
-  const outputPath = path.join(__dirname, "seo-data.json");
+  const outputPath = path.join(_dirname, "seo-data.json");
   fs.writeFileSync(outputPath, JSON.stringify(seoData, null, 2));
   console.log(`SEO data written to ${outputPath}`);
   console.log(`  States: ${Object.keys(statesMap).length}`);

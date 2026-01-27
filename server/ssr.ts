@@ -6,8 +6,14 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Polyfill for __dirname in ESM, but safe for CJS bundling
+const _filename = typeof import.meta.url !== 'undefined' 
+  ? fileURLToPath(import.meta.url) 
+  : (typeof __filename !== 'undefined' ? __filename : '');
+
+const _dirname = typeof __dirname !== 'undefined'
+  ? __dirname
+  : (_filename ? path.dirname(_filename) : process.cwd());
 
 const BASE_URL = process.env.SITE_BASE_URL || "https://housing-intel.com";
 
@@ -54,7 +60,7 @@ let seoDataCache: SEOData | null = null;
 export function getSEOData(): SEOData {
   if (seoDataCache) return seoDataCache;
   
-  const dataPath = path.join(__dirname, "seo-data.json");
+  const dataPath = path.join(_dirname, "seo-data.json");
   if (fs.existsSync(dataPath)) {
     seoDataCache = JSON.parse(fs.readFileSync(dataPath, "utf-8"));
     return seoDataCache!;
