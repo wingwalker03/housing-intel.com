@@ -183,72 +183,8 @@ export async function registerRoutes(
     }
   });
 
-  // Sitemap with lastmod
-  app.get("/sitemap.xml", async (req, res) => {
-    const seoData = getSEOData();
-    const lastMod = seoData.generatedAt ? seoData.generatedAt.split('T')[0] : new Date().toISOString().split('T')[0];
-    
-    // National URL
-    const nationalUrl = `  <url>
-    <loc>${baseUrl}/</loc>
-    <lastmod>${lastMod}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>${baseUrl}/states</loc>
-    <lastmod>${lastMod}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>${baseUrl}/metros</loc>
-    <lastmod>${lastMod}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>`;
-
-    // State URLs
-    const stateUrls = Object.values(seoData.states).map(s => {
-      return `  <url>
-    <loc>${baseUrl}/state/${s.slug}</loc>
-    <lastmod>${lastMod}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>`;
-    }).join('\n');
-
-    // Metro URLs
-    const metroUrls = Object.values(seoData.metros).map(m => {
-      return `  <url>
-    <loc>${baseUrl}/metro/${m.slug}</loc>
-    <lastmod>${lastMod}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>`;
-    }).join('\n');
-
-    // News URLs
-    const briefs = await db.select().from(weeklyMarketBriefs);
-    const newsUrls = briefs.map(b => {
-      const briefDate = b.createdAt ? new Date(b.createdAt).toISOString().split('T')[0] : lastMod;
-      return `  <url>
-    <loc>${baseUrl}/news/${b.marketType}/${b.marketSlug}/week/${b.weekStart}</loc>
-    <lastmod>${briefDate}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>`;
-    }).join("\n");
-
-    res.header('Content-Type', 'application/xml');
-    res.send(`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${nationalUrl}
-${stateUrls}
-${metroUrls}
-${newsUrls}
-</urlset>`);
-  });
+  // Sitemap route removed in favor of static file in client/public
+  // app.get("/sitemap.xml", ...)
 
   app.post("/api/leads", async (req, res) => {
     try {
