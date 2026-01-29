@@ -370,7 +370,7 @@ export function renderStatesPage(): string {
           <li>
             <a href="/state/${s.slug}">${escapeHtml(s.name)}</a>
             <span style="color: var(--muted); margin-left: 12px;">
-              ${formatCurrency(s.latestValue)} 
+              ${formatCurrency(s.latestValue)}
               <span class="${s.yoyChange >= 0 ? "positive" : "negative"}">(${formatPercent(s.yoyChange)})</span>
             </span>
           </li>
@@ -399,8 +399,8 @@ export function renderStatePage(slug: string): string | null {
     .sort((a, b) => b.latestValue - a.latestValue);
 
   const meta: SEOMeta = {
-    title: `${state.name} Housing Market Trends | Housing Intel`,
-    description: `Track ${state.name} housing prices: median value ${formatCurrency(state.latestValue)}, ${formatPercent(state.yoyChange)} YoY growth. View stats for ${metros.length} metro areas.`,
+    title: `${state.name} Housing Market Statistics | Housing Intel`,
+    description: `${state.name} housing: median ${formatCurrency(state.latestValue)} (${formatPercent(state.yoyChange)} YoY). Explore ${metros.length} metros and historical trends.`,
     canonical: `${BASE_URL}/state/${slug}`,
   };
 
@@ -411,7 +411,7 @@ export function renderStatePage(slug: string): string | null {
     <main>
       <div class="breadcrumb"><a href="/">Home</a> / <a href="/states">States</a> / ${escapeHtml(state.name)}</div>
       <h1>${escapeHtml(state.name)} Housing Market</h1>
-      <p>Housing market trends for ${escapeHtml(state.name)}, including median home values and regional changes.</p>
+      <p>Median home value, YoY change, and metro-level breakdowns for ${escapeHtml(state.name)}.</p>
 
       <div class="stats-grid">
         <div class="stat-box">
@@ -420,18 +420,19 @@ export function renderStatePage(slug: string): string | null {
           <div class="stat-change ${state.yoyChange >= 0 ? "positive" : "negative"}">${formatPercent(state.yoyChange)} YoY</div>
         </div>
         <div class="stat-box">
-          <div class="stat-label">Metro Areas Tracked</div>
+          <div class="stat-label">Metro Areas</div>
           <div class="stat-value">${metros.length}</div>
         </div>
         <div class="stat-box">
-          <div class="stat-label">Latest Data</div>
+          <div class="stat-label">Data As Of</div>
           <div class="stat-value" style="font-size: 1.25rem;">${formatDate(state.latestDate)}</div>
         </div>
       </div>
 
+      ${metros.length ? `
       <h2>Metro Areas in ${escapeHtml(state.name)}</h2>
       <ul class="link-list">
-        ${metros.slice(0, 20).map(m => `
+        ${metros.slice(0, 50).map(m => `
           <li>
             <a href="/metro/${m.slug}">${escapeHtml(m.name)}</a>
             <span style="color: var(--muted); margin-left: 12px;">
@@ -440,7 +441,8 @@ export function renderStatePage(slug: string): string | null {
             </span>
           </li>
         `).join("")}
-      </ul>
+      </ul>` : ``}
+
     </main>
 
     ${renderFooter()}
@@ -452,13 +454,12 @@ export function renderStatePage(slug: string): string | null {
 // Metros listing page
 export function renderMetrosPage(): string {
   const data = getSEOData();
-  const metroList = Object.values(data.metros)
-    .sort((a, b) => b.latestValue - a.latestValue)
-    .slice(0, 100);
+  const total = Object.keys(data.metros).length;
+  const metroList = Object.values(data.metros).sort((a, b) => b.latestValue - a.latestValue).slice(0, 200);
 
   const meta: SEOMeta = {
-    title: "US Metropolitan Housing Market Stats | Housing Intel",
-    description: `Compare housing trends across top US metro areas. View median prices and growth for major urban centers.`,
+    title: "Housing Market by Metro Area | Housing Intel",
+    description: `Compare housing stats across ${total}+ US metro areas: median home values and YoY change for major markets.`,
     canonical: `${BASE_URL}/metros`,
   };
 
@@ -468,8 +469,8 @@ export function renderMetrosPage(): string {
 
     <main>
       <div class="breadcrumb"><a href="/">Home</a> / Metro Areas</div>
-      <h1>Metropolitan Housing Market Stats</h1>
-      <p>Top US metropolitan areas ranked by median home value and year-over-year change.</p>
+      <h1>Housing Market by Metro Area</h1>
+      <p>Metro-level market stats for major US regions.</p>
 
       <ul class="link-list">
         ${metroList.map(m => `
@@ -502,19 +503,26 @@ export function renderMetroPage(slug: string): string | null {
   const state = data.states[metro.stateCode];
 
   const meta: SEOMeta = {
-    title: `${metro.name} Housing Prices & Trends | Housing Intel`,
-    description: `View ${metro.name} housing stats: median home value ${formatCurrency(metro.latestValue)}, ${formatPercent(metro.yoyChange)} change from last year.`,
+    title: `${metro.name} Housing Market Statistics | Housing Intel`,
+    description: `${metro.name} housing: median ${formatCurrency(metro.latestValue)} (${formatPercent(metro.yoyChange)} YoY). View trends and compare to ${state ? state.name : "state"}.`,
     canonical: `${BASE_URL}/metro/${slug}`,
   };
+
+  const relatedMetros = metro.relatedMetros.map(name => data.metros[name]).filter(Boolean);
 
   const body = `
   <div class="container">
     <header><a href="/">Housing Intel</a></header>
 
     <main>
-      <div class="breadcrumb"><a href="/">Home</a> / <a href="/metros">Metros</a> / ${escapeHtml(metro.name)}</div>
+      <div class="breadcrumb">
+        <a href="/">Home</a> / <a href="/metros">Metro Areas</a>
+        ${state ? ` / <a href="/state/${state.slug}">${escapeHtml(state.name)}</a>` : ``}
+        / ${escapeHtml(metro.name)}
+      </div>
+
       <h1>${escapeHtml(metro.name)} Housing Market</h1>
-      <p>Market conditions for ${escapeHtml(metro.name)} ${state ? `in ${state.name}` : ""}.</p>
+      <p>Median home value, YoY change, and related metros for ${escapeHtml(metro.name)}.</p>
 
       <div class="stats-grid">
         <div class="stat-box">
@@ -524,15 +532,30 @@ export function renderMetroPage(slug: string): string | null {
         </div>
         ${state ? `
         <div class="stat-box">
-          <div class="stat-label">State Median (${state.code})</div>
+          <div class="stat-label">${escapeHtml(state.name)} Median</div>
           <div class="stat-value">${formatCurrency(state.latestValue)}</div>
-        </div>
-        ` : ""}
+          <div class="stat-change ${state.yoyChange >= 0 ? "positive" : "negative"}">${formatPercent(state.yoyChange)} YoY</div>
+        </div>` : ``}
         <div class="stat-box">
-          <div class="stat-label">Latest Data</div>
+          <div class="stat-label">Data As Of</div>
           <div class="stat-value" style="font-size: 1.25rem;">${formatDate(metro.latestDate)}</div>
         </div>
       </div>
+
+      ${relatedMetros.length ? `
+      <h2>Related Metro Areas${state ? ` in ${escapeHtml(state.name)}` : ``}</h2>
+      <ul class="link-list">
+        ${relatedMetros.slice(0, 30).map(m => `
+          <li>
+            <a href="/metro/${m.slug}">${escapeHtml(m.name)}</a>
+            <span style="color: var(--muted); margin-left: 12px;">
+              ${formatCurrency(m.latestValue)}
+              <span class="${m.yoyChange >= 0 ? "positive" : "negative"}">(${formatPercent(m.yoyChange)})</span>
+            </span>
+          </li>
+        `).join("")}
+      </ul>` : ``}
+
     </main>
 
     ${renderFooter()}
