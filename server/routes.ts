@@ -12,6 +12,7 @@ import {
   renderStatePage,
   renderMetrosPage,
   renderMetroPage,
+  renderCrawlHubPage,
 } from "./ssr";
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -117,6 +118,16 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       res.setHeader("Content-Type", "text/html; charset=utf-8");
       res.setHeader("Vary", "Accept-Encoding");
       res.send(html);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  app.get("/crawl-hub", (req, res, next) => {
+    try {
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("Vary", "Accept-Encoding");
+      res.send(renderCrawlHubPage());
     } catch (err) {
       next(err);
     }

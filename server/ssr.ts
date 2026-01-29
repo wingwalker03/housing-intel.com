@@ -540,3 +540,41 @@ export function renderMetroPage(slug: string): string | null {
 
   return renderDocument(meta, body);
 }
+
+// Crawl Hub page
+export function renderCrawlHubPage(): string {
+  const data = getSEOData();
+  const stateList = Object.values(data.states).sort((a, b) => a.name.localeCompare(b.name));
+  const metroList = Object.values(data.metros).sort((a, b) => a.name.localeCompare(b.name));
+
+  const meta: SEOMeta = {
+    title: "Housing Market Crawl Hub | All States & Metros | Housing Intel",
+    description: "A comprehensive directory of all US states and metropolitan areas for housing market statistics and trends.",
+    canonical: `${BASE_URL}/crawl-hub`,
+  };
+
+  const body = `
+  <div class="container">
+    <header><a href="/">Housing Intel</a></header>
+
+    <main>
+      <div class="breadcrumb"><a href="/">Home</a> / Crawl Hub</div>
+      <h1>Housing Market Crawl Hub</h1>
+      <p>Comprehensive directory of all tracked regions.</p>
+
+      <h2>US States</h2>
+      <ul class="link-grid">
+        ${stateList.map(s => `<li><a href="/state/${s.slug}">${escapeHtml(s.name)}</a></li>`).join("")}
+      </ul>
+
+      <h2 style="margin-top: 40px;">Metropolitan Areas</h2>
+      <ul class="link-grid">
+        ${metroList.map(m => `<li><a href="/metro/${m.slug}">${escapeHtml(m.name)}</a></li>`).join("")}
+      </ul>
+    </main>
+
+    ${renderFooter()}
+  </div>`;
+
+  return renderDocument(meta, body);
+}
