@@ -1,4 +1,22 @@
 User-agent: *
 Allow: /
 
+# Ensure JS, CSS, and assets are crawlable
+Allow: /assets/
+Allow: /static/
+Allow: /images/
+Allow: /*.js$
+Allow: /*.css$
+
+# Prevent crawling of non-content or internal paths
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
+Disallow: /_next/
+Disallow: /src/
+Disallow: /node_modules/
+
+# Crawl efficiency
+Crawl-delay: 5
+
 Sitemap: https://housing-intel.com/sitemap.xml
