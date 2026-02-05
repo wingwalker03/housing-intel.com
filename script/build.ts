@@ -1,6 +1,6 @@
 import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
-import { rm, readFile } from "fs/promises";
+import { rm, readFile, writeFile } from "fs/promises";
 
 // server deps to bundle to reduce openat(2) syscalls
 // which helps cold start times
@@ -9,6 +9,8 @@ const allowlist = [
   "axios",
   "connect-pg-simple",
   "cors",
+  "csv-parse",
+  "d3-scale",
   "date-fns",
   "drizzle-orm",
   "drizzle-zod",
@@ -21,9 +23,12 @@ const allowlist = [
   "nanoid",
   "nodemailer",
   "openai",
+  "p-limit",
+  "p-retry",
   "passport",
   "passport-local",
   "pg",
+  "sanitize-html",
   "stripe",
   "uuid",
   "ws",
@@ -50,15 +55,33 @@ async function buildAll() {
     entryPoints: ["server/index.ts"],
     platform: "node",
     bundle: true,
-    format: "cjs",
-    outfile: "dist/index.cjs",
+    format: "esm",
+    outfile: "dist/index.mjs",
     define: {
       "process.env.NODE_ENV": '"production"',
     },
     minify: true,
     external: externals,
     logLevel: "info",
+    banner: {
+      js: `import { createRequire } from 'module'; const require = createRequire(import.meta.url);`,
+    },
   });
+
+  // Create a CJS wrapper for deployment compatibility
+  // Uses dynamic import() which works in both CJS and ESM contexts
+  const cjsWrapper = `// CJS wrapper that loads ESM module
+(async () => {
+  try {
+    await import('./index.mjs');
+  } catch (err) {
+    console.error('Failed to load ESM module:', err);
+    process.exit(1);
+  }
+})();
+`;
+  await writeFile("dist/index.cjs", cjsWrapper);
+  console.log("created CJS wrapper at dist/index.cjs");
 }
 
 buildAll().catch((err) => {
