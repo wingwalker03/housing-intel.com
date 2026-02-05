@@ -39,7 +39,7 @@ const stateZoomConfig: Record<string, { center: [number, number]; zoom: number }
   "CO": { center: [-105.5, 39], zoom: 5 },
   "CT": { center: [-72.7, 41.6], zoom: 12 },
   "DE": { center: [-75.5, 39], zoom: 12 },
-  "DC": { center: [-77, 38.9], zoom: 40 },
+  "DC": { center: [-77, 38.9], zoom: 35 },
   "FL": { center: [-82, 28.5], zoom: 4 },
   "GA": { center: [-83.4, 32.7], zoom: 5 },
   "HI": { center: [-157, 20.5], zoom: 6 },
