@@ -5,6 +5,7 @@ import { api } from "@shared/routes";
 import { insertLeadEmailSchema } from "@shared/schema";
 import multer from "multer";
 import { parse } from "csv-parse";
+import { renderHomepage, renderStatePage } from "./ssr";
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -52,6 +53,29 @@ async function processZillowCsv(buffer: Buffer): Promise<any[]> {
 }
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
+  // SSR routes (served even in CSR mode for SEO crawlers)
+  app.get("/", (req, res, next) => {
+    try {
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.send(renderHomepage());
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  app.get("/state/:slug", (req, res, next) => {
+    const { slug } = req.params;
+    if (!/^[a-z-]+$/.test(slug)) return res.status(400).send("Invalid state slug");
+    try {
+      const html = renderStatePage(slug);
+      if (!html) return next();
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.send(html);
+    } catch (err) {
+      next(err);
+    }
+  });
+
   // Leads capture
   app.post("/api/leads", async (req, res) => {
     try {

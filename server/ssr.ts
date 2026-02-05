@@ -328,10 +328,38 @@ export function renderHomepage(): string {
 
   const stateList = Object.values(states).sort((a, b) => a.name.localeCompare(b.name));
 
+  const datasetSchema = {
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    "name": "US National Housing Market Statistics",
+    "description": "Historical housing market data across the United States including median home values and year-over-year changes.",
+    "url": BASE_URL,
+    "variableMeasured": [
+      {
+        "@type": "PropertyValue",
+        "name": "Median Home Value",
+        "unitText": "USD"
+      },
+      {
+        "@type": "PropertyValue",
+        "name": "Year-over-Year Change",
+        "unitText": "Percent"
+      }
+    ],
+    "distribution": [
+      {
+        "@type": "DataDownload",
+        "encodingFormat": "application/json",
+        "contentUrl": `${BASE_URL}/api/housing`
+      }
+    ]
+  };
+
   const meta: SEOMeta = {
     title: "US Housing Market Statistics and Trends | Housing Intel",
     description: `Track US housing trends with a national median home value of ${formatCurrency(national.latestValue)} and ${formatPercent(national.yoyChange)} YoY. Explore ${national.totalStates} states and ${national.totalMetros}+ metros.`,
     canonical: BASE_URL,
+    jsonLd: JSON.stringify(datasetSchema)
   };
 
   const body = `
@@ -441,10 +469,35 @@ export function renderStatePage(slug: string): string | null {
     .filter(Boolean)
     .sort((a, b) => b.latestValue - a.latestValue);
 
+  const datasetSchema = {
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    "name": `${state.name} Housing Market Data`,
+    "description": `Housing market statistics for ${state.name} including median home values and trends.`,
+    "url": `${BASE_URL}/state/${slug}`,
+    "spatialCoverage": {
+      "@type": "Place",
+      "name": state.name,
+      "address": {
+        "@type": "PostalAddress",
+        "addressRegion": state.code,
+        "addressCountry": "US"
+      }
+    },
+    "variableMeasured": [
+      {
+        "@type": "PropertyValue",
+        "name": "Median Home Value",
+        "unitText": "USD"
+      }
+    ]
+  };
+
   const meta: SEOMeta = {
     title: `${state.name} Housing Market Trends | Housing Intel`,
     description: `Track ${state.name} housing prices: median value ${formatCurrency(state.latestValue)}, ${formatPercent(state.yoyChange)} YoY growth. View stats for ${metros.length} metro areas.`,
     canonical: `${BASE_URL}/state/${slug}`,
+    jsonLd: JSON.stringify(datasetSchema)
   };
 
   const body = `
