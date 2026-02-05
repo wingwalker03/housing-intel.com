@@ -19,7 +19,7 @@ const BASE_URL = process.env.SITE_BASE_URL || "https://housing-intel.com";
 /** Where Vite outputs production assets. Override in prod if needed. */
 const CLIENT_DIST_DIR =
   process.env.CLIENT_DIST_DIR ||
-  path.join(process.cwd(), "client", "dist");
+  path.join(process.cwd(), "dist", "public");
 
 interface StateData {
   code: string;
@@ -184,9 +184,27 @@ function renderClientAssets(): string {
     <script type="module" src="/src/main.tsx"></script>`;
   }
 
-  const manifestPath = path.join(CLIENT_DIST_DIR, ".vite", "manifest.json");
-  if (!fs.existsSync(manifestPath)) {
-    // Fallback (won't work if /src isn't served in prod)
+  // In production, Replit dist structure is usually:
+  // dist/index.cjs
+  // dist/index.mjs
+  // dist/public/ (contains index.html, assets/, .vite/manifest.json)
+  const manifestPaths = [
+    path.join(CLIENT_DIST_DIR, ".vite", "manifest.json"),
+    path.join(process.cwd(), "dist", "public", ".vite", "manifest.json"),
+    path.join(process.cwd(), "client", "dist", ".vite", "manifest.json"),
+    path.join(process.cwd(), "dist", "manifest.json"),
+  ];
+
+  let manifestPath = "";
+  for (const p of manifestPaths) {
+    if (fs.existsSync(p)) {
+      manifestPath = p;
+      break;
+    }
+  }
+
+  if (!manifestPath) {
+    console.error(`Vite manifest not found in any of: ${manifestPaths.join(", ")}`);
     return `<script type="module" src="/src/main.tsx"></script>`;
   }
 
