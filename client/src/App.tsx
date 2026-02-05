@@ -11,8 +11,11 @@ function Router() {
     <Switch>
       {/* SEO Routes */}
       <Route path="/" component={Dashboard} />
+      <Route path="/states" component={Dashboard} />
       <Route path="/state/:stateSlug" component={Dashboard} />
+      <Route path="/metros" component={Dashboard} />
       <Route path="/metro/:metroSlug" component={Dashboard} />
+      <Route path="/crawl-hub" component={Dashboard} />
       
       {/* Fallback to 404 */}
       <Route component={NotFound} />

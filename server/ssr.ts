@@ -149,14 +149,23 @@ function renderHead(meta: SEOMeta): string {
 }
 
 /**
- * In dev: load Vite client entry.
+ * In dev: load Vite client entry with React refresh preamble.
  * In prod: read Vite manifest.json to load hashed assets.
  */
 function renderClientAssets(): string {
   const isProd = process.env.NODE_ENV === "production";
 
   if (!isProd) {
-    return `<script type="module" src="/src/main.tsx"></script>`;
+    return `
+    <script type="module" src="/@vite/client"></script>
+    <script type="module">
+      import RefreshRuntime from '/@react-refresh'
+      RefreshRuntime.injectIntoGlobalHook(window)
+      window.$RefreshReg$ = () => {}
+      window.$RefreshSig$ = () => (type) => type
+      window.__vite_plugin_react_preamble_installed__ = true
+    </script>
+    <script type="module" src="/src/main.tsx"></script>`;
   }
 
   const manifestPath = path.join(CLIENT_DIST_DIR, ".vite", "manifest.json");

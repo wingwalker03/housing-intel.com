@@ -2,19 +2,12 @@ import express, { type Request, Response, NextFunction } from "express";
 import path from "path";
 import { createServer } from "http";
 import { registerRoutes } from "./routes";
+import { setupVite } from "./vite";
 import { serveStatic } from "./static";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-// IMPORTANT: serve client/dist (Vite build output) at "/"
-const clientDist = process.env.CLIENT_DIST_DIR || path.join(process.cwd(), "client", "dist");
-app.use(express.static(clientDist, { index: false }));
-
-// Serve public files (if you keep them separate)
-const clientPublic = path.join(process.cwd(), "client", "public");
-app.use(express.static(clientPublic, { index: false }));
 
 const httpServer = createServer(app);
 
@@ -30,7 +23,7 @@ export function log(message: string, source = "express") {
 
 app.use((req, res, next) => {
   const start = Date.now();
-  const path = req.path;
+  const reqPath = req.path;
   let capturedJsonResponse: Record<string, any> | undefined = undefined;
 
   const originalResJson = res.json;
@@ -41,8 +34,8 @@ app.use((req, res, next) => {
 
   res.on("finish", () => {
     const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
+    if (reqPath.startsWith("/api")) {
+      let logLine = `${req.method} ${reqPath} ${res.statusCode} in ${duration}ms`;
       if (capturedJsonResponse) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
@@ -54,6 +47,7 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Register API and SSR routes first
   await registerRoutes(httpServer, app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -63,10 +57,13 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  // SPA fallback for routes not handled by SSR/API
-  app.get("*", (_req, res) => {
-    res.sendFile(path.join(clientDist, "index.html"));
-  });
+  // In development, use Vite middleware for HMR and serving client files
+  // In production, serve static files from client/dist
+  if (process.env.NODE_ENV === "development") {
+    await setupVite(httpServer, app);
+  } else {
+    serveStatic(app);
+  }
 
   const port = parseInt(process.env.PORT || "5000", 10);
   httpServer.listen(
