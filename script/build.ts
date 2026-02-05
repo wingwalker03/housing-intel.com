@@ -1,6 +1,8 @@
 import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
 import { rm, readFile, writeFile } from "fs/promises";
+import fs from "fs";
+import path from "path";
 
 // server deps to bundle to reduce openat(2) syscalls
 // which helps cold start times
@@ -82,6 +84,13 @@ async function buildAll() {
 `;
   await writeFile("dist/index.cjs", cjsWrapper);
   console.log("created CJS wrapper at dist/index.cjs");
+
+  // Copy seo-data.json to dist for production SSR
+  const seoDataPath = path.resolve(process.cwd(), "server", "seo-data.json");
+  if (fs.existsSync(seoDataPath)) {
+    await fs.promises.copyFile(seoDataPath, path.resolve(process.cwd(), "dist", "seo-data.json"));
+    console.log("copied server/seo-data.json to dist/");
+  }
 }
 
 buildAll().catch((err) => {

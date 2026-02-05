@@ -63,11 +63,27 @@ let seoDataCache: SEOData | null = null;
 export function getSEOData(): SEOData {
   if (seoDataCache) return seoDataCache;
 
-  const dataPath = path.join(_dirname, "seo-data.json");
-  if (fs.existsSync(dataPath)) {
-    seoDataCache = JSON.parse(fs.readFileSync(dataPath, "utf-8"));
-    return seoDataCache!;
+  // In production, the file might be relative to the bundled index.mjs in dist/
+  // In development, it's in server/
+  const possiblePaths = [
+    path.join(_dirname, "seo-data.json"),
+    path.join(process.cwd(), "server", "seo-data.json"),
+    path.join(process.cwd(), "dist", "seo-data.json"),
+  ];
+
+  for (const dataPath of possiblePaths) {
+    if (fs.existsSync(dataPath)) {
+      try {
+        seoDataCache = JSON.parse(fs.readFileSync(dataPath, "utf-8"));
+        console.log(`Loaded SEO data from ${dataPath}`);
+        return seoDataCache!;
+      } catch (err) {
+        console.error(`Error parsing SEO data at ${dataPath}:`, err);
+      }
+    }
   }
+
+  console.warn("No seo-data.json found in any expected location.");
 
   return {
     generatedAt: new Date().toISOString(),
