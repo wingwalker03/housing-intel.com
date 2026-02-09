@@ -5,10 +5,14 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
+import EmbedPage from "@/pages/embed";
 
 function Router() {
   return (
     <Switch>
+      {/* Embed route - minimal chrome, no dashboard wrapper */}
+      <Route path="/embed" component={EmbedPage} />
+
       {/* SEO Routes */}
       <Route path="/" component={Dashboard} />
       <Route path="/states" component={Dashboard} />

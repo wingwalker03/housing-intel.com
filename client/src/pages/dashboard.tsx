@@ -41,6 +41,7 @@ import { Input } from "@/components/ui/input";
 import { Building2, TrendingUp, Map, Info, Maximize2, ArrowLeft, MapPin, Calculator, Activity } from "lucide-react";
 import { SentimentBadge } from "@/components/ui/sentiment-badge";
 import { useMarketSentiment } from "@/hooks/use-housing";
+import { EmbedBuilder } from "@/components/embed-builder";
 import { format, subYears, isSameMonth } from "date-fns";
 
 import { apiRequest } from "@/lib/queryClient";
@@ -703,6 +704,11 @@ export default function Dashboard() {
           </div>
           
           <div className="flex items-center gap-4">
+            <EmbedBuilder
+              currentStateCode={selectedStateCode}
+              currentStateName={selectedStateName}
+              currentMetroName={selectedMetroName}
+            />
             <div className="hidden md:flex items-center text-sm text-muted-foreground mr-2">
               <Info className="w-4 h-4 mr-1.5" />
               <span>Data updated Jan 2026</span>
