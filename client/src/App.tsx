@@ -6,12 +6,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import EmbedPage from "@/pages/embed";
+import EmbedLandingPage from "@/pages/embed-info";
 
 function Router() {
   return (
     <Switch>
       {/* Embed route - minimal chrome, no dashboard wrapper */}
       <Route path="/embed" component={EmbedPage} />
+      <Route path="/embed-info" component={EmbedLandingPage} />
 
       {/* SEO Routes */}
       <Route path="/" component={Dashboard} />

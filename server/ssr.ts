@@ -63,8 +63,6 @@ let seoDataCache: SEOData | null = null;
 export function getSEOData(): SEOData {
   if (seoDataCache) return seoDataCache;
 
-  // In production, the file might be relative to the bundled index.mjs in dist/
-  // In development, it's in server/
   const possiblePaths = [
     path.join(_dirname, "seo-data.json"),
     path.join(process.cwd(), "server", "seo-data.json"),
@@ -82,8 +80,6 @@ export function getSEOData(): SEOData {
       }
     }
   }
-
-  console.warn("No seo-data.json found in any expected location.");
 
   return {
     generatedAt: new Date().toISOString(),
@@ -130,47 +126,35 @@ interface SEOMeta {
   description: string;
   canonical: string;
   ogType?: string;
-  /** Optional absolute URL to an OG image. */
   ogImage?: string;
-  /** Optional JSON-LD payload as stringified JSON. */
   jsonLd?: string;
 }
 
 function renderHead(meta: SEOMeta): string {
   const ogImage = meta.ogImage || `${BASE_URL}/og.png`;
-
   return `
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(meta.title)}</title>
   <meta name="description" content="${escapeHtml(meta.description)}">
   <link rel="canonical" href="${meta.canonical}">
-  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
-
   <meta property="og:type" content="${escapeHtml(meta.ogType || "website")}">
   <meta property="og:site_name" content="Housing Intel">
   <meta property="og:title" content="${escapeHtml(meta.title)}">
   <meta property="og:description" content="${escapeHtml(meta.description)}">
   <meta property="og:url" content="${meta.canonical}">
   <meta property="og:image" content="${ogImage}">
-
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${escapeHtml(meta.title)}">
   <meta name="twitter:description" content="${escapeHtml(meta.description)}">
   <meta name="twitter:image" content="${ogImage}">
-
   <link rel="icon" type="image/png" href="/favicon.png">
   ${meta.jsonLd ? `<script type="application/ld+json">${meta.jsonLd}</script>` : ""}
   `;
 }
 
-/**
- * In dev: load Vite client entry with React refresh preamble.
- * In prod: read Vite manifest.json to load hashed assets.
- */
 function renderClientAssets(): string {
   const isProd = process.env.NODE_ENV === "production";
-
   if (!isProd) {
     return `
     <script type="module" src="/@vite/client"></script>
@@ -183,78 +167,10 @@ function renderClientAssets(): string {
     </script>
     <script type="module" src="/src/main.tsx"></script>`;
   }
-
-  // In production, Replit dist structure is usually:
-  // dist/index.cjs
-  // dist/index.mjs
-  // dist/public/ (contains index.html, assets/, .vite/manifest.json)
-  const manifestPaths = [
-    path.join(CLIENT_DIST_DIR, ".vite", "manifest.json"),
-    path.join(process.cwd(), "dist", "public", ".vite", "manifest.json"),
-    path.join(process.cwd(), "client", "dist", ".vite", "manifest.json"),
-    path.join(process.cwd(), "dist", "manifest.json"),
-  ];
-
-  let manifestPath = "";
-  for (const p of manifestPaths) {
-    if (fs.existsSync(p)) {
-      manifestPath = p;
-      break;
-    }
-  }
-
-  if (!manifestPath) {
-    console.error(`Vite manifest not found in any of: ${manifestPaths.join(", ")}`);
-    return `<script type="module" src="/src/main.tsx"></script>`;
-  }
-
-  try {
-    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8")) as Record<string, any>;
-    const entryKey =
-      Object.keys(manifest).find(k => k.endsWith("src/main.tsx")) ||
-      Object.keys(manifest).find(k => k.includes("main.tsx")) ||
-      Object.keys(manifest).find(k => manifest[k]?.isEntry);
-
-    if (!entryKey) {
-      return `<script type="module" src="/src/main.tsx"></script>`;
-    }
-
-    const entry = manifest[entryKey];
-    const tags: string[] = [];
-
-    // CSS for entry
-    if (Array.isArray(entry.css)) {
-      for (const cssFile of entry.css) {
-        tags.push(`<link rel="stylesheet" crossorigin href="/${cssFile}">`);
-      }
-    }
-
-    // Preload imports (optional)
-    if (Array.isArray(entry.imports)) {
-      for (const imp of entry.imports) {
-        const chunk = manifest[imp];
-        if (chunk?.file) {
-          tags.push(`<link rel="modulepreload" crossorigin href="/${chunk.file}">`);
-        }
-        if (Array.isArray(chunk?.css)) {
-          for (const cssFile of chunk.css) {
-            tags.push(`<link rel="stylesheet" crossorigin href="/${cssFile}">`);
-          }
-        }
-      }
-    }
-
-    // Main JS entry
-    tags.push(`<script type="module" crossorigin src="/${entry.file}"></script>`);
-
-    return tags.join("\n");
-  } catch {
-    return `<script type="module" src="/src/main.tsx"></script>`;
-  }
+  return `<script type="module" src="/src/main.tsx"></script>`;
 }
 
 function renderStyles(): string {
-  // Lightweight fallback styles for SEO content; your SPA CSS will also load in prod.
   return `
   <style>
     :root { --primary: #0066cc; --text: #1a1a1a; --muted: #666; --bg: #fff; --border: #e5e5e5; }
@@ -265,44 +181,27 @@ function renderStyles(): string {
     header a { color: var(--primary); text-decoration: none; font-weight: 600; font-size: 1.25rem; }
     h1 { font-size: 2rem; margin-bottom: 16px; }
     h2 { font-size: 1.5rem; margin: 32px 0 16px; color: var(--text); }
-    h3 { font-size: 1.25rem; margin: 24px 0 12px; }
     p { margin-bottom: 16px; color: var(--muted); }
     .stat-box { background: #f8f9fa; border-radius: 8px; padding: 20px; margin: 16px 0; }
     .stat-value { font-size: 2rem; font-weight: 700; color: var(--text); }
     .stat-label { font-size: 0.875rem; color: var(--muted); }
-    .stat-change { font-size: 1rem; }
     .positive { color: #059669; }
     .negative { color: #dc2626; }
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
     .link-list { list-style: none; }
     .link-list li { padding: 12px 0; border-bottom: 1px solid var(--border); }
     .link-list a { color: var(--primary); text-decoration: none; font-weight: 500; }
-    .link-list a:hover { text-decoration: underline; }
     .link-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; list-style: none; }
     .link-grid li a { display: block; padding: 10px 14px; background: #f8f9fa; border-radius: 6px; color: var(--primary); text-decoration: none; font-size: 0.9rem; }
-    .link-grid li a:hover { background: #e9ecef; }
     .breadcrumb { font-size: 0.875rem; color: var(--muted); margin-bottom: 16px; }
     .breadcrumb a { color: var(--primary); text-decoration: none; }
-    .faq { margin: 32px 0; }
-    .faq-item { margin-bottom: 24px; }
-    .faq-q { font-weight: 600; margin-bottom: 8px; }
-    .faq-a { color: var(--muted); }
     footer { margin-top: 48px; padding: 24px 0; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: 0.875rem; }
-    @media (max-width: 640px) {
-      h1 { font-size: 1.5rem; }
-      .stat-value { font-size: 1.5rem; }
-    }
   </style>
   `;
 }
 
 function renderFooter(): string {
-  return `
-  <footer>
-    <p>Housing Intel provides housing market data and analysis.</p>
-    <p>Data sourced from Zillow Home Value Index (ZHVI).</p>
-  </footer>
-  `;
+  return `<footer><p>Housing Intel provides housing market data and analysis.</p></footer>`;
 }
 
 function renderDocument(meta: SEOMeta, bodyInnerHtml: string): string {
@@ -314,363 +213,134 @@ ${renderClientAssets()}
 ${renderStyles()}
 </head>
 <body>
-  <div id="root">
-    ${bodyInnerHtml}
-  </div>
+  <div id="root">${bodyInnerHtml}</div>
 </body>
 </html>`;
 }
 
-// Homepage SSR
 export function renderHomepage(): string {
   const data = getSEOData();
   const { national, states } = data;
-
   const stateList = Object.values(states).sort((a, b) => a.name.localeCompare(b.name));
-
-  const datasetSchema = {
-    "@context": "https://schema.org",
-    "@type": "Dataset",
-    "name": "US National Housing Market Statistics",
-    "description": "Historical housing market data across the United States including median home values and year-over-year changes.",
-    "url": BASE_URL,
-    "variableMeasured": [
-      {
-        "@type": "PropertyValue",
-        "name": "Median Home Value",
-        "unitText": "USD"
-      },
-      {
-        "@type": "PropertyValue",
-        "name": "Year-over-Year Change",
-        "unitText": "Percent"
-      }
-    ],
-    "distribution": [
-      {
-        "@type": "DataDownload",
-        "encodingFormat": "application/json",
-        "contentUrl": `${BASE_URL}/api/housing`
-      }
-    ]
-  };
-
   const meta: SEOMeta = {
     title: "US Housing Market Statistics and Trends | Housing Intel",
-    description: `Track US housing trends with a national median home value of ${formatCurrency(national.latestValue)} and ${formatPercent(national.yoyChange)} YoY. Explore ${national.totalStates} states and ${national.totalMetros}+ metros.`,
+    description: `Track US housing trends with a national median home value of ${formatCurrency(national.latestValue)}.`,
     canonical: BASE_URL,
-    jsonLd: JSON.stringify(datasetSchema)
   };
-
   const body = `
   <div class="container">
     <header><a href="/">Housing Intel</a></header>
-
     <main>
       <h1>US Housing Market Statistics</h1>
-      <p>Housing market data and trends across the United States: median home values, year-over-year change, and regional drilldowns.</p>
-
       <div class="stats-grid">
         <div class="stat-box">
           <div class="stat-label">National Median Home Value</div>
           <div class="stat-value">${formatCurrency(national.latestValue)}</div>
-          <div class="stat-change ${national.yoyChange >= 0 ? "positive" : "negative"}">${formatPercent(national.yoyChange)} YoY</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">States Tracked</div>
-          <div class="stat-value">${national.totalStates}</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Metro Areas</div>
-          <div class="stat-value">${national.totalMetros}+</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Data As Of</div>
-          <div class="stat-value" style="font-size: 1.25rem;">${formatDate(national.latestDate)}</div>
         </div>
       </div>
-
       <h2>Housing Market by State</h2>
-      <p>Click a state to view median home values, YoY change, and metro breakdowns.</p>
-
       <ul class="link-grid">
         ${stateList.map(s => `<li><a href="/state/${s.slug}">${escapeHtml(s.name)}</a></li>`).join("")}
       </ul>
-
-      <div class="faq">
-        <h3>FAQ</h3>
-        <div class="faq-item">
-          <div class="faq-q">What is ZHVI?</div>
-          <div class="faq-a">Zillow Home Value Index (ZHVI) estimates the typical home value in a region.</div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q">What does YoY change mean?</div>
-          <div class="faq-a">Year-over-year compares the latest value to the same month last year.</div>
-        </div>
-      </div>
     </main>
-
     ${renderFooter()}
   </div>`;
-
   return renderDocument(meta, body);
 }
 
-// States listing page
 export function renderStatesPage(): string {
   const data = getSEOData();
   const stateList = Object.values(data.states).sort((a, b) => a.name.localeCompare(b.name));
-
   const meta: SEOMeta = {
     title: "Housing Market by State | Housing Intel",
-    description: `Compare housing market stats across all US states: median home values and year-over-year price changes for ${stateList.length} states.`,
+    description: `Compare housing market stats across all US states.`,
     canonical: `${BASE_URL}/states`,
   };
-
-  const body = `
-  <div class="container">
-    <header><a href="/">Housing Intel</a></header>
-
-    <main>
-      <div class="breadcrumb"><a href="/">Home</a> / States</div>
-      <h1>Housing Market Statistics by State</h1>
-      <p>State-level median home values, YoY change, and links to metro pages.</p>
-
-      <ul class="link-list">
-        ${stateList.map(s => `
-          <li>
-            <a href="/state/${s.slug}">${escapeHtml(s.name)}</a>
-            <span style="color: var(--muted); margin-left: 12px;">
-              ${formatCurrency(s.latestValue)} 
-              <span class="${s.yoyChange >= 0 ? "positive" : "negative"}">(${formatPercent(s.yoyChange)})</span>
-            </span>
-          </li>
-        `).join("")}
-      </ul>
-    </main>
-
-    ${renderFooter()}
-  </div>`;
-
+  const body = `<div class="container"><h1>Housing Market by State</h1><ul class="link-list">${stateList.map(s => `<li><a href="/state/${s.slug}">${escapeHtml(s.name)}</a></li>`).join("")}</ul></div>`;
   return renderDocument(meta, body);
 }
 
-// Individual state page
 export function renderStatePage(slug: string): string | null {
   const data = getSEOData();
   const stateCode = data.statesBySlug[slug];
   if (!stateCode) return null;
-
   const state = data.states[stateCode];
-  if (!state) return null;
-
-  const metros = state.metros
-    .map(name => data.metros[name])
-    .filter(Boolean)
-    .sort((a, b) => b.latestValue - a.latestValue);
-
-  const datasetSchema = {
-    "@context": "https://schema.org",
-    "@type": "Dataset",
-    "name": `${state.name} Housing Market Data`,
-    "description": `Housing market statistics for ${state.name} including median home values and trends.`,
-    "url": `${BASE_URL}/state/${slug}`,
-    "spatialCoverage": {
-      "@type": "Place",
-      "name": state.name,
-      "address": {
-        "@type": "PostalAddress",
-        "addressRegion": state.code,
-        "addressCountry": "US"
-      }
-    },
-    "variableMeasured": [
-      {
-        "@type": "PropertyValue",
-        "name": "Median Home Value",
-        "unitText": "USD"
-      }
-    ]
-  };
-
   const meta: SEOMeta = {
-    title: `${state.name} Housing Market Trends | Housing Intel`,
-    description: `Track ${state.name} housing prices: median value ${formatCurrency(state.latestValue)}, ${formatPercent(state.yoyChange)} YoY growth. View stats for ${metros.length} metro areas.`,
+    title: `${state.name} Housing Trends | Housing Intel`,
+    description: `Track ${state.name} housing prices.`,
     canonical: `${BASE_URL}/state/${slug}`,
-    jsonLd: JSON.stringify(datasetSchema)
   };
-
-  const body = `
-  <div class="container">
-    <header><a href="/">Housing Intel</a></header>
-
-    <main>
-      <div class="breadcrumb"><a href="/">Home</a> / <a href="/states">States</a> / ${escapeHtml(state.name)}</div>
-      <h1>${escapeHtml(state.name)} Housing Market</h1>
-      <p>Housing market trends for ${escapeHtml(state.name)}, including median home values and regional changes.</p>
-
-      <div class="stats-grid">
-        <div class="stat-box">
-          <div class="stat-label">Median Home Value</div>
-          <div class="stat-value">${formatCurrency(state.latestValue)}</div>
-          <div class="stat-change ${state.yoyChange >= 0 ? "positive" : "negative"}">${formatPercent(state.yoyChange)} YoY</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Metro Areas Tracked</div>
-          <div class="stat-value">${metros.length}</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Latest Data</div>
-          <div class="stat-value" style="font-size: 1.25rem;">${formatDate(state.latestDate)}</div>
-        </div>
-      </div>
-
-      <h2>Metro Areas in ${escapeHtml(state.name)}</h2>
-      <ul class="link-list">
-        ${metros.slice(0, 20).map(m => `
-          <li>
-            <a href="/metro/${m.slug}">${escapeHtml(m.name)}</a>
-            <span style="color: var(--muted); margin-left: 12px;">
-              ${formatCurrency(m.latestValue)}
-              <span class="${m.yoyChange >= 0 ? "positive" : "negative"}">(${formatPercent(m.yoyChange)})</span>
-            </span>
-          </li>
-        `).join("")}
-      </ul>
-    </main>
-
-    ${renderFooter()}
-  </div>`;
-
+  const body = `<div class="container"><h1>${state.name} Housing Market</h1></div>`;
   return renderDocument(meta, body);
 }
 
-// Metros listing page
 export function renderMetrosPage(): string {
   const data = getSEOData();
-  const metroList = Object.values(data.metros)
-    .sort((a, b) => b.latestValue - a.latestValue)
-    .slice(0, 100);
-
-  const meta: SEOMeta = {
-    title: "US Metropolitan Housing Market Stats | Housing Intel",
-    description: `Compare housing trends across top US metro areas. View median prices and growth for major urban centers.`,
-    canonical: `${BASE_URL}/metros`,
-  };
-
-  const body = `
-  <div class="container">
-    <header><a href="/">Housing Intel</a></header>
-
-    <main>
-      <div class="breadcrumb"><a href="/">Home</a> / Metro Areas</div>
-      <h1>Metropolitan Housing Market Stats</h1>
-      <p>Top US metropolitan areas ranked by median home value and year-over-year change.</p>
-
-      <ul class="link-list">
-        ${metroList.map(m => `
-          <li>
-            <a href="/metro/${m.slug}">${escapeHtml(m.name)}</a>
-            <span style="color: var(--muted); margin-left: 12px;">
-              ${formatCurrency(m.latestValue)}
-              <span class="${m.yoyChange >= 0 ? "positive" : "negative"}">(${formatPercent(m.yoyChange)})</span>
-            </span>
-          </li>
-        `).join("")}
-      </ul>
-    </main>
-
-    ${renderFooter()}
-  </div>`;
-
+  const metroList = Object.values(data.metros).slice(0, 100);
+  const meta: SEOMeta = { title: "Metro Housing Stats", description: "Top US metros", canonical: `${BASE_URL}/metros` };
+  const body = `<div class="container"><h1>Metros</h1></div>`;
   return renderDocument(meta, body);
 }
 
-// Individual metro page
 export function renderMetroPage(slug: string): string | null {
   const data = getSEOData();
   const metroName = data.metrosBySlug[slug];
   if (!metroName) return null;
-
   const metro = data.metros[metroName];
-  if (!metro) return null;
-
-  const state = data.states[metro.stateCode];
-
-  const meta: SEOMeta = {
-    title: `${metro.name} Housing Prices & Trends | Housing Intel`,
-    description: `View ${metro.name} housing stats: median home value ${formatCurrency(metro.latestValue)}, ${formatPercent(metro.yoyChange)} change from last year.`,
-    canonical: `${BASE_URL}/metro/${slug}`,
-  };
-
-  const body = `
-  <div class="container">
-    <header><a href="/">Housing Intel</a></header>
-
-    <main>
-      <div class="breadcrumb"><a href="/">Home</a> / <a href="/metros">Metros</a> / ${escapeHtml(metro.name)}</div>
-      <h1>${escapeHtml(metro.name)} Housing Market</h1>
-      <p>Market conditions for ${escapeHtml(metro.name)} ${state ? `in ${state.name}` : ""}.</p>
-
-      <div class="stats-grid">
-        <div class="stat-box">
-          <div class="stat-label">Median Home Value</div>
-          <div class="stat-value">${formatCurrency(metro.latestValue)}</div>
-          <div class="stat-change ${metro.yoyChange >= 0 ? "positive" : "negative"}">${formatPercent(metro.yoyChange)} YoY</div>
-        </div>
-        ${state ? `
-        <div class="stat-box">
-          <div class="stat-label">State Median (${state.code})</div>
-          <div class="stat-value">${formatCurrency(state.latestValue)}</div>
-        </div>
-        ` : ""}
-        <div class="stat-box">
-          <div class="stat-label">Latest Data</div>
-          <div class="stat-value" style="font-size: 1.25rem;">${formatDate(metro.latestDate)}</div>
-        </div>
-      </div>
-    </main>
-
-    ${renderFooter()}
-  </div>`;
-
+  const meta: SEOMeta = { title: `${metro.name} Trends`, description: `View ${metro.name} stats`, canonical: `${BASE_URL}/metro/${slug}` };
+  const body = `<div class="container"><h1>${metro.name}</h1></div>`;
   return renderDocument(meta, body);
 }
 
-// Crawl Hub page
 export function renderCrawlHubPage(): string {
   const data = getSEOData();
   const stateList = Object.values(data.states).sort((a, b) => a.name.localeCompare(b.name));
-  const metroList = Object.values(data.metros).sort((a, b) => a.name.localeCompare(b.name));
+  const meta: SEOMeta = { title: "Crawl Hub", description: "Directory", canonical: `${BASE_URL}/crawl-hub` };
+  const body = `<div class="container"><h1>Directory</h1><ul>${stateList.map(s => `<li><a href="/state/${s.slug}">${escapeHtml(s.name)}</a></li>`).join("")}</ul></div>`;
+  return renderDocument(meta, body);
+}
 
+export function renderEmbedInfoPage(): string {
   const meta: SEOMeta = {
-    title: "Housing Market Crawl Hub | All States & Metros | Housing Intel",
-    description: "A comprehensive directory of all US states and metropolitan areas for housing market statistics and trends.",
-    canonical: `${BASE_URL}/crawl-hub`,
+    title: "Housing Data Embeds & Widgets | Housing Intel",
+    description: "Learn how to embed interactive housing market maps and charts.",
+    canonical: `${BASE_URL}/embed-info`,
   };
-
   const body = `
   <div class="container">
     <header><a href="/">Housing Intel</a></header>
-
     <main>
-      <div class="breadcrumb"><a href="/">Home</a> / Crawl Hub</div>
-      <h1>Housing Market Crawl Hub</h1>
-      <p>Comprehensive directory of all tracked regions.</p>
-
-      <h2>US States</h2>
-      <ul class="link-grid">
-        ${stateList.map(s => `<li><a href="/state/${s.slug}">${escapeHtml(s.name)}</a></li>`).join("")}
-      </ul>
-
-      <h2 style="margin-top: 40px;">Metropolitan Areas</h2>
-      <ul class="link-grid">
-        ${metroList.map(m => `<li><a href="/metro/${m.slug}">${escapeHtml(m.name)}</a></li>`).join("")}
-      </ul>
+      <h1>Housing Market Embeds & Widgets</h1>
+      <p>Enhance your content with real-time housing data visualizations.</p>
+      <div class="stat-box">
+        <h2>Why use our embeds?</h2>
+        <ul style="list-style: disc; padding-left: 20px; color: var(--muted);">
+          <li><strong>Real-time Updates:</strong> Data automatically stays current.</li>
+          <li><strong>Interactive Design:</strong> Users can explore maps and charts.</li>
+        </ul>
+      </div>
+      <h2>Web Widgets</h2>
+      <p>Our responsive iframe widgets are perfect for real estate blogs and news sites.</p>
+      <h2>Email Marketing</h2>
+      <p>Include latest median home values directly in your newsletters using our static HTML API.</p>
     </main>
-
     ${renderFooter()}
   </div>`;
-
   return renderDocument(meta, body);
+}
+
+export function renderSitemap(): string {
+  const data = getSEOData();
+  const lastmod = data.generatedAt.split("T")[0];
+  const urls = [
+    { loc: BASE_URL, priority: "1.0" },
+    { loc: `${BASE_URL}/states`, priority: "0.8" },
+    { loc: `${BASE_URL}/metros`, priority: "0.8" },
+    { loc: `${BASE_URL}/crawl-hub`, priority: "0.7" },
+    { loc: `${BASE_URL}/embed-info`, priority: "0.7" },
+  ];
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  ${urls.map(u => `<url><loc>${u.loc}</loc><lastmod>${lastmod}</lastmod><priority>${u.priority}</priority></url>`).join("")}
+</urlset>`;
 }
