@@ -275,7 +275,7 @@ export default function EmbedPage() {
           </div>
         )}
         {showChart && (
-          <div className={`${view === "both" ? "md:w-1/2 h-1/2 md:h-full" : "w-full h-full"} min-h-0`}>
+          <div className={`${view === "both" ? "md:w-1/2 h-1/2 md:h-full border-t md:border-t-0 md:border-l border-border/40" : "w-full h-full"} min-h-0`}>
             <HousingTrendChart
               data={stats}
               metric={metricParam}

@@ -127,7 +127,7 @@ export function EmbedBuilder({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="both">Map + Chart</SelectItem>
+                    <SelectItem value="both">Map + Chart (Combined)</SelectItem>
                     <SelectItem value="map">Map Only</SelectItem>
                     <SelectItem value="chart">Chart Only</SelectItem>
                   </SelectContent>
