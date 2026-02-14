@@ -256,7 +256,25 @@ export function renderStatesPage(): string {
     description: `Compare housing market stats across all US states.`,
     canonical: `${BASE_URL}/states`,
   };
-  const body = `<div class="container"><h1>Housing Market by State</h1><ul class="link-list">${stateList.map(s => `<li><a href="/state/${s.slug}">${escapeHtml(s.name)}</a></li>`).join("")}</ul></div>`;
+  const body = `
+  <div class="container">
+    <header><a href="/">Housing Intel</a></header>
+    <main>
+      <div class="breadcrumb"><a href="/">Home</a> / States</div>
+      <h1>Housing Market by State</h1>
+      <ul class="link-list">
+        ${stateList.map(s => `
+          <li>
+            <a href="/state/${s.slug}">${escapeHtml(s.name)}</a>
+            <span style="color: var(--muted); margin-left: 12px;">
+              ${formatCurrency(s.latestValue)} 
+            </span>
+          </li>
+        `).join("")}
+      </ul>
+    </main>
+    ${renderFooter()}
+  </div>`;
   return renderDocument(meta, body);
 }
 
@@ -265,20 +283,67 @@ export function renderStatePage(slug: string): string | null {
   const stateCode = data.statesBySlug[slug];
   if (!stateCode) return null;
   const state = data.states[stateCode];
+  
+  const metros = state.metros
+    .map(name => data.metros[name])
+    .filter(Boolean)
+    .sort((a, b) => b.latestValue - a.latestValue);
+
   const meta: SEOMeta = {
     title: `${state.name} Housing Trends | Housing Intel`,
     description: `Track ${state.name} housing prices.`,
     canonical: `${BASE_URL}/state/${slug}`,
   };
-  const body = `<div class="container"><h1>${state.name} Housing Market</h1></div>`;
+  const body = `
+  <div class="container">
+    <header><a href="/">Housing Intel</a></header>
+    <main>
+      <div class="breadcrumb"><a href="/">Home</a> / <a href="/states">States</a> / ${escapeHtml(state.name)}</div>
+      <h1>${escapeHtml(state.name)} Housing Market</h1>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-label">Median Home Value</div>
+          <div class="stat-value">${formatCurrency(state.latestValue)}</div>
+          <div class="stat-change ${state.yoyChange >= 0 ? "positive" : "negative"}">${formatPercent(state.yoyChange)} YoY</div>
+        </div>
+      </div>
+      <h2>Metro Areas in ${escapeHtml(state.name)}</h2>
+      <ul class="link-list">
+        ${metros.map(m => `
+          <li>
+            <a href="/metro/${m.slug}">${escapeHtml(m.name)}</a>
+            <span style="color: var(--muted); margin-left: 12px;">
+              ${formatCurrency(m.latestValue)}
+            </span>
+          </li>
+        `).join("")}
+      </ul>
+    </main>
+    ${renderFooter()}
+  </div>`;
   return renderDocument(meta, body);
 }
 
 export function renderMetrosPage(): string {
   const data = getSEOData();
-  const metroList = Object.values(data.metros).slice(0, 100);
+  const metroList = Object.values(data.metros).sort((a, b) => b.latestValue - a.latestValue).slice(0, 100);
   const meta: SEOMeta = { title: "Metro Housing Stats", description: "Top US metros", canonical: `${BASE_URL}/metros` };
-  const body = `<div class="container"><h1>Metros</h1></div>`;
+  const body = `
+  <div class="container">
+    <header><a href="/">Housing Intel</a></header>
+    <main>
+      <div class="breadcrumb"><a href="/">Home</a> / Metro Areas</div>
+      <h1>Metropolitan Housing Market Stats</h1>
+      <ul class="link-list">
+        ${metroList.map(m => `
+          <li>
+            <a href="/metro/${m.slug}">${escapeHtml(m.name)}</a>
+          </li>
+        `).join("")}
+      </ul>
+    </main>
+    ${renderFooter()}
+  </div>`;
   return renderDocument(meta, body);
 }
 
@@ -287,8 +352,26 @@ export function renderMetroPage(slug: string): string | null {
   const metroName = data.metrosBySlug[slug];
   if (!metroName) return null;
   const metro = data.metros[metroName];
+  const state = data.states[metro.stateCode];
+
   const meta: SEOMeta = { title: `${metro.name} Trends`, description: `View ${metro.name} stats`, canonical: `${BASE_URL}/metro/${slug}` };
-  const body = `<div class="container"><h1>${metro.name}</h1></div>`;
+  const body = `
+  <div class="container">
+    <header><a href="/">Housing Intel</a></header>
+    <main>
+      <div class="breadcrumb"><a href="/">Home</a> / <a href="/metros">Metros</a> / ${escapeHtml(metro.name)}</div>
+      <h1>${escapeHtml(metro.name)} Housing Market</h1>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-label">Median Home Value</div>
+          <div class="stat-value">${formatCurrency(metro.latestValue)}</div>
+          <div class="stat-change ${metro.yoyChange >= 0 ? "positive" : "negative"}">${formatPercent(metro.yoyChange)} YoY</div>
+        </div>
+      </div>
+      ${state ? `<p style="margin-top: 20px;">Return to <a href="/state/${state.slug}" style="color: var(--primary); text-decoration: none; font-weight: 600;">${state.name} State Overview</a></p>` : ""}
+    </main>
+    ${renderFooter()}
+  </div>`;
   return renderDocument(meta, body);
 }
 

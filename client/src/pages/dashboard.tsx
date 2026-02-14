@@ -475,11 +475,18 @@ export default function Dashboard() {
   };
 
   const handleBackToState = () => {
+    if (selectedStateName) {
+      const slug = stateNameToSlug(selectedStateName);
+      setLocation(`/state/${slug}`);
+    } else {
+      handleResetAll();
+    }
     setSelectedMetroName(undefined);
     setSelectedMetroId(undefined);
   };
 
   const handleResetAll = () => {
+    setLocation("/");
     setSelectedStateCode(undefined);
     setSelectedStateName(undefined);
     setSelectedMetroName(undefined);
