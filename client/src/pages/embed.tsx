@@ -240,7 +240,7 @@ export default function EmbedPage() {
 
   return (
     <div className="w-full h-screen flex flex-col bg-background text-foreground overflow-hidden" data-testid="embed-container">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-border/40 bg-background/95 shrink-0">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-border/40 bg-background/95 shrink-0 z-10">
         <div className="flex items-center gap-3">
           <span className="text-sm font-semibold" data-testid="text-embed-title">{displayName}</span>
           <span className="text-xs text-muted-foreground">Median: {latestValue}</span>
@@ -259,9 +259,9 @@ export default function EmbedPage() {
         </a>
       </div>
 
-      <div className={`flex-1 flex ${view === "both" ? "flex-col md:flex-row" : ""} min-h-0 overflow-hidden`}>
+      <div className={`flex-1 flex ${view === "both" ? "flex-col md:flex-row" : "flex-col"} min-h-0 overflow-hidden`}>
         {showMap && (
-          <div className={`${view === "both" ? "md:w-1/2 h-1/2 md:h-full" : "w-full h-full"} min-h-0`}>
+          <div className={`${view === "both" ? "md:w-1/2 h-1/2 md:h-full" : "w-full h-full"} relative min-h-0`}>
             <DrillDownMap
               selectedStateCode={stateCode}
               selectedStateName={stateName}
@@ -275,7 +275,7 @@ export default function EmbedPage() {
           </div>
         )}
         {showChart && (
-          <div className={`${view === "both" ? "md:w-1/2 h-1/2 md:h-full border-t md:border-t-0 md:border-l border-border/40" : "w-full h-full"} min-h-0`}>
+          <div className={`${view === "both" ? "md:w-1/2 h-1/2 md:h-full border-t md:border-t-0 md:border-l border-border/40" : "w-full h-full"} relative min-h-0 bg-background`}>
             <HousingTrendChart
               data={stats}
               metric={metricParam}
