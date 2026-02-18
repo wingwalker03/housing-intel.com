@@ -238,6 +238,29 @@ export function renderHomepage(): string {
           <div class="stat-value">${formatCurrency(national.latestValue)}</div>
         </div>
       </div>
+
+      <section style="margin: 32px 0; padding: 24px; background: #f8f9fa; border-radius: 8px; border: 1px solid var(--border);">
+        <h2 style="margin-top: 0;">Data Methodology</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+          <div>
+            <h3 style="font-size: 1rem; margin-bottom: 8px;">Source: Zillow ZHVI</h3>
+            <p style="font-size: 0.8rem; color: var(--muted);">Representing typical home values in the 35th to 65th percentile range.</p>
+          </div>
+          <div>
+            <h3 style="font-size: 1rem; margin-bottom: 8px;">YoY Growth</h3>
+            <p style="font-size: 0.8rem; color: var(--muted);">((Price_t - Price_t-12) / Price_t-12) * 100. Removes seasonal fluctuations.</p>
+          </div>
+          <div>
+            <h3 style="font-size: 1rem; margin-bottom: 8px;">Update Cycle</h3>
+            <p style="font-size: 0.8rem; color: var(--muted);">Synchronized monthly with official Zillow releases (approx. 15th of month).</p>
+          </div>
+          <div>
+            <h3 style="font-size: 1rem; margin-bottom: 8px;">Limitations</h3>
+            <p style="font-size: 0.8rem; color: var(--muted);">Uses a 3-month moving average of closed sales (30-60 day market lag).</p>
+          </div>
+        </div>
+      </section>
+
       <h2>Housing Market by State</h2>
       <ul class="link-grid">
         ${stateList.map(s => `<li><a href="/state/${s.slug}">${escapeHtml(s.name)}</a></li>`).join("")}
