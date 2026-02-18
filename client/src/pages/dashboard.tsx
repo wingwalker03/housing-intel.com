@@ -1173,6 +1173,73 @@ export default function Dashboard() {
           </div>
         </div>
         
+        <section className="mt-12 mb-8" data-testid="section-methodology">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="p-1.5 bg-primary/10 rounded-lg">
+              <Info className="w-4 h-4 text-primary" />
+            </div>
+            <h3 className="text-lg font-bold font-display tracking-tight text-foreground">Data Methodology</h3>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <Card className="bg-card/30 border-border/40">
+              <CardHeader className="p-3 pb-1">
+                <CardTitle className="text-xs font-semibold flex items-center gap-1.5 text-muted-foreground uppercase tracking-wider">
+                  <BarChart3 className="w-3.5 h-3.5" />
+                  Source
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-3 pt-1">
+                <p className="text-[11px] leading-relaxed text-muted-foreground/80">
+                  Powered by <strong>Zillow ZHVI</strong>, representing typical home values in the 35th-65th percentile.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/30 border-border/40">
+              <CardHeader className="p-3 pb-1">
+                <CardTitle className="text-xs font-semibold flex items-center gap-1.5 text-muted-foreground uppercase tracking-wider">
+                  <TrendingUp className="w-3.5 h-3.5" />
+                  YoY Growth
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-3 pt-1">
+                <p className="text-[11px] leading-relaxed text-muted-foreground/80">
+                  Calculated as <code>((P_t - P_t-12) / P_t-12) * 100</code> to remove seasonal fluctuations.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/30 border-border/40">
+              <CardHeader className="p-3 pb-1">
+                <CardTitle className="text-xs font-semibold flex items-center gap-1.5 text-muted-foreground uppercase tracking-wider">
+                  <Activity className="w-3.5 h-3.5" />
+                  Updates
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-3 pt-1">
+                <p className="text-[11px] leading-relaxed text-muted-foreground/80">
+                  Synchronized monthly with Zillow's official releases, typically around the 15th.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/30 border-border/40">
+              <CardHeader className="p-3 pb-1">
+                <CardTitle className="text-xs font-semibold flex items-center gap-1.5 text-muted-foreground uppercase tracking-wider">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Notes
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-3 pt-1">
+                <p className="text-[11px] leading-relaxed text-muted-foreground/80">
+                  ZHVI uses a 3-month moving average of closed sales (30-60 day market lag).
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
         <SEOContent
           type={seoType}
           stateName={selectedStateName}
