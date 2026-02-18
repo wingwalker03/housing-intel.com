@@ -406,6 +406,26 @@ export function renderEmbedInfoPage(): string {
       <p>Our responsive iframe widgets are perfect for real estate blogs and news sites.</p>
       <h2>Email Marketing</h2>
       <p>Include latest median home values directly in your newsletters using our static HTML API.</p>
+      
+      <hr style="margin: 40px 0; border: 0; border-top: 1px solid var(--border);" />
+      
+      <h2>Methodology</h2>
+      <div style="margin-bottom: 24px;">
+        <h3>Data Source: Zillow ZHVI</h3>
+        <p>Data is powered by the Zillow Home Value Index (ZHVI), a smoothed, seasonally adjusted measure of the typical home value across US regions.</p>
+      </div>
+      <div style="margin-bottom: 24px;">
+        <h3>YoY Calculation</h3>
+        <p>Year-over-year change is calculated as: ((Price_current - Price_year_ago) / Price_year_ago) * 100. This removes seasonality for clearer long-term trends.</p>
+      </div>
+      <div style="margin-bottom: 24px;">
+        <h3>Update Frequency</h3>
+        <p>Our system updates monthly, synchronized with Zillow's data releases (typically around the 15th of each month).</p>
+      </div>
+      <div style="margin-bottom: 24px;">
+        <h3>Limitations</h3>
+        <p>ZHVI reflects a 3-month moving average of closed sales, which may result in a 30-60 day lag relative to real-time market sentiment.</p>
+      </div>
     </main>
     ${renderFooter()}
   </div>`;

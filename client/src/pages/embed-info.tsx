@@ -163,7 +163,7 @@ export default function EmbedLandingPage() {
             </div>
           </div>
 
-          <div id="how-it-works" className="text-center mb-20">
+          <div id="how-it-works" className="text-center mb-32">
             <h2 className="text-3xl font-bold mb-12">How It Works</h2>
             <div className="grid sm:grid-cols-3 gap-8">
               <div className="space-y-4">
@@ -189,6 +189,79 @@ export default function EmbedLandingPage() {
               </div>
             </div>
           </div>
+
+          {/* Methodology Section */}
+          <section className="mb-32">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4">Methodology</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Transparency is key to our data. Here is how we source and calculate the housing statistics shown in our widgets.
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              <Card className="bg-card/50">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <BarChart3 className="w-5 h-5 text-primary" />
+                    </div>
+                    <h3 className="font-bold">Data Source: Zillow ZHVI</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Our data is powered by the <strong>Zillow Home Value Index (ZHVI)</strong>. ZHVI is a smoothed, seasonally adjusted measure of the typical home value and market changes across a given region and housing type. It reflects the typical value for homes in the 35th to 65th percentile range.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-card/50">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-emerald-500/10 rounded-lg">
+                      <TrendingUp className="w-5 h-5 text-emerald-500" />
+                    </div>
+                    <h3 className="font-bold">YoY Calculation</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+                    Year-over-year (YoY) change is Zillow's preferred comparison as it effectively removes seasonality from the data:
+                  </p>
+                  <div className="bg-background/50 p-4 rounded-lg font-mono text-[11px] border border-border/50 text-center">
+                    YoY % = ((Price<sub>t</sub> - Price<sub>t-12</sub>) / Price<sub>t-12</sub>) × 100
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-card/50">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-blue-500/10 rounded-lg">
+                      <Zap className="w-5 h-5 text-blue-500" />
+                    </div>
+                    <h3 className="font-bold">Update Frequency</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Housing Intel synchronizes with Zillow's data releases monthly. New historical data points are typically processed and available by the 15th of each month, reflecting the previous month's finalized market activity.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-card/50">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-amber-500/10 rounded-lg">
+                      <CheckCircle2 className="w-5 h-5 text-amber-500" />
+                    </div>
+                    <h3 className="font-bold">Data Limitations</h3>
+                  </div>
+                  <ul className="text-sm text-muted-foreground space-y-2 list-disc pl-4">
+                    <li><strong>Market Lag:</strong> ZHVI reflects closed sales, representing decisions made 30-60 days prior.</li>
+                    <li><strong>Smoothing:</strong> A 3-month moving average is applied to reduce volatility.</li>
+                    <li><strong>Granularity:</strong> Regional averages may vary from specific neighborhood conditions.</li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+          </section>
         </div>
       </main>
 
