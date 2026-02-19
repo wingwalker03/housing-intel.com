@@ -166,11 +166,16 @@ function CountyRentalMap({
     const range = max - min;
     const normalized = Math.max(0, Math.min(1, (zori - min) / (range || 1)));
 
-    const hue = 220 - normalized * 160;
-    const saturation = 50 + normalized * 30;
-    const lightness = 75 - normalized * 45;
+    // Green (120) for low rent, Red (0) for high rent
+    const hue = 120 - normalized * 120;
+    const saturation = 60 + normalized * 20;
+    const lightness = 65 - normalized * 25;
 
     return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  };
+
+  const formatPriceK = (price: number) => {
+    return `${(price / 1000).toFixed(1)}k`;
   };
 
   const handleBackToNational = () => {
@@ -248,17 +253,17 @@ function CountyRentalMap({
         </div>
       )}
 
-      <div className="absolute bottom-4 left-4 z-10 bg-background/90 backdrop-blur px-3 py-2 rounded-lg border border-border shadow-sm max-w-[220px]">
-        <span className="text-[10px] uppercase font-bold text-muted-foreground block mb-1.5">Monthly Rent</span>
-        <div className="flex items-center gap-1 mb-1">
-          <div className="h-2 flex-1 rounded-sm" style={{
-            background: "linear-gradient(to right, hsl(220, 50%, 75%), hsl(140, 65%, 55%), hsl(60, 80%, 45%))"
+      <div className="absolute bottom-4 left-4 z-10 bg-background/90 backdrop-blur px-3 py-2 rounded-lg border border-border shadow-sm flex flex-col items-center gap-2">
+        <span className="text-[10px] uppercase font-bold text-muted-foreground block text-center">Monthly Rent</span>
+        <div className="flex flex-row-reverse items-center gap-3">
+          <div className="flex flex-col justify-between h-32 text-[10px] text-muted-foreground font-medium py-0.5">
+            <span>${formatPriceK(rentalValues.max)}</span>
+            <span>${formatPriceK(rentalValues.median)}</span>
+            <span>${formatPriceK(rentalValues.min)}</span>
+          </div>
+          <div className="w-2.5 h-32 rounded-full" style={{
+            background: "linear-gradient(to top, hsl(120, 60%, 65%), hsl(60, 70%, 55%), hsl(0, 80%, 40%))"
           }} />
-        </div>
-        <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-          <span>${Math.round(rentalValues.min).toLocaleString()}</span>
-          <span>${Math.round(rentalValues.median).toLocaleString()}</span>
-          <span>${Math.round(rentalValues.max).toLocaleString()}</span>
         </div>
       </div>
 
