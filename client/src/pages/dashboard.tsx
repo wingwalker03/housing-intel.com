@@ -83,7 +83,6 @@ const STATE_NAME_TO_CODE: Record<string, string> = {
 const DATA_URLS = {
   METRO_CSV_URL: "/data/metro_zhvi_LONG_1767920463349.csv", 
   STATE_CSV_URL: "/data/state_zhvi_LONG_copy_paste.csv.csv",
-  COUNTY_ZORI_URL: "/data/county_zori_LONG.csv"
 };
 
 export default function Dashboard() {
@@ -143,21 +142,21 @@ export default function Dashboard() {
         setIsLoadingData(true);
         setDataError(null);
 
-        const [metroRes, stateRes, countyZoriRes] = await Promise.all([
+        const [metroRes, stateRes, countyLatestRes] = await Promise.all([
           fetch(DATA_URLS.METRO_CSV_URL),
           fetch(DATA_URLS.STATE_CSV_URL),
-          fetch(DATA_URLS.COUNTY_ZORI_URL)
+          fetch("/api/county-rental/latest")
         ]);
 
         if (!metroRes.ok) throw new Error(`Failed to fetch metro data: ${metroRes.status} ${metroRes.statusText}`);
         if (!stateRes.ok) throw new Error(`Failed to fetch state data: ${stateRes.status} ${stateRes.statusText}`);
-        if (!countyZoriRes.ok) throw new Error(`Failed to fetch rental data: ${countyZoriRes.status} ${countyZoriRes.statusText}`);
+        if (!countyLatestRes.ok) throw new Error(`Failed to fetch rental data: ${countyLatestRes.status} ${countyLatestRes.statusText}`);
 
-        const [metroCsv, stateCsv, countyZoriCsv] = await Promise.all([
+        const [metroCsv, stateCsv] = await Promise.all([
           metroRes.text(),
           stateRes.text(),
-          countyZoriRes.text()
         ]);
+        const countyLatestJson = await countyLatestRes.json();
 
         const parseMetroCsv = (csv: string): Promise<any[]> => {
           return new Promise((resolve, reject) => {
@@ -181,24 +180,14 @@ export default function Dashboard() {
           });
         };
 
-        const parseCountyZoriCsv = (csv: string): Promise<any[]> => {
-          return new Promise((resolve, reject) => {
-            parse(csv, { columns: true, skip_empty_lines: true }, (err, data) => {
-              if (err) reject(err);
-              else resolve(data);
-            });
-          });
-        };
-
-        const [metroData, stateData, countyZoriParsed] = await Promise.all([
+        const [metroData, stateData] = await Promise.all([
           parseMetroCsv(metroCsv),
           parseStateCsv(stateCsv),
-          parseCountyZoriCsv(countyZoriCsv)
         ]);
 
         setMetroCsvData(metroData);
         setStateCsvData(stateData);
-        setCountyZoriData(countyZoriParsed);
+        setCountyZoriData(countyLatestJson);
       } catch (err: any) {
         console.error("Data loading error:", err);
         setDataError(err.message || "An unknown error occurred while loading data.");
@@ -463,19 +452,19 @@ export default function Dashboard() {
     const lookup: Record<string, number> = {};
     const countyGroups: Record<string, any[]> = {};
 
-    countyZoriData.forEach(row => {
-      const name = (row.RegionName || "").trim();
-      const state = (row.State || "").trim();
-      if (!name || !state) return;
-      const key = `${name}_${state}`;
+    countyZoriData.forEach((row: any) => {
+      const normalizedName = (row.normalizedName || row.normalized_name || "").trim();
+      const state = (row.stateCode || row.state_code || "").trim();
+      if (!normalizedName || !state) return;
+      const key = `${normalizedName}_${state}`;
       if (!countyGroups[key]) countyGroups[key] = [];
       countyGroups[key].push(row);
     });
 
     Object.entries(countyGroups).forEach(([key, rows]) => {
-      rows.sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+      rows.sort((a: any, b: any) => ((a.date || "").localeCompare(b.date || "")));
       const latest = rows[rows.length - 1];
-      const zori = parseFloat(latest.zori);
+      const zori = typeof latest.zori === 'number' ? latest.zori : parseFloat(latest.zori);
       if (!isNaN(zori) && zori > 0) {
         lookup[key] = zori;
       }
@@ -484,51 +473,39 @@ export default function Dashboard() {
     return lookup;
   }, [countyZoriData]);
 
+  const [rentalTrendData, setRentalTrendData] = useState<any[]>([]);
+  const [rentalTrendLoading, setRentalTrendLoading] = useState(false);
+
+  useEffect(() => {
+    if (dataView !== 'rental') return;
+    const fetchTrend = async () => {
+      setRentalTrendLoading(true);
+      try {
+        const stateParam = selectedStateCode && selectedStateCode !== "US" ? `?stateCode=${selectedStateCode}` : "";
+        const res = await fetch(`/api/county-rental/trend${stateParam}`);
+        if (res.ok) {
+          const data = await res.json();
+          setRentalTrendData(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch rental trend:", err);
+      } finally {
+        setRentalTrendLoading(false);
+      }
+    };
+    fetchTrend();
+  }, [dataView, selectedStateCode]);
+
   const rentalStats = useMemo(() => {
-    if (countyZoriData.length === 0 || dataView !== 'rental') return [];
+    if (rentalTrendData.length === 0 || dataView !== 'rental') return [];
 
-    let filtered: any[] = [];
-
-    if (selectedStateCode && selectedStateCode !== "US") {
-      const stateRows = countyZoriData.filter(r => (r.State || "").trim() === selectedStateCode);
-      const dateGroups: Record<string, { sum: number; count: number }> = {};
-      stateRows.forEach(row => {
-        const date = (row.date || "").trim();
-        const zori = parseFloat(row.zori);
-        if (!date || isNaN(zori)) return;
-        if (!dateGroups[date]) dateGroups[date] = { sum: 0, count: 0 };
-        dateGroups[date].sum += zori;
-        dateGroups[date].count += 1;
-      });
-      filtered = Object.entries(dateGroups)
-        .map(([date, data]) => ({
-          date,
-          medianHomeValue: data.sum / data.count,
-          yoyChange: 0,
-          stateCode: selectedStateCode,
-          metroName: "",
-        }))
-        .sort((a, b) => a.date.localeCompare(b.date));
-    } else {
-      const dateGroups: Record<string, { sum: number; count: number }> = {};
-      countyZoriData.forEach(row => {
-        const date = (row.date || "").trim();
-        const zori = parseFloat(row.zori);
-        if (!date || isNaN(zori)) return;
-        if (!dateGroups[date]) dateGroups[date] = { sum: 0, count: 0 };
-        dateGroups[date].sum += zori;
-        dateGroups[date].count += 1;
-      });
-      filtered = Object.entries(dateGroups)
-        .map(([date, data]) => ({
-          date,
-          medianHomeValue: data.sum / data.count,
-          yoyChange: 0,
-          stateCode: "US",
-          metroName: "",
-        }))
-        .sort((a, b) => a.date.localeCompare(b.date));
-    }
+    const filtered = rentalTrendData.map((r: any) => ({
+      date: r.date,
+      medianHomeValue: r.avgZori,
+      yoyChange: 0,
+      stateCode: selectedStateCode || "US",
+      metroName: "",
+    }));
 
     for (let i = 12; i < filtered.length; i++) {
       const cur = filtered[i].medianHomeValue;
@@ -539,7 +516,7 @@ export default function Dashboard() {
     }
 
     return filtered;
-  }, [countyZoriData, dataView, selectedStateCode]);
+  }, [rentalTrendData, dataView, selectedStateCode]);
 
   const activeStats = dataView === 'rental' ? rentalStats : stats;
 

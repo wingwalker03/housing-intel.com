@@ -99,6 +99,20 @@ export const api = {
         })),
       },
     },
+    trend: {
+      method: 'GET' as const,
+      path: '/api/county-rental/trend',
+      input: z.object({
+        stateCode: z.string().optional(),
+      }).optional(),
+      responses: {
+        200: z.array(z.object({
+          date: z.string(),
+          avgZori: z.number(),
+          count: z.number(),
+        })),
+      },
+    },
   },
 };
 

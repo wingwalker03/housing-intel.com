@@ -25,6 +25,7 @@ export interface IStorage {
   saveLeadEmail(data: InsertLeadEmail): Promise<LeadEmail>;
   getCountyRentalStats(stateCode?: string, startDate?: string, endDate?: string): Promise<CountyRentalStat[]>;
   getLatestCountyRentals(stateCode?: string): Promise<{ countyName: string, normalizedName: string, stateCode: string, stateName: string, zori: number, date: string }[]>;
+  getCountyRentalTrend(stateCode?: string): Promise<{ date: string, avgZori: number, count: number }[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -129,6 +130,26 @@ export class DatabaseStorage implements IStorage {
       .where(and(...conditions));
 
     return results.map(r => ({ ...r, date: String(r.date) }));
+  }
+  async getCountyRentalTrend(stateCode?: string): Promise<{ date: string, avgZori: number, count: number }[]> {
+    let conditions = [];
+    if (stateCode) conditions.push(eq(countyRentalStats.stateCode, stateCode));
+
+    const results = await db.select({
+      date: countyRentalStats.date,
+      avgZori: sql<number>`AVG(${countyRentalStats.zori})`,
+      count: sql<number>`COUNT(*)`,
+    })
+      .from(countyRentalStats)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .groupBy(countyRentalStats.date)
+      .orderBy(countyRentalStats.date);
+
+    return results.map(r => ({
+      date: String(r.date),
+      avgZori: Number(r.avgZori),
+      count: Number(r.count),
+    }));
   }
 }
 

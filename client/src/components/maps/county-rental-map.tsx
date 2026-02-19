@@ -128,29 +128,18 @@ function CountyRentalMap({
     };
   }, [countyRentalLookup]);
 
+  const normalizeCountyName = (name: string): string => {
+    return name
+      .replace(/\s+(County|Parish|Borough|City|Census Area|Municipality)$/i, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, "")
+      .trim();
+  };
+
   const findCountyZori = (topoName: string, stateAbbr: string): number | undefined => {
-    const directKey = `${topoName}_${stateAbbr}`;
-    if (countyRentalLookup[directKey] !== undefined) return countyRentalLookup[directKey];
-
-    const withCounty = `${topoName} County_${stateAbbr}`;
-    if (countyRentalLookup[withCounty] !== undefined) return countyRentalLookup[withCounty];
-
-    const withParish = `${topoName} Parish_${stateAbbr}`;
-    if (countyRentalLookup[withParish] !== undefined) return countyRentalLookup[withParish];
-
-    const withBorough = `${topoName} Borough_${stateAbbr}`;
-    if (countyRentalLookup[withBorough] !== undefined) return countyRentalLookup[withBorough];
-
-    const withCity = `${topoName} City_${stateAbbr}`;
-    if (countyRentalLookup[withCity] !== undefined) return countyRentalLookup[withCity];
-
-    const withCensusArea = `${topoName} Census Area_${stateAbbr}`;
-    if (countyRentalLookup[withCensusArea] !== undefined) return countyRentalLookup[withCensusArea];
-
-    const withMunicipality = `${topoName} Municipality_${stateAbbr}`;
-    if (countyRentalLookup[withMunicipality] !== undefined) return countyRentalLookup[withMunicipality];
-
-    return undefined;
+    const normalized = normalizeCountyName(topoName);
+    const key = `${normalized}_${stateAbbr}`;
+    return countyRentalLookup[key];
   };
 
   const getCountyColor = (fipsId: string, countyName: string) => {
