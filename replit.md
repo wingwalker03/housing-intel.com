@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a US housing statistics visualization dashboard built as a full-stack TypeScript application. The project displays historical housing data (median home values, year-over-year changes) across US states using an interactive map and time-series charts. Data is sourced from Zillow CSV files and stored in PostgreSQL.
+This is a US housing statistics visualization dashboard built as a full-stack TypeScript application. The project displays historical housing data (median home values, year-over-year changes) and rental price data (ZORI) across US states and counties using interactive maps and time-series charts. Data is sourced from Zillow CSV files (ZHVI for home values, ZORI for rental prices) and stored in PostgreSQL.
 
 The application follows a monorepo structure with a React frontend (Vite), Express backend, and shared types/schemas between client and server.
 
@@ -20,8 +20,10 @@ Preferred communication style: Simple, everyday language.
 - **UI Components**: shadcn/ui component library (Radix primitives + Tailwind CSS)
 - **Styling**: Tailwind CSS with CSS variables for theming
 - **Visualization**: 
-  - Recharts for time-series line charts
+  - Plotly.js for time-series line charts
   - react-simple-maps with d3-scale for interactive US state choropleth map
+  - County-level choropleth heat map for rental prices (ZORI data)
+  - Housing/Rental toggle switch to switch between data views
 
 ### Backend Architecture
 - **Framework**: Express.js with TypeScript

@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useRoute, useLocation } from "wouter";
 import DrillDownMap from "@/components/maps/drill-down-map";
+import CountyRentalMap from "@/components/maps/county-rental-map";
 import { HousingTrendChart } from "@/components/charts/housing-trend-chart";
 import { StatCard } from "@/components/ui/card-stats";
 import { SEOContent } from "@/components/seo/seo-content";
@@ -38,7 +39,8 @@ import {
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Building2, TrendingUp, Map, Info, Maximize2, ArrowLeft, MapPin, Calculator, Activity, BarChart3, CheckCircle2 } from "lucide-react";
+import { Building2, TrendingUp, Map, Info, Maximize2, ArrowLeft, MapPin, Calculator, Activity, BarChart3, CheckCircle2, Home, DollarSign } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { SentimentBadge } from "@/components/ui/sentiment-badge";
 import { useMarketSentiment } from "@/hooks/use-housing";
 import { EmbedBuilder } from "@/components/embed-builder";
@@ -78,10 +80,10 @@ const STATE_NAME_TO_CODE: Record<string, string> = {
   "United States": "US"
 };
 
-// Google Sheets CSV Export URLs (must be published to web as CSV)
 const DATA_URLS = {
   METRO_CSV_URL: "/data/metro_zhvi_LONG_1767920463349.csv", 
-  STATE_CSV_URL: "/data/state_zhvi_LONG_copy_paste.csv.csv"
+  STATE_CSV_URL: "/data/state_zhvi_LONG_copy_paste.csv.csv",
+  COUNTY_ZORI_URL: "/data/county_zori_LONG.csv"
 };
 
 export default function Dashboard() {
@@ -103,9 +105,11 @@ export default function Dashboard() {
 
   const [metroCsvData, setMetroCsvData] = useState<any[]>([]);
   const [stateCsvData, setStateCsvData] = useState<any[]>([]);
+  const [countyZoriData, setCountyZoriData] = useState<any[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [dataError, setDataError] = useState<string | null>(null);
   const [routeInitialized, setRouteInitialized] = useState(false);
+  const [dataView, setDataView] = useState<'housing' | 'rental'>('housing');
 
   const { toast } = useToast();
   const [email, setEmail] = useState("");
@@ -139,17 +143,20 @@ export default function Dashboard() {
         setIsLoadingData(true);
         setDataError(null);
 
-        const [metroRes, stateRes] = await Promise.all([
+        const [metroRes, stateRes, countyZoriRes] = await Promise.all([
           fetch(DATA_URLS.METRO_CSV_URL),
-          fetch(DATA_URLS.STATE_CSV_URL)
+          fetch(DATA_URLS.STATE_CSV_URL),
+          fetch(DATA_URLS.COUNTY_ZORI_URL)
         ]);
 
         if (!metroRes.ok) throw new Error(`Failed to fetch metro data: ${metroRes.status} ${metroRes.statusText}`);
         if (!stateRes.ok) throw new Error(`Failed to fetch state data: ${stateRes.status} ${stateRes.statusText}`);
+        if (!countyZoriRes.ok) throw new Error(`Failed to fetch rental data: ${countyZoriRes.status} ${countyZoriRes.statusText}`);
 
-        const [metroCsv, stateCsv] = await Promise.all([
+        const [metroCsv, stateCsv, countyZoriCsv] = await Promise.all([
           metroRes.text(),
-          stateRes.text()
+          stateRes.text(),
+          countyZoriRes.text()
         ]);
 
         const parseMetroCsv = (csv: string): Promise<any[]> => {
@@ -174,13 +181,24 @@ export default function Dashboard() {
           });
         };
 
-        const [metroData, stateData] = await Promise.all([
+        const parseCountyZoriCsv = (csv: string): Promise<any[]> => {
+          return new Promise((resolve, reject) => {
+            parse(csv, { columns: true, skip_empty_lines: true }, (err, data) => {
+              if (err) reject(err);
+              else resolve(data);
+            });
+          });
+        };
+
+        const [metroData, stateData, countyZoriParsed] = await Promise.all([
           parseMetroCsv(metroCsv),
-          parseStateCsv(stateCsv)
+          parseStateCsv(stateCsv),
+          parseCountyZoriCsv(countyZoriCsv)
         ]);
 
         setMetroCsvData(metroData);
         setStateCsvData(stateData);
+        setCountyZoriData(countyZoriParsed);
       } catch (err: any) {
         console.error("Data loading error:", err);
         setDataError(err.message || "An unknown error occurred while loading data.");
@@ -440,6 +458,91 @@ export default function Dashboard() {
     return lookup;
   }, [metroCsvData]);
 
+  const countyRentalLookup = useMemo(() => {
+    if (countyZoriData.length === 0) return {};
+    const lookup: Record<string, number> = {};
+    const countyGroups: Record<string, any[]> = {};
+
+    countyZoriData.forEach(row => {
+      const name = (row.RegionName || "").trim();
+      const state = (row.State || "").trim();
+      if (!name || !state) return;
+      const key = `${name}_${state}`;
+      if (!countyGroups[key]) countyGroups[key] = [];
+      countyGroups[key].push(row);
+    });
+
+    Object.entries(countyGroups).forEach(([key, rows]) => {
+      rows.sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+      const latest = rows[rows.length - 1];
+      const zori = parseFloat(latest.zori);
+      if (!isNaN(zori) && zori > 0) {
+        lookup[key] = zori;
+      }
+    });
+
+    return lookup;
+  }, [countyZoriData]);
+
+  const rentalStats = useMemo(() => {
+    if (countyZoriData.length === 0 || dataView !== 'rental') return [];
+
+    let filtered: any[] = [];
+
+    if (selectedStateCode && selectedStateCode !== "US") {
+      const stateRows = countyZoriData.filter(r => (r.State || "").trim() === selectedStateCode);
+      const dateGroups: Record<string, { sum: number; count: number }> = {};
+      stateRows.forEach(row => {
+        const date = (row.date || "").trim();
+        const zori = parseFloat(row.zori);
+        if (!date || isNaN(zori)) return;
+        if (!dateGroups[date]) dateGroups[date] = { sum: 0, count: 0 };
+        dateGroups[date].sum += zori;
+        dateGroups[date].count += 1;
+      });
+      filtered = Object.entries(dateGroups)
+        .map(([date, data]) => ({
+          date,
+          medianHomeValue: data.sum / data.count,
+          yoyChange: 0,
+          stateCode: selectedStateCode,
+          metroName: "",
+        }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+    } else {
+      const dateGroups: Record<string, { sum: number; count: number }> = {};
+      countyZoriData.forEach(row => {
+        const date = (row.date || "").trim();
+        const zori = parseFloat(row.zori);
+        if (!date || isNaN(zori)) return;
+        if (!dateGroups[date]) dateGroups[date] = { sum: 0, count: 0 };
+        dateGroups[date].sum += zori;
+        dateGroups[date].count += 1;
+      });
+      filtered = Object.entries(dateGroups)
+        .map(([date, data]) => ({
+          date,
+          medianHomeValue: data.sum / data.count,
+          yoyChange: 0,
+          stateCode: "US",
+          metroName: "",
+        }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+    }
+
+    for (let i = 12; i < filtered.length; i++) {
+      const cur = filtered[i].medianHomeValue;
+      const prev = filtered[i - 12].medianHomeValue;
+      if (prev > 0) {
+        filtered[i].yoyChange = ((cur - prev) / prev) * 100;
+      }
+    }
+
+    return filtered;
+  }, [countyZoriData, dataView, selectedStateCode]);
+
+  const activeStats = dataView === 'rental' ? rentalStats : stats;
+
   const handleStateSelect = (code: string | undefined, name: string | undefined) => {
     setSelectedStateCode(code);
     setSelectedStateName(name);
@@ -631,13 +734,14 @@ export default function Dashboard() {
     }
   };
 
-  const latestStat = stats.length > 0 ? stats[stats.length - 1] : null;
+  const displayStats = dataView === 'rental' ? rentalStats : stats;
+  const latestStat = displayStats.length > 0 ? displayStats[displayStats.length - 1] : null;
   
   const stat12mAgo = useMemo(() => {
-    if (!latestStat || stats.length < 13) return null;
+    if (!latestStat || displayStats.length < 13) return null;
     const targetDate = subYears(new Date(latestStat.date), 1);
-    return stats.find(s => isSameMonth(new Date(s.date), targetDate)) || null;
-  }, [latestStat, stats]);
+    return displayStats.find(s => isSameMonth(new Date(s.date), targetDate)) || null;
+  }, [latestStat, displayStats]);
 
   const valueYoY = useMemo(() => {
     if (latestStat && stat12mAgo) {
@@ -648,14 +752,13 @@ export default function Dashboard() {
 
   const yoyTrend = useMemo(() => {
     if (!latestStat || !stat12mAgo) return 0;
-    // trend = current YoY % - YoY % from 12 months ago
     return latestStat.yoyChange - stat12mAgo.yoyChange;
   }, [latestStat, stat12mAgo]);
 
   const historicalHigh = useMemo(() => {
-    if (stats.length === 0) return 0;
-    return Math.max(...stats.map(s => s.medianHomeValue));
-  }, [stats]);
+    if (displayStats.length === 0) return 0;
+    return Math.max(...displayStats.map(s => s.medianHomeValue));
+  }, [displayStats]);
 
   const diffFromHigh = useMemo(() => {
     if (!latestStat || historicalHigh === 0) return 0;
@@ -763,8 +866,8 @@ export default function Dashboard() {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <StatCard 
-            title="Current Median Value"
-            value={latestStat ? `$${Math.round(latestStat.medianHomeValue).toLocaleString()}` : "---"}
+            title={dataView === 'rental' ? "Avg Monthly Rent" : "Current Median Value"}
+            value={latestStat ? `$${Math.round(latestStat.medianHomeValue).toLocaleString()}${dataView === 'rental' ? '/mo' : ''}` : "---"}
             trend={valueYoY}
             trendLabel="vs 12 months ago"
             icon="currency"
@@ -780,8 +883,8 @@ export default function Dashboard() {
             isLoading={statsLoading}
           />
           <StatCard 
-            title="Historical High"
-            value={latestStat ? `$${Math.round(historicalHigh).toLocaleString()}` : "---"}
+            title={dataView === 'rental' ? "Historical High Rent" : "Historical High"}
+            value={latestStat ? `$${Math.round(historicalHigh).toLocaleString()}${dataView === 'rental' ? '/mo' : ''}` : "---"}
             trend={diffFromHigh}
             trendLabel="from all-time high"
             icon="percent"
@@ -919,6 +1022,24 @@ export default function Dashboard() {
                   Geographic Selection
                 </h3>
                 <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex items-center gap-2 bg-background border border-border rounded-lg px-3 py-1.5 shadow-sm" data-testid="toggle-data-view">
+                    <Home className={`w-3.5 h-3.5 ${dataView === 'housing' ? 'text-primary' : 'text-muted-foreground'}`} />
+                    <span className={`text-xs font-medium ${dataView === 'housing' ? 'text-foreground' : 'text-muted-foreground'}`}>Housing</span>
+                    <Switch
+                      checked={dataView === 'rental'}
+                      onCheckedChange={(checked) => {
+                        setDataView(checked ? 'rental' : 'housing');
+                        if (checked) {
+                          setSelectedMetroName(undefined);
+                          setSelectedMetroId(undefined);
+                        }
+                      }}
+                      data-testid="switch-data-view"
+                    />
+                    <DollarSign className={`w-3.5 h-3.5 ${dataView === 'rental' ? 'text-primary' : 'text-muted-foreground'}`} />
+                    <span className={`text-xs font-medium ${dataView === 'rental' ? 'text-foreground' : 'text-muted-foreground'}`}>Rental</span>
+                  </div>
+
                   <Select 
                     value={selectedStateCode || "all"} 
                     onValueChange={handleDropdownSelect}
@@ -938,7 +1059,7 @@ export default function Dashboard() {
                     </SelectContent>
                   </Select>
                   
-                  {selectedStateCode && filteredMetros.length > 0 && (
+                  {dataView === 'housing' && selectedStateCode && filteredMetros.length > 0 && (
                     <Select 
                       value={selectedMetroId || "state"} 
                       onValueChange={handleMetroDropdownSelect}
@@ -968,35 +1089,55 @@ export default function Dashboard() {
                     </DialogTrigger>
                     <DialogContent className="max-w-[95vw] w-full h-[90vh] flex flex-col p-6">
                       <DialogHeader className="mb-4">
-                        <DialogTitle>Geographic Selection</DialogTitle>
+                        <DialogTitle>{dataView === 'rental' ? 'County Rental Prices' : 'Geographic Selection'}</DialogTitle>
                       </DialogHeader>
                       <div className="flex-1 min-h-0 bg-muted/20 rounded-lg overflow-hidden">
-                        <DrillDownMap 
-                          selectedStateCode={selectedStateCode}
-                          selectedStateName={selectedStateName}
-                          selectedMetroName={selectedMetroName}
-                          selectedMetroId={selectedMetroId}
-                          metroYoYLookup={metroYoYLookup}
-                          onStateSelect={handleStateSelect}
-                          onMetroSelect={handleMetroSelect}
-                          onReset={handleResetAll}
-                        />
+                        {dataView === 'rental' ? (
+                          <CountyRentalMap
+                            selectedStateCode={selectedStateCode}
+                            selectedStateName={selectedStateName}
+                            countyRentalLookup={countyRentalLookup}
+                            onStateSelect={handleStateSelect}
+                            onReset={handleResetAll}
+                          />
+                        ) : (
+                          <DrillDownMap 
+                            selectedStateCode={selectedStateCode}
+                            selectedStateName={selectedStateName}
+                            selectedMetroName={selectedMetroName}
+                            selectedMetroId={selectedMetroId}
+                            metroYoYLookup={metroYoYLookup}
+                            onStateSelect={handleStateSelect}
+                            onMetroSelect={handleMetroSelect}
+                            onReset={handleResetAll}
+                          />
+                        )}
                       </div>
                     </DialogContent>
                   </Dialog>
                 </div>
               </div>
               <div className="flex-1 min-h-0">
-                <DrillDownMap 
-                  selectedStateCode={selectedStateCode}
-                  selectedStateName={selectedStateName}
-                  selectedMetroName={selectedMetroName}
-                  selectedMetroId={selectedMetroId}
-                  metroYoYLookup={metroYoYLookup}
-                  onStateSelect={handleStateSelect}
-                  onMetroSelect={handleMetroSelect}
-                  onReset={handleResetAll}
-                />
+                {dataView === 'rental' ? (
+                  <CountyRentalMap
+                    selectedStateCode={selectedStateCode}
+                    selectedStateName={selectedStateName}
+                    countyRentalLookup={countyRentalLookup}
+                    onStateSelect={handleStateSelect}
+                    onReset={handleResetAll}
+                  />
+                ) : (
+                  <DrillDownMap 
+                    selectedStateCode={selectedStateCode}
+                    selectedStateName={selectedStateName}
+                    selectedMetroName={selectedMetroName}
+                    selectedMetroId={selectedMetroId}
+                    metroYoYLookup={metroYoYLookup}
+                    onStateSelect={handleStateSelect}
+                    onMetroSelect={handleMetroSelect}
+                    onReset={handleResetAll}
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -1031,12 +1172,13 @@ export default function Dashboard() {
                           </div>
                         ) : (
                           <HousingTrendChart 
-                            data={stats} 
+                            data={displayStats} 
                             metric={metric} 
                             selectedStateName={displayTitle}
                             isLoading={statsLoading}
                             movingAverages={movingAverages}
                             startDate={startDate}
+                            isRentalData={dataView === 'rental'}
                           />
                         )}
                       </div>
@@ -1048,7 +1190,7 @@ export default function Dashboard() {
                     className="w-[160px]"
                   >
                     <TabsList className="grid w-full grid-cols-2 h-8 bg-muted/50">
-                      <TabsTrigger value="medianHomeValue" className="text-xs">Price</TabsTrigger>
+                      <TabsTrigger value="medianHomeValue" className="text-xs">{dataView === 'rental' ? 'Rent' : 'Price'}</TabsTrigger>
                       <TabsTrigger value="yoyChange" className="text-xs">Growth</TabsTrigger>
                     </TabsList>
                   </Tabs>
@@ -1124,12 +1266,13 @@ export default function Dashboard() {
                   </div>
                 ) : (
                   <HousingTrendChart 
-                    data={stats} 
+                    data={displayStats} 
                     metric={metric} 
                     selectedStateName={displayTitle}
                     isLoading={statsLoading}
                     movingAverages={movingAverages}
                     startDate={startDate}
+                    isRentalData={dataView === 'rental'}
                   />
                 )}
               </div>

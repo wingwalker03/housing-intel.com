@@ -23,6 +23,7 @@ interface HousingTrendChartProps {
     ma60: boolean;
   };
   startDate?: string;
+  isRentalData?: boolean;
 }
 
 export function HousingTrendChart({ 
@@ -31,7 +32,8 @@ export function HousingTrendChart({
   selectedStateName,
   isLoading,
   movingAverages = { ma12: false, ma24: false, ma60: false },
-  startDate
+  startDate,
+  isRentalData = false
 }: HousingTrendChartProps) {
   
   const processedData = useMemo(() => {
@@ -259,7 +261,7 @@ export function HousingTrendChart({
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-              {isValueMetric ? 'Median Home Value' : 'Year-over-Year Change'}
+              {isValueMetric ? (isRentalData ? 'Avg Monthly Rent' : 'Median Home Value') : 'Year-over-Year Change'}
             </CardTitle>
             <CardDescription className="text-xs">
               {selectedStateName ? `${selectedStateName}` : 'National Average'}
