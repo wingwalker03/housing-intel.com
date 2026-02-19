@@ -30,9 +30,22 @@ export const leadEmails = pgTable("lead_emails", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const countyRentalStats = pgTable("county_rental_stats", {
+  id: serial("id").primaryKey(),
+  regionId: integer("region_id").notNull(),
+  countyName: text("county_name").notNull(),
+  normalizedName: text("normalized_name").notNull(),
+  stateCode: text("state_code").notNull(),
+  stateName: text("state_name").notNull(),
+  metro: text("metro"),
+  date: date("date").notNull(),
+  zori: real("zori").notNull(),
+});
+
 export const insertHousingStatSchema = createInsertSchema(housingStats).omit({ id: true });
 export const insertMetroStatSchema = createInsertSchema(metroStats).omit({ id: true });
 export const insertLeadEmailSchema = createInsertSchema(leadEmails).omit({ id: true, createdAt: true });
+export const insertCountyRentalStatSchema = createInsertSchema(countyRentalStats).omit({ id: true });
 
 export type HousingStat = typeof housingStats.$inferSelect;
 export type InsertHousingStat = z.infer<typeof insertHousingStatSchema>;
@@ -40,6 +53,8 @@ export type MetroStat = typeof metroStats.$inferSelect;
 export type InsertMetroStat = z.infer<typeof insertMetroStatSchema>;
 export type LeadEmail = typeof leadEmails.$inferSelect;
 export type InsertLeadEmail = z.infer<typeof insertLeadEmailSchema>;
+export type CountyRentalStat = typeof countyRentalStats.$inferSelect;
+export type InsertCountyRentalStat = z.infer<typeof insertCountyRentalStatSchema>;
 
 export * from "./models/chat";
 
