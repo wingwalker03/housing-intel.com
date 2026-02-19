@@ -182,6 +182,8 @@ function CountyRentalMap({
     onStateSelect(undefined, undefined);
   };
 
+  const isZoomedOut = !selectedStateCode;
+
   if (!countiesData || !statesData) {
     return (
       <div className="w-full h-full min-h-[300px] flex items-center justify-center bg-card/50 rounded-xl border border-border/60">
@@ -276,6 +278,7 @@ function CountyRentalMap({
           zoom={zoomConfig.zoom}
           minZoom={1}
           maxZoom={50}
+          translateExtent={isZoomedOut ? [[0, 0], [800, 600]] : undefined}
         >
           {selectedStateCode ? (
             <>

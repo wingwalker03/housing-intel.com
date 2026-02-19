@@ -242,6 +242,8 @@ function DrillDownMap({
     );
   }
 
+  const isZoomedOut = !selectedStateCode;
+
   return (
     <div className="w-full h-full min-h-[300px] flex items-center justify-center bg-card/50 rounded-xl border border-border/60 overflow-hidden relative">
       <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
@@ -358,6 +360,10 @@ function DrillDownMap({
           zoom={zoomConfig.zoom}
           minZoom={1}
           maxZoom={50}
+          onMoveStart={() => {
+            if (isZoomedOut) return false;
+          }}
+          translateExtent={isZoomedOut ? [[0, 0], [800, 600]] : undefined}
         >
           <Geographies geography={statesData}>
             {({ geographies }: { geographies: any[] }) => (
