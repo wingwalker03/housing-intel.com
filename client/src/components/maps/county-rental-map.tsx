@@ -219,7 +219,7 @@ function CountyRentalMap({
         )}
         <div className="bg-background/80 backdrop-blur px-3 py-1.5 rounded-lg border border-border shadow-sm">
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-            {selectedStateName ? `${selectedStateName} - Rental Prices` : "US Rental Prices by County"}
+            {selectedStateName ? `${selectedStateName} - Median Rental Prices` : "US Median Rental Prices by County"}
           </span>
         </div>
       </div>
@@ -238,7 +238,7 @@ function CountyRentalMap({
           </p>
           {hoveredCounty.zori !== undefined ? (
             <p className="text-xs font-medium text-primary">
-              Rent: ${Math.round(hoveredCounty.zori).toLocaleString()}/mo
+            Median Rent: ${Math.round(hoveredCounty.zori).toLocaleString()}/mo
             </p>
           ) : (
             <p className="text-xs text-muted-foreground">No rental data</p>
@@ -254,7 +254,7 @@ function CountyRentalMap({
       )}
 
       <div className="absolute bottom-4 left-4 z-10 bg-background/90 backdrop-blur px-3 py-2 rounded-lg border border-border shadow-sm flex flex-col items-center gap-2">
-        <span className="text-[10px] uppercase font-bold text-muted-foreground block text-center">Monthly Rent</span>
+        <span className="text-[10px] uppercase font-bold text-muted-foreground block text-center">Median Rent</span>
         <div className="flex flex-row-reverse items-center gap-3">
           <div className="flex flex-col justify-between h-32 text-[10px] text-muted-foreground font-medium py-0.5">
             <span>${formatPriceK(rentalValues.max)}</span>

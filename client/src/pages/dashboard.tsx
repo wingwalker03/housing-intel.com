@@ -866,7 +866,7 @@ export default function Dashboard() {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <StatCard 
-            title={dataView === 'rental' ? "Avg Monthly Rent" : "Current Median Value"}
+            title={dataView === 'rental' ? "Avg Median Rent" : "Current Median Value"}
             value={latestStat ? `$${Math.round(latestStat.medianHomeValue).toLocaleString()}${dataView === 'rental' ? '/mo' : ''}` : "---"}
             trend={valueYoY}
             trendLabel="vs 12 months ago"

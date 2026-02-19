@@ -261,7 +261,7 @@ export function HousingTrendChart({
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-              {isValueMetric ? (isRentalData ? 'Avg Monthly Rent' : 'Median Home Value') : 'Year-over-Year Change'}
+              {isValueMetric ? (isRentalData ? 'Avg Median Rent' : 'Median Home Value') : 'Year-over-Year Change'}
             </CardTitle>
             <CardDescription className="text-xs">
               {selectedStateName ? `${selectedStateName}` : 'National Average'}
