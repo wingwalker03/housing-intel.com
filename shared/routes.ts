@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { insertHousingStatSchema, housingStats, metroStats } from './schema';
+import { insertHousingStatSchema, housingStats, metroStats, countyRentalStats } from './schema';
 
 export const errorSchemas = {
   validation: z.object({
@@ -66,6 +66,37 @@ export const api = {
       }),
       responses: {
         200: z.array(z.object({ name: z.string() })),
+      },
+    },
+  },
+  countyRental: {
+    list: {
+      method: 'GET' as const,
+      path: '/api/county-rental',
+      input: z.object({
+        stateCode: z.string().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+      }).optional(),
+      responses: {
+        200: z.array(z.custom<typeof countyRentalStats.$inferSelect>()),
+      },
+    },
+    latest: {
+      method: 'GET' as const,
+      path: '/api/county-rental/latest',
+      input: z.object({
+        stateCode: z.string().optional(),
+      }).optional(),
+      responses: {
+        200: z.array(z.object({
+          countyName: z.string(),
+          normalizedName: z.string(),
+          stateCode: z.string(),
+          stateName: z.string(),
+          zori: z.number(),
+          date: z.string(),
+        })),
       },
     },
   },

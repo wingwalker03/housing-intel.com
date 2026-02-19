@@ -149,5 +149,17 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     res.json(data);
   });
 
+  app.get(api.countyRental.list.path, async (req, res) => {
+    const input = api.countyRental.list.input.parse(req.query);
+    const data = await storage.getCountyRentalStats(input?.stateCode, input?.startDate, input?.endDate);
+    res.json(data);
+  });
+
+  app.get(api.countyRental.latest.path, async (req, res) => {
+    const input = api.countyRental.latest.input.parse(req.query);
+    const data = await storage.getLatestCountyRentals(input?.stateCode);
+    res.json(data);
+  });
+
   return httpServer;
 }

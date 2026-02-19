@@ -3,14 +3,16 @@ import {
   housingStats, 
   metroStats, 
   leadEmails,
+  countyRentalStats,
   type HousingStat, 
   type InsertHousingStat, 
   type MetroStat, 
   type InsertMetroStat,
   type LeadEmail,
-  type InsertLeadEmail
+  type InsertLeadEmail,
+  type CountyRentalStat,
 } from "@shared/schema";
-import { eq, and, gte, lte, desc } from "drizzle-orm";
+import { eq, and, gte, lte, desc, sql } from "drizzle-orm";
 
 export interface IStorage {
   getHousingStats(stateCode?: string, startDate?: string, endDate?: string): Promise<HousingStat[]>;
@@ -21,6 +23,8 @@ export interface IStorage {
   seedMetroData(data: InsertMetroStat[]): Promise<void>;
   clearMetroData(): Promise<void>;
   saveLeadEmail(data: InsertLeadEmail): Promise<LeadEmail>;
+  getCountyRentalStats(stateCode?: string, startDate?: string, endDate?: string): Promise<CountyRentalStat[]>;
+  getLatestCountyRentals(stateCode?: string): Promise<{ countyName: string, normalizedName: string, stateCode: string, stateName: string, zori: number, date: string }[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -91,6 +95,40 @@ export class DatabaseStorage implements IStorage {
   async saveLeadEmail(data: InsertLeadEmail): Promise<LeadEmail> {
     const [result] = await db.insert(leadEmails).values(data).returning();
     return result;
+  }
+
+  async getCountyRentalStats(stateCode?: string, startDate?: string, endDate?: string): Promise<CountyRentalStat[]> {
+    let conditions = [];
+    if (stateCode) conditions.push(eq(countyRentalStats.stateCode, stateCode));
+    if (startDate) conditions.push(gte(countyRentalStats.date, startDate));
+    if (endDate) conditions.push(lte(countyRentalStats.date, endDate));
+
+    return await db.select()
+      .from(countyRentalStats)
+      .where(and(...conditions))
+      .orderBy(countyRentalStats.date);
+  }
+
+  async getLatestCountyRentals(stateCode?: string): Promise<{ countyName: string, normalizedName: string, stateCode: string, stateName: string, zori: number, date: string }[]> {
+    const latestDateSubquery = db
+      .select({ maxDate: sql<string>`MAX(${countyRentalStats.date})` })
+      .from(countyRentalStats);
+
+    let conditions = [eq(countyRentalStats.date, sql`(${latestDateSubquery})`)];
+    if (stateCode) conditions.push(eq(countyRentalStats.stateCode, stateCode));
+
+    const results = await db.select({
+      countyName: countyRentalStats.countyName,
+      normalizedName: countyRentalStats.normalizedName,
+      stateCode: countyRentalStats.stateCode,
+      stateName: countyRentalStats.stateName,
+      zori: countyRentalStats.zori,
+      date: countyRentalStats.date,
+    })
+      .from(countyRentalStats)
+      .where(and(...conditions));
+
+    return results.map(r => ({ ...r, date: String(r.date) }));
   }
 }
 
