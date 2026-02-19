@@ -1219,7 +1219,7 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent className="p-3 pt-1">
                 <p className="text-[11px] leading-relaxed text-muted-foreground/80">
-                  Data reflects the latest Zillow release (February 2026). Synchronized monthly, typically around the 15th.
+                  Data reflects the latest Zillow release (November 2025). Synchronized monthly, typically around the 15th.
                 </p>
               </CardContent>
             </Card>
