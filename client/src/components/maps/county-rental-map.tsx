@@ -130,8 +130,8 @@ function CountyRentalMap({
 
   const normalizeCountyName = (name: string): string => {
     return name
-      .replace(/\s+(County|Parish|Borough|City|Census Area|Municipality)$/i, "")
       .toLowerCase()
+      .replace(/\s+(county|parish|borough|city|census area|municipality)$/g, "")
       .replace(/[^a-z0-9\s]/g, "")
       .trim();
   };
