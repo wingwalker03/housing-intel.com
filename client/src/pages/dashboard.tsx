@@ -39,11 +39,13 @@ import {
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Building2, TrendingUp, Map, Info, Maximize2, ArrowLeft, MapPin, Calculator, Activity, BarChart3, CheckCircle2, Home, DollarSign } from "lucide-react";
+import { Building2, TrendingUp, Map, Info, Maximize2, ArrowLeft, MapPin, Calculator, Activity, BarChart3, CheckCircle2, Home, DollarSign, Code2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { SentimentBadge } from "@/components/ui/sentiment-badge";
 import { useMarketSentiment } from "@/hooks/use-housing";
 import { EmbedBuilder } from "@/components/embed-builder";
+import { ApiDocumentation } from "@/pages/api-docs";
+import { Link } from "wouter";
 import { format, subYears, isSameMonth } from "date-fns";
 
 import { apiRequest } from "@/lib/queryClient";
@@ -1133,6 +1135,36 @@ export default function Dashboard() {
                 </h3>
                 
                 <div className="flex items-center gap-2">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-8 gap-2 border-primary/20 hover:bg-primary/5 transition-colors">
+                        <Code2 className="h-4 w-4" />
+                        API
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                      <ApiDocumentation />
+                    </DialogContent>
+                  </Dialog>
+
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-8 gap-2 border-primary/20 hover:bg-primary/5 transition-colors">
+                        <Maximize2 className="w-4 h-4" />
+                        Embed
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-3xl">
+                      <DialogHeader>
+                        <DialogTitle>Embed this Visualization</DialogTitle>
+                      </DialogHeader>
+                      <EmbedBuilder 
+                        stateCode={selectedStateCode} 
+                        metroName={selectedMetroName} 
+                      />
+                    </DialogContent>
+                  </Dialog>
+
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button variant="ghost" size="icon" className="h-8 w-8">

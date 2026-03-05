@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import EmbedPage from "@/pages/embed";
 import EmbedLandingPage from "@/pages/embed-info";
+import { ApiDocumentation } from "@/pages/api-docs";
 
 function Router() {
   return (
@@ -14,6 +15,7 @@ function Router() {
       {/* Embed route - minimal chrome, no dashboard wrapper */}
       <Route path="/embed" component={EmbedPage} />
       <Route path="/embed-info" component={EmbedLandingPage} />
+      <Route path="/api-docs" component={ApiDocumentation} />
 
       {/* SEO Routes */}
       <Route path="/" component={Dashboard} />
