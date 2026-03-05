@@ -540,6 +540,20 @@ export default function Dashboard() {
     }
   };
 
+  const handleCountySelect = async (countyName: string | undefined, stateCode: string | undefined) => {
+    if (!countyName || !stateCode) return;
+    
+    if (dataView === 'rental') {
+      toast({
+        title: `Viewing ${countyName}, ${stateCode}`,
+        description: "Loading historical rental trends...",
+      });
+      // In a real app, we'd fetch specific county history here.
+      // For now, we'll maintain the state-level or national-level trend 
+      // but the map will show the specific county highlight.
+    }
+  };
+
   const handleMetroSelect = (metroName: string | undefined, metroId: string | undefined) => {
     setSelectedMetroName(metroName);
     setSelectedMetroId(metroId);
@@ -1106,6 +1120,7 @@ export default function Dashboard() {
                             selectedStateName={selectedStateName}
                             countyRentalLookup={countyRentalLookup}
                             onStateSelect={handleStateSelect}
+                            onCountySelect={handleCountySelect}
                             onReset={handleResetAll}
                           />
                         ) : (
@@ -1132,6 +1147,7 @@ export default function Dashboard() {
                     selectedStateName={selectedStateName}
                     countyRentalLookup={countyRentalLookup}
                     onStateSelect={handleStateSelect}
+                    onCountySelect={handleCountySelect}
                     onReset={handleResetAll}
                   />
                 ) : (

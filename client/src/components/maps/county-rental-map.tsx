@@ -7,9 +7,13 @@ import {
 } from "react-simple-maps";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, RotateCcw } from "lucide-react";
+import { parse } from "csv-parse/browser/esm/sync";
 
 const US_COUNTIES_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json";
 const US_STATES_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
+const LATEST_RENTAL_CSV = "/data/County_zori_latest_month_LONG_geoid.csv";
+
+const DEBUG_RENTAL_MAP = true;
 
 const fipsToAbbr: Record<string, string> = {
   "01": "AL", "02": "AK", "04": "AZ", "05": "AR", "06": "CA", "08": "CO", "09": "CT", "10": "DE",
@@ -94,10 +98,12 @@ function CountyRentalMap({
 }: CountyRentalMapProps) {
   const [countiesData, setCountiesData] = useState<any>(null);
   const [statesData, setStatesData] = useState<any>(null);
+  const [latestRentalData, setLatestRentalData] = useState<Record<string, { zori: number, date: string }>>({});
   const [hoveredCounty, setHoveredCounty] = useState<{
     name: string;
     state: string;
     zori?: number;
+    date?: string;
     x: number;
     y: number;
   } | null>(null);
@@ -107,9 +113,37 @@ function CountyRentalMap({
     Promise.all([
       fetch(US_COUNTIES_URL).then(r => r.json()),
       fetch(US_STATES_URL).then(r => r.json()),
-    ]).then(([counties, states]) => {
+      fetch(LATEST_RENTAL_CSV).then(r => r.text()).then(csv => {
+        try {
+          const records = parse(csv, { columns: true, skip_empty_lines: true });
+          const lookup: Record<string, { zori: number, date: string }> = {};
+          records.forEach((r: any) => {
+            if (r.geoid) {
+              lookup[r.geoid] = { zori: parseFloat(r.zori), date: r.date };
+            }
+          });
+          return lookup;
+        } catch (e) {
+          console.error("Failed to parse latest rental CSV:", e);
+          return {};
+        }
+      })
+    ]).then(([counties, states, rentalLookup]) => {
       setCountiesData(counties);
       setStatesData(states);
+      setLatestRentalData(rentalLookup);
+
+      if (DEBUG_RENTAL_MAP) {
+        const features = counties.objects.counties.geometries;
+        const matched = features.filter((f: any) => rentalLookup[f.id.padStart(5, "0")]);
+        const unmatched = features.filter((f: any) => !rentalLookup[f.id.padStart(5, "0")]);
+        console.log(`[RentalMap Debug] Total features: ${features.length}`);
+        console.log(`[RentalMap Debug] Matched latest-month rows: ${matched.length}`);
+        console.log(`[RentalMap Debug] Unmatched GEOIDs: ${unmatched.length}`);
+        if (unmatched.length > 0) {
+          console.log("[RentalMap Debug] Top 20 unmatched names:", unmatched.slice(0, 20).map((f: any) => f.properties.name));
+        }
+      }
     });
   }, []);
 
@@ -118,7 +152,7 @@ function CountyRentalMap({
     : { center: [-96, 38] as [number, number], zoom: 1 };
 
   const rentalValues = useMemo(() => {
-    const vals = Object.values(countyRentalLookup).filter(v => v > 0);
+    const vals = Object.values(latestRentalData).map(v => v.zori).filter(v => v > 0);
     if (vals.length === 0) return { min: 500, max: 3000, median: 1500 };
     vals.sort((a, b) => a - b);
     return {
@@ -126,31 +160,13 @@ function CountyRentalMap({
       max: vals[Math.floor(vals.length * 0.95)],
       median: vals[Math.floor(vals.length * 0.5)],
     };
-  }, [countyRentalLookup]);
+  }, [latestRentalData]);
 
-  const normalizeCountyName = (name: string): string => {
-    return name
-      .toLowerCase()
-      .replace(/\s+(county|parish|borough|city|census area|municipality)$/g, "")
-      .replace(/[^a-z0-9\s]/g, "")
-      .trim();
-  };
+  const getCountyColor = (geoid: string) => {
+    const data = latestRentalData[geoid.padStart(5, "0")];
+    if (!data) return "hsl(var(--muted) / 0.15)";
 
-  const findCountyZori = (topoName: string, stateAbbr: string): number | undefined => {
-    const normalized = normalizeCountyName(topoName);
-    const key = `${normalized}_${stateAbbr}`;
-    return countyRentalLookup[key];
-  };
-
-  const getCountyColor = (fipsId: string, countyName: string) => {
-    const stateFips = fipsId.substring(0, 2);
-    const stateAbbr = fipsToAbbr[stateFips];
-    if (!stateAbbr) return "hsl(var(--muted) / 0.3)";
-
-    const zori = findCountyZori(countyName, stateAbbr);
-
-    if (zori === undefined) return "hsl(var(--muted) / 0.3)";
-
+    const zori = data.zori;
     const { min, max } = rentalValues;
     const range = max - min;
     const normalized = Math.max(0, Math.min(1, (zori - min) / (range || 1)));
@@ -228,11 +244,16 @@ function CountyRentalMap({
             {hoveredCounty.name}, {hoveredCounty.state}
           </p>
           {hoveredCounty.zori !== undefined ? (
-            <p className="text-xs font-medium text-primary">
-            Median Rent: ${Math.round(hoveredCounty.zori).toLocaleString()}/mo
-            </p>
+            <div className="flex flex-col">
+              <p className="text-xs font-medium text-primary">
+                Median Rent: ${Math.round(hoveredCounty.zori).toLocaleString()}/mo
+              </p>
+              <p className="text-[10px] text-muted-foreground italic">
+                as of {hoveredCounty.date}
+              </p>
+            </div>
           ) : (
-            <p className="text-xs text-muted-foreground">No rental data</p>
+            <p className="text-xs text-muted-foreground">No data</p>
           )}
         </div>
       )}
@@ -275,7 +296,7 @@ function CountyRentalMap({
                 {({ geographies }: { geographies: any[] }) => (
                   <>
                     {geographies.map((geo: any) => {
-                      const fipsId = geo.id;
+                      const fipsId = geo.id.padStart(5, "0");
                       const stateFips = fipsId.substring(0, 2);
                       const stateAbbr = fipsToAbbr[stateFips];
                       const countyName = geo.properties?.name || "";
@@ -310,8 +331,8 @@ function CountyRentalMap({
                         );
                       }
 
-                      const fillColor = getCountyColor(fipsId, countyName);
-                      const zori = findCountyZori(countyName, stateAbbr);
+                      const fillColor = getCountyColor(fipsId);
+                      const rentalInfo = latestRentalData[fipsId];
 
                       return (
                         <Geography
@@ -323,7 +344,8 @@ function CountyRentalMap({
                             setHoveredCounty({
                               name: countyName,
                               state: stateAbbr,
-                              zori,
+                              zori: rentalInfo?.zori,
+                              date: rentalInfo?.date,
                               x: evt.clientX,
                               y: evt.clientY,
                             });
@@ -412,12 +434,12 @@ function CountyRentalMap({
                 {({ geographies }: { geographies: any[] }) => (
                   <>
                     {geographies.map((geo: any) => {
-                      const fipsId = geo.id;
+                      const fipsId = geo.id.padStart(5, "0");
                       const countyName = geo.properties?.name || "";
-                      const fillColor = getCountyColor(fipsId, countyName);
+                      const fillColor = getCountyColor(fipsId);
                       const stateFips = fipsId.substring(0, 2);
                       const stateAbbr = fipsToAbbr[stateFips] || "";
-                      const zori = findCountyZori(countyName, stateAbbr);
+                      const rentalInfo = latestRentalData[fipsId];
 
                       return (
                         <Geography
@@ -428,7 +450,8 @@ function CountyRentalMap({
                             setHoveredCounty({
                               name: countyName,
                               state: stateAbbr,
-                              zori,
+                              zori: rentalInfo?.zori,
+                              date: rentalInfo?.date,
                               x: evt.clientX,
                               y: evt.clientY,
                             });
