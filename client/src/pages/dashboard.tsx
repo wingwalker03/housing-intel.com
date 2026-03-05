@@ -794,12 +794,39 @@ export default function Dashboard() {
             </h1>
           </div>
           
-          <div className="flex items-center gap-4">
-            <EmbedBuilder
-              currentStateCode={selectedStateCode}
-              currentStateName={selectedStateName}
-              currentMetroName={selectedMetroName}
-            />
+          <div className="flex items-center gap-2">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 gap-2 text-muted-foreground hover:text-foreground">
+                  <Code2 className="h-4 w-4" />
+                  <span className="hidden sm:inline">API</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <ApiDocumentation />
+              </DialogContent>
+            </Dialog>
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 gap-2 text-muted-foreground hover:text-foreground">
+                  <Maximize2 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Embed</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl">
+                <DialogHeader>
+                  <DialogTitle>Embed this Visualization</DialogTitle>
+                </DialogHeader>
+                <EmbedBuilder 
+                  stateCode={selectedStateCode} 
+                  metroName={selectedMetroName} 
+                />
+              </DialogContent>
+            </Dialog>
+
+            <div className="h-4 w-[1px] bg-border mx-1 hidden sm:block" />
+
             <div className="hidden md:flex items-center text-sm text-muted-foreground mr-2">
               <Info className="w-4 h-4 mr-1.5" />
               <span>Data updated Jan 2026</span>
@@ -1135,36 +1162,6 @@ export default function Dashboard() {
                 </h3>
                 
                 <div className="flex items-center gap-2">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="h-8 gap-2 border-primary/20 hover:bg-primary/5 transition-colors">
-                        <Code2 className="h-4 w-4" />
-                        API
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                      <ApiDocumentation />
-                    </DialogContent>
-                  </Dialog>
-
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="h-8 gap-2 border-primary/20 hover:bg-primary/5 transition-colors">
-                        <Maximize2 className="w-4 h-4" />
-                        Embed
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-3xl">
-                      <DialogHeader>
-                        <DialogTitle>Embed this Visualization</DialogTitle>
-                      </DialogHeader>
-                      <EmbedBuilder 
-                        stateCode={selectedStateCode} 
-                        metroName={selectedMetroName} 
-                      />
-                    </DialogContent>
-                  </Dialog>
-
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
