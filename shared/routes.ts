@@ -118,10 +118,24 @@ export const api = {
       path: '/api/summary',
       responses: {
         200: z.object({
-          nationalMedianHomeValue: z.number(),
-          latestDate: z.string(),
-          totalStatesTracked: z.number(),
-          totalMetrosTracked: z.number(),
+          national: z.object({
+            medianHomeValue: z.number(),
+            latestDate: z.string(),
+            totalStates: z.number(),
+            totalMetros: z.number(),
+          }),
+          states: z.array(z.object({
+            code: z.string(),
+            name: z.string(),
+            latestValue: z.number(),
+            latestDate: z.string(),
+          })),
+          topMetros: z.array(z.object({
+            name: z.string(),
+            stateCode: z.string(),
+            latestValue: z.number(),
+            latestDate: z.string(),
+          })),
         }),
       },
     },

@@ -7,16 +7,7 @@ import { api } from "@shared/routes";
 import { insertLeadEmailSchema } from "@shared/schema";
 import multer from "multer";
 import { parse } from "csv-parse";
-import { 
-  renderHomepage, 
-  renderStatePage, 
-  renderMetroPage, 
-  renderStatesPage, 
-  renderMetrosPage, 
-  renderCrawlHubPage, 
-  renderEmbedInfoPage, 
-  renderSitemap 
-} from "./ssr";
+import { renderHomepage, renderStatePage, renderMetroPage, renderStatesPage, renderMetrosPage, renderCrawlHubPage, renderEmbedInfoPage, renderSitemap, getSEOData } from "./ssr";
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -178,33 +169,37 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   app.get('/api/summary', async (_req, res) => {
     try {
-      const states = await storage.getAllStates();
-      const nationalData = await storage.getHousingStats('US');
-      let latestValue = 0;
-      let latestDate = "";
-
-      if (nationalData.length > 0) {
-        const latest = nationalData[nationalData.length - 1];
-        latestValue = latest.medianHomeValue;
-        latestDate = String(latest.date);
-      } else {
-        // Fallback: aggregate from states
-        const allStats = await storage.getHousingStats();
-        if (allStats.length > 0) {
-          const dates = [...new Set(allStats.map(s => String(s.date)))].sort();
-          latestDate = dates[dates.length - 1];
-          const latestStats = allStats.filter(s => String(s.date) === latestDate);
-          latestValue = Math.round(latestStats.reduce((sum, s) => sum + s.medianHomeValue, 0) / latestStats.length);
-        }
-      }
+      const seoData = getSEOData();
       
+      const states = Object.values(seoData.states).map(s => ({
+        code: s.code,
+        name: s.name,
+        latestValue: s.latestValue,
+        latestDate: s.latestDate
+      }));
+
+      const topMetros = Object.values(seoData.metros)
+        .sort((a, b) => b.latestValue - a.latestValue)
+        .slice(0, 50)
+        .map(m => ({
+          name: m.name,
+          stateCode: m.stateCode,
+          latestValue: m.latestValue,
+          latestDate: m.latestDate
+        }));
+
       res.json({
-        nationalMedianHomeValue: latestValue,
-        latestDate: latestDate,
-        totalStatesTracked: states.length,
-        totalMetrosTracked: 895, 
+        national: {
+          medianHomeValue: seoData.national.latestValue,
+          latestDate: seoData.national.latestDate,
+          totalStates: seoData.national.totalStates,
+          totalMetros: seoData.national.totalMetros,
+        },
+        states,
+        topMetros
       });
     } catch (err) {
+      console.error("Summary API Error:", err);
       res.status(500).json({ message: "Internal server error" });
     }
   });

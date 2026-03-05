@@ -170,12 +170,11 @@ function renderClientAssets(): string {
 
   // In production, find the main JS file from dist/public/assets
   try {
-    const isProd = process.env.NODE_ENV === "production";
     const distPublic = path.resolve(process.cwd(), "dist", "public", "assets");
     const distPublicAlt = path.resolve(process.cwd(), "server", "..", "dist", "public", "assets");
     const searchPath = fs.existsSync(distPublic) ? distPublic : (fs.existsSync(distPublicAlt) ? distPublicAlt : null);
     
-    if (isProd && searchPath) {
+    if (searchPath) {
       const files = fs.readdirSync(searchPath);
       const mainJs = files.find(f => f.startsWith("index-") && f.endsWith(".js"));
       const mainCss = files.find(f => f.startsWith("index-") && f.endsWith(".css"));
@@ -189,6 +188,7 @@ function renderClientAssets(): string {
     console.error("Error reading production assets:", err);
   }
   
+  // Final fallback if we are in prod but can't find hashed files (unlikely with correct distPath)
   return `<script type="module" src="/src/main.tsx"></script>`;
 }
 
