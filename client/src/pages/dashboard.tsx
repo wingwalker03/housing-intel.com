@@ -518,7 +518,9 @@ export default function Dashboard() {
     return filtered;
   }, [rentalTrendData, dataView, selectedStateCode]);
 
-  const activeStats = dataView === 'rental' ? rentalStats : stats;
+  const activeStats = useMemo(() => {
+    return dataView === 'rental' ? rentalStats : stats;
+  }, [dataView, rentalStats, stats]);
 
   const handleStateSelect = (code: string | undefined, name: string | undefined) => {
     setSelectedStateCode(code);
