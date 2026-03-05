@@ -30,7 +30,11 @@ export function serveStatic(app: Express) {
   // Fallback for SPA routes
   app.get("*", (req, res, next) => {
     // Skip if it looks like an API or file request
+    // IMPORTANT: Ensure /api/* is never handled by SPA fallback
     if (req.path.startsWith("/api") || req.path.includes(".")) {
+      if (req.path.startsWith("/api")) {
+        return res.status(404).json({ message: `API route ${req.path} not found` });
+      }
       return next();
     }
     const indexHtml = path.join(finalDistPath, "index.html");

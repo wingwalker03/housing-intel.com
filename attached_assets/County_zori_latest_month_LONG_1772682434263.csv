@@ -1,0 +1,1288 @@
+RegionID,SizeRank,RegionName,RegionType,StateName,State,Metro,date,zori
+66,146,Ada County,county,ID,ID,"Boise City, ID",2026-01-31,1806.956143
+351,1630,Adair County,county,MO,MO,"Kirksville, MO",2026-01-31,907.4444444
+353,139,Adams County,county,CO,CO,"Denver-Aurora-Lakewood, CO",2026-01-31,1827.215394
+356,824,Adams County,county,IL,IL,"Quincy, IL-MO",2026-01-31,1036.805556
+362,591,Adams County,county,PA,PA,"Gettysburg, PA",2026-01-31,1251.458333
+365,397,Aiken County,county,SC,SC,"Augusta-Richmond County, GA-SC",2026-01-31,1463.04092
+1509,251,Alachua County,county,FL,FL,"Gainesville, FL",2026-01-31,1656.900348
+2117,390,Alamance County,county,NC,NC,"Burlington, NC",2026-01-31,1414.218084
+1510,19,Alameda County,county,CA,CA,"San Francisco-Oakland-Berkeley, CA",2026-01-31,2724.441151
+1511,2076,Alamosa County,county,CO,CO,,2026-01-31,1187.5
+823,225,Albany County,county,NY,NY,"Albany-Schenectady-Troy, NY",2026-01-31,1619.12517
+824,1270,Albany County,county,WY,WY,"Laramie, WY",2026-01-31,1162.324786
+2608,552,Albemarle County,county,VA,VA,"Charlottesville, VA",2026-01-31,1978.46767
+3253,422,Alexandria City,county,VA,VA,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,2280.474
+1513,528,Allegan County,county,MI,MI,"Holland, MI",2026-01-31,1526.25
+2118,786,Allegany County,county,MD,MD,"Cumberland, MD-WV",2026-01-31,1016.071429
+2614,35,Allegheny County,county,PA,PA,"Pittsburgh, PA",2026-01-31,1488.549001
+367,185,Allen County,county,IN,IN,"Fort Wayne, IN",2026-01-31,1148.500522
+371,598,Allen County,county,OH,OH,"Lima, OH",2026-01-31,1124.305556
+829,1200,Amador County,county,CA,CA,,2026-01-31,1908.333333
+1514,1425,Amherst County,county,VA,VA,"Lynchburg, VA",2026-01-31,1059.444444
+2616,239,Anchorage Borough,county,AK,AK,"Anchorage, AK",2026-01-31,1691.392799
+2121,1715,Anderson County,county,KY,KY,"Frankfort, KY",2026-01-31,1237.5
+2122,335,Anderson County,county,SC,SC,"Greenville-Anderson, SC",2026-01-31,1423.771696
+2123,737,Anderson County,county,TN,TN,"Knoxville, TN",2026-01-31,1594.517172
+2124,907,Anderson County,county,TX,TX,"Palestine, TX",2026-01-31,1377.25
+3151,556,Androscoggin County,county,ME,ME,"Lewiston-Auburn, ME",2026-01-31,1506.388889
+2125,675,Angelina County,county,TX,TX,"Lufkin, TX",2026-01-31,1363.888889
+3152,115,Anne Arundel County,county,MD,MD,"Baltimore-Columbia-Towson, MD",2026-01-31,2209.979453
+373,198,Anoka County,county,MN,MN,"Minneapolis-St. Paul-Bloomington, MN-WI",2026-01-31,1642.046185
+1517,1687,Aransas County,county,TX,TX,"Rockport, TX",2026-01-31,1609.111111
+2127,104,Arapahoe County,county,CO,CO,"Denver-Aurora-Lakewood, CO",2026-01-31,1737.600406
+2619,287,Arlington County,county,VA,VA,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,2572.364982
+2622,806,Aroostook County,county,ME,ME,,2026-01-31,1008.333333
+2623,512,Ascension Parish,county,LA,LA,"Baton Rouge, LA",2026-01-31,1872.090428
+1519,963,Ashland County,county,OH,OH,"Ashland, OH",2026-01-31,909.6944444
+840,1761,Asotin County,county,WA,WA,"Lewiston, ID-WA",2026-01-31,1200.0
+2129,1025,Atascosa County,county,TX,TX,"San Antonio-New Braunfels, TX",2026-01-31,1335.0
+841,856,Athens County,county,OH,OH,"Athens, OH",2026-01-31,1130.972222
+2133,252,Atlantic County,county,NJ,NJ,"Atlantic City-Hammonton, NJ",2026-01-31,2214.889828
+1523,734,Augusta County,county,VA,VA,"Staunton, VA",2026-01-31,1394.603175
+844,1466,Austin County,county,TX,TX,"Houston-The Woodlands-Sugar Land, TX",2026-01-31,1700.0
+1524,904,Autauga County,county,AL,AL,"Montgomery, AL",2026-01-31,1870.383333
+376,1998,Avery County,county,NC,NC,,2026-01-31,2200.0
+1525,302,Baldwin County,county,AL,AL,"Daphne-Fairhope-Foley, AL",2026-01-31,1707.76779
+1526,1114,Baldwin County,county,GA,GA,"Milledgeville, GA",2026-01-31,1074.583333
+3236,113,Baltimore City,county,MD,MD,"Baltimore-Columbia-Towson, MD",2026-01-31,1713.807668
+2626,73,Baltimore County,county,MD,MD,"Baltimore-Columbia-Towson, MD",2026-01-31,1701.352085
+1529,1825,Bandera County,county,TX,TX,"San Antonio-New Braunfels, TX",2026-01-31,1405.555556
+381,1974,Banks County,county,GA,GA,,2026-01-31,1465.75
+1530,676,Bannock County,county,ID,ID,"Pocatello, ID",2026-01-31,1069.353276
+2885,300,Barnstable County,county,MA,MA,"Barnstable Town, MA",2026-01-31,2569.277778
+850,1104,Barren County,county,KY,KY,"Glasgow, KY",2026-01-31,1025.0
+851,1056,Barron County,county,WI,WI,,2026-01-31,878.3333333
+852,699,Barrow County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,2008.173932
+3084,703,Bartholomew County,county,IN,IN,"Columbus, IN",2026-01-31,1339.369963
+853,1619,Barton County,county,KS,KS,"Great Bend, KS",2026-01-31,832.5
+855,569,Bartow County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,1711.757407
+1533,635,Bastrop County,county,TX,TX,"Austin-Round Rock-Georgetown, TX",2026-01-31,1886.60373
+856,1168,Baxter County,county,AR,AR,"Mountain Home, AR",2026-01-31,1083.333333
+67,371,Bay County,county,FL,FL,"Panama City, FL",2026-01-31,1689.3779
+68,589,Bay County,county,MI,MI,"Bay City, MI",2026-01-31,1111.269841
+2137,1094,Beaufort County,county,NC,NC,"Washington, NC",2026-01-31,1295.833333
+2138,356,Beaufort County,county,SC,SC,"Hilton Head Island-Bluffton, SC",2026-01-31,1986.536989
+2886,1302,Beauregard Parish,county,LA,LA,"DeRidder, LA",2026-01-31,1238.888889
+860,395,Beaver County,county,PA,PA,"Pittsburgh, PA",2026-01-31,1028.598864
+1538,720,Bedford County,county,VA,VA,"Lynchburg, VA",2026-01-31,1328.194444
+1539,849,Belknap County,county,NH,NH,"Laconia, NH",2026-01-31,1833.888889
+98,196,Bell County,county,TX,TX,"Killeen-Temple, TX",2026-01-31,1325.633519
+2139,1066,Beltrami County,county,MN,MN,"Bemidji, MN",2026-01-31,1614.285714
+2888,1275,Bennington County,county,VT,VT,"Bennington, VT",2026-01-31,1433.333333
+864,248,Benton County,county,AR,AR,"Fayetteville-Springdale-Rogers, AR",2026-01-31,1547.981861
+865,1622,Benton County,county,IA,IA,"Cedar Rapids, IA",2026-01-31,750.0
+867,1174,Benton County,county,MN,MN,"St. Cloud, MN",2026-01-31,868.75
+870,636,Benton County,county,OR,OR,"Corvallis, OR",2026-01-31,1950.531264
+872,332,Benton County,county,WA,WA,"Kennewick-Richland, WA",2026-01-31,1664.736314
+874,54,Bergen County,county,NJ,NJ,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,2786.431258
+2141,309,Berkeley County,county,SC,SC,"Charleston-North Charleston, SC",2026-01-31,1922.519018
+2142,525,Berkeley County,county,WV,WV,"Hagerstown-Martinsburg, MD-WV",2026-01-31,1644.401865
+385,165,Berks County,county,PA,PA,"Reading, PA",2026-01-31,1411.397332
+2628,502,Berkshire County,county,MA,MA,"Pittsfield, MA",2026-01-31,1549.940476
+2889,99,Bernalillo County,county,NM,NM,"Albuquerque, NM",2026-01-31,1479.118275
+1544,438,Berrien County,county,MI,MI,"Niles, MI",2026-01-31,1374.583333
+386,15,Bexar County,county,TX,TX,"San Antonio-New Braunfels, TX",2026-01-31,1355.146395
+101,429,Bibb County,county,GA,GA,"Macon-Bibb County, GA",2026-01-31,1205.284512
+1545,1042,Bingham County,county,ID,ID,"Blackfoot, ID",2026-01-31,1045.833333
+2890,493,Black Hawk County,county,IA,IA,"Waterloo-Cedar Falls, IA",2026-01-31,1112.854783
+878,1694,Blaine County,county,ID,ID,"Hailey, ID",2026-01-31,2962.5
+387,518,Blair County,county,PA,PA,"Altoona, PA",2026-01-31,1023.472222
+884,484,Blount County,county,TN,TN,"Knoxville, TN",2026-01-31,1714.824735
+2891,788,Blue Earth County,county,MN,MN,"Mankato, MN",2026-01-31,1546.527778
+885,1057,Bonner County,county,ID,ID,"Sandpoint, ID",2026-01-31,2047.222222
+2892,523,Bonneville County,county,ID,ID,"Idaho Falls, ID",2026-01-31,1399.528327
+391,1581,Boone County,county,IA,IA,"Ames, IA",2026-01-31,872.2222222
+393,780,Boone County,county,IN,IN,"Indianapolis-Carmel-Anderson, IN",2026-01-31,1809.818312
+394,480,Boone County,county,KY,KY,"Cincinnati, OH-KY-IN",2026-01-31,1831.062759
+395,366,Boone County,county,MO,MO,"Columbia, MO",2026-01-31,1349.346751
+1548,508,Bossier Parish,county,LA,LA,"Shreveport-Bossier City, LA",2026-01-31,1353.748335
+2634,1375,Botetourt County,county,VA,VA,"Roanoke, VA",2026-01-31,1817.25
+1549,216,Boulder County,county,CO,CO,"Boulder, CO",2026-01-31,2245.312672
+1551,1865,Bourbon County,county,KY,KY,"Lexington-Fayette, KY",2026-01-31,1273.75
+399,648,Bowie County,county,TX,TX,"Texarkana, TX-AR",2026-01-31,1210.032764
+2637,918,Box Elder County,county,UT,UT,"Ogden-Clearfield, UT",2026-01-31,1270.833333
+103,1035,Boyd County,county,KY,KY,"Huntington-Ashland, WV-KY-OH",2026-01-31,2100.0
+2149,882,Bradford County,county,PA,PA,"Sayre, PA",2026-01-31,1073.75
+1554,571,Bradley County,county,TN,TN,"Cleveland, TN",2026-01-31,1348.74053
+2151,195,Brazoria County,county,TX,TX,"Houston-The Woodlands-Sugar Land, TX",2026-01-31,1704.990473
+890,295,Brazos County,county,TX,TX,"College Station-Bryan, TX",2026-01-31,1707.953694
+1556,111,Brevard County,county,FL,FL,"Palm Bay-Melbourne-Titusville, FL",2026-01-31,1887.346486
+1560,2038,Bristol City,county,VA,VA,"Kingsport-Bristol, TN-VA",2026-01-31,1413.888889
+1558,118,Bristol County,county,MA,MA,"Providence-Warwick, RI-MA",2026-01-31,1990.808738
+1559,992,Bristol County,county,RI,RI,"Providence-Warwick, RI-MA",2026-01-31,2338.690476
+401,26,Bronx County,county,NY,NY,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,2680.500616
+892,1753,Brooke County,county,WV,WV,"Weirton-Steubenville, WV-OH",2026-01-31,834.5
+2639,1354,Brookings County,county,SD,SD,"Brookings, SD",2026-01-31,1371.280756
+895,341,Broome County,county,NY,NY,"Binghamton, NY",2026-01-31,1324.774411
+2894,766,Broomfield County,county,CO,CO,"Denver-Aurora-Lakewood, CO",2026-01-31,1981.119725
+1561,17,Broward County,county,FL,FL,"Miami-Fort Lauderdale-Pompano Beach, FL",2026-01-31,2455.739675
+408,1237,Brown County,county,SD,SD,"Aberdeen, SD",2026-01-31,1002.916667
+410,259,Brown County,county,WI,WI,"Green Bay, WI",2026-01-31,1018.051014
+2640,485,Brunswick County,county,NC,NC,"Myrtle Beach-Conway-North Myrtle Beach, SC-NC",2026-01-31,1799.252849
+412,1125,Bryan County,county,GA,GA,"Savannah, GA",2026-01-31,2032.859477
+413,1072,Bryan County,county,OK,OK,"Durant, OK",2026-01-31,1584.611111
+2154,682,Buchanan County,county,MO,MO,"St. Joseph, MO-KS",2026-01-31,906.2833333
+414,106,Bucks County,county,PA,PA,"Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",2026-01-31,2288.717476
+1562,1004,Buffalo County,county,NE,NE,"Kearney, NE",2026-01-31,1574.805556
+1565,704,Bullitt County,county,KY,KY,"Louisville/Jefferson County, KY-IN",2026-01-31,1516.75
+1566,716,Bulloch County,county,GA,GA,"Statesboro, GA",2026-01-31,1562.07037
+2156,260,Buncombe County,county,NC,NC,"Asheville, NC",2026-01-31,1749.094898
+416,669,Burke County,county,NC,NC,"Hickory-Lenoir-Morganton, NC",2026-01-31,1125.0
+2157,621,Burleigh County,county,ND,ND,"Bismarck, ND",2026-01-31,1349.1
+2158,1999,Burleson County,county,TX,TX,"College Station-Bryan, TX",2026-01-31,1600.0
+2896,154,Burlington County,county,NJ,NJ,"Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",2026-01-31,2213.698043
+897,1028,Burnet County,county,TX,TX,,2026-01-31,1548.208995
+898,1924,Butler County,county,AL,AL,,2026-01-31,1100.0
+900,802,Butler County,county,KS,KS,"Wichita, KS",2026-01-31,1008.952381
+904,181,Butler County,county,OH,OH,"Cincinnati, OH-KY-IN",2026-01-31,1514.154003
+905,348,Butler County,county,PA,PA,"Pittsburgh, PA",2026-01-31,1725.346032
+418,314,Butte County,county,CA,CA,"Chico, CA",2026-01-31,1572.10628
+2159,311,Cabarrus County,county,NC,NC,"Charlotte-Concord-Gastonia, NC-SC",2026-01-31,1715.761733
+906,640,Cabell County,county,WV,WV,"Huntington-Ashland, WV-KY-OH",2026-01-31,1009.732143
+422,492,Cache County,county,UT,UT,"Logan, UT-ID",2026-01-31,1373.024747
+423,282,Caddo Parish,county,LA,LA,"Shreveport-Bossier City, LA",2026-01-31,1118.902273
+2643,1082,Calaveras County,county,CA,CA,,2026-01-31,2062.5
+2644,320,Calcasieu Parish,county,LA,LA,"Lake Charles, LA",2026-01-31,1139.597507
+2163,710,Caldwell County,county,NC,NC,"Hickory-Lenoir-Morganton, NC",2026-01-31,1222.777778
+2164,1083,Caldwell County,county,TX,TX,"Austin-Round Rock-Georgetown, TX",2026-01-31,1685.0
+1569,543,Calhoun County,county,AL,AL,"Anniston-Oxford, AL",2026-01-31,932.75
+1575,481,Calhoun County,county,MI,MI,"Battle Creek, MI",2026-01-31,1175.009524
+2166,1103,Callaway County,county,MO,MO,"Jefferson City, MO",2026-01-31,1146.388889
+2167,1272,Calloway County,county,KY,KY,"Murray, KY",2026-01-31,1060.305556
+1580,975,Calumet County,county,WI,WI,"Appleton, WI",2026-01-31,929.6666667
+1581,651,Calvert County,county,MD,MD,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,2366.888889
+1582,483,Cambria County,county,PA,PA,"Johnstown, PA",2026-01-31,796.7857143
+908,947,Camden County,county,GA,GA,"St. Marys, GA",2026-01-31,1537.148077
+909,1132,Camden County,county,MO,MO,,2026-01-31,1354.777778
+911,134,Camden County,county,NJ,NJ,"Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",2026-01-31,1947.746706
+1585,168,Cameron County,county,TX,TX,"Brownsville-Harlingen, TX",2026-01-31,1433.65805
+2168,649,Campbell County,county,KY,KY,"Cincinnati, OH-KY-IN",2026-01-31,1543.875556
+2171,934,Campbell County,county,VA,VA,"Lynchburg, VA",2026-01-31,1436.488095
+2172,1051,Campbell County,county,WY,WY,"Gillette, WY",2026-01-31,1236.333333
+2173,448,Canadian County,county,OK,OK,"Oklahoma City, OK",2026-01-31,1555.678739
+913,301,Canyon County,county,ID,ID,"Boise City, ID",2026-01-31,1543.43026
+3237,709,Cape Girardeau County,county,MO,MO,"Cape Girardeau, MO-IL",2026-01-31,1037.377922
+2174,631,Cape May County,county,NJ,NJ,"Ocean City, NJ",2026-01-31,2066.666667
+915,840,Carbon County,county,PA,PA,"Allentown-Bethlehem-Easton, PA-NJ",2026-01-31,1206.555556
+917,2177,Carbon County,county,WY,WY,,2026-01-31,945.8333333
+2178,1449,Caroline County,county,VA,VA,,2026-01-31,2088.055556
+1590,533,Carroll County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,1609.697544
+1593,1863,Carroll County,county,IN,IN,"Lafayette-West Lafayette, IN",2026-01-31,1285.0
+1595,383,Carroll County,county,MD,MD,"Baltimore-Columbia-Towson, MD",2026-01-31,1725.236364
+1598,1000,Carroll County,county,NH,NH,,2026-01-31,2000.0
+3087,909,Carson City,county,NV,NV,"Carson City, NV",2026-01-31,1706.472222
+922,1033,Carter County,county,OK,OK,"Ardmore, OK",2026-01-31,1151.25
+923,921,Carter County,county,TN,TN,"Johnson City, TN",2026-01-31,1040.0
+2179,795,Carteret County,county,NC,NC,"Morehead City, NC",2026-01-31,1772.705556
+924,579,Carver County,county,MN,MN,"Minneapolis-St. Paul-Bloomington, MN-WI",2026-01-31,2014.930769
+1602,691,Cascade County,county,MT,MT,"Great Falls, MT",2026-01-31,1336.411977
+109,1250,Cass County,county,IN,IN,"Logansport, IN",2026-01-31,974.5
+112,573,Cass County,county,MO,MO,"Kansas City, MO-KS",2026-01-31,1695.721345
+113,364,Cass County,county,ND,ND,"Fargo, ND-MN",2026-01-31,1121.969697
+114,1590,Cass County,county,NE,NE,"Omaha-Council Bluffs, NE-IA",2026-01-31,1372.0
+925,1675,Cassia County,county,ID,ID,"Burley, ID",2026-01-31,1300.0
+1604,420,Catawba County,county,NC,NC,"Hickory-Lenoir-Morganton, NC",2026-01-31,1468.161829
+1605,801,Catoosa County,county,GA,GA,"Chattanooga, TN-GA",2026-01-31,1499.727778
+929,738,Cayuga County,county,NY,NY,"Auburn, NY",2026-01-31,1211.875
+429,594,Cecil County,county,MD,MD,"Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",2026-01-31,1814.489379
+930,421,Centre County,county,PA,PA,"State College, PA",2026-01-31,1605.671795
+1606,1911,Chaffee County,county,CO,CO,,2026-01-31,2410.277778
+2182,1084,Chambers County,county,TX,TX,"Houston-The Woodlands-Sugar Land, TX",2026-01-31,2020.333333
+2648,329,Champaign County,county,IL,IL,"Champaign-Urbana, IL",2026-01-31,1291.224542
+2649,1232,Champaign County,county,OH,OH,"Urbana, OH",2026-01-31,950.0
+1607,404,Charles County,county,MD,MD,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,2420.200714
+2897,175,Charleston County,county,SC,SC,"Charleston-North Charleston, SC",2026-01-31,2026.566641
+2898,1600,Charlevoix County,county,MI,MI,,2026-01-31,1875.0
+2650,359,Charlotte County,county,FL,FL,"Punta Gorda, FL",2026-01-31,1826.982293
+3288,1054,Charlottesville City,county,VA,VA,"Charlottesville, VA",2026-01-31,1926.915812
+1608,236,Chatham County,county,GA,GA,"Savannah, GA",2026-01-31,1739.473446
+1609,746,Chatham County,county,NC,NC,"Durham-Chapel Hill, NC",2026-01-31,2084.031746
+2900,507,Chautauqua County,county,NY,NY,"Jamestown-Dunkirk-Fredonia, NY",2026-01-31,949.1666667
+931,835,Chaves County,county,NM,NM,"Roswell, NM",2026-01-31,1155.666667
+2185,1180,Cheatham County,county,TN,TN,"Nashville-Davidson--Murfreesboro--Franklin, TN",2026-01-31,1663.133333
+932,726,Chelan County,county,WA,WA,"Wenatchee, WA",2026-01-31,1748.391379
+1610,689,Chemung County,county,NY,NY,"Elmira, NY",2026-01-31,1164.25
+2188,267,Cherokee County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,2019.916159
+2191,1515,Cherokee County,county,NC,NC,,2026-01-31,1573.75
+2192,1048,Cherokee County,county,OK,OK,"Tahlequah, OK",2026-01-31,1167.583333
+2193,924,Cherokee County,county,SC,SC,"Gaffney, SC",2026-01-31,1017.722222
+3254,277,Chesapeake City,county,VA,VA,"Virginia Beach-Norfolk-Newport News, VA-NC",2026-01-31,2045.007217
+2195,740,Cheshire County,county,NH,NH,"Keene, NH",2026-01-31,1894.928571
+1611,131,Chester County,county,PA,PA,"Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",2026-01-31,2115.034559
+3158,199,Chesterfield County,county,VA,VA,"Richmond, VA",2026-01-31,1803.116641
+1614,1090,Chilton County,county,AL,AL,"Birmingham-Hoover, AL",2026-01-31,1394.444444
+2201,825,Chippewa County,county,WI,WI,"Eau Claire, WI",2026-01-31,1233.472222
+1615,920,Chisago County,county,MN,MN,"Minneapolis-St. Paul-Bloomington, MN-WI",2026-01-31,1548.0
+2901,400,Chittenden County,county,VT,VT,"Burlington-South Burlington, VT",2026-01-31,2154.317111
+2658,765,Christian County,county,KY,KY,"Clarksville, TN-KY",2026-01-31,1102.906015
+2659,670,Christian County,county,MO,MO,"Springfield, MO",2026-01-31,1440.155637
+2660,1641,Churchill County,county,NV,NV,"Fallon, NV",2026-01-31,1450.0
+938,445,Citrus County,county,FL,FL,"Homosassa Springs, FL",2026-01-31,1660.015152
+2661,169,Clackamas County,county,OR,OR,"Portland-Vancouver-Hillsboro, OR-WA",2026-01-31,1882.305209
+1619,736,Clallam County,county,WA,WA,"Port Angeles, WA",2026-01-31,1825.305556
+441,527,Clark County,county,IN,IN,"Louisville/Jefferson County, KY-IN",2026-01-31,1307.974603
+443,1290,Clark County,county,KY,KY,"Lexington-Fayette, KY",2026-01-31,1400.0
+445,12,Clark County,county,NV,NV,"Las Vegas-Henderson-Paradise, NV",2026-01-31,1715.52864
+446,479,Clark County,county,OH,OH,"Springfield, OH",2026-01-31,1175.555556
+448,141,Clark County,county,WA,WA,"Portland-Vancouver-Hillsboro, OR-WA",2026-01-31,1869.007536
+449,1341,Clark County,county,WI,WI,,2026-01-31,795.4166667
+940,505,Clarke County,county,GA,GA,"Athens-Clarke County, GA",2026-01-31,1678.782931
+1621,1185,Clatsop County,county,OR,OR,"Astoria, OR",2026-01-31,1705.777778
+118,316,Clay County,county,FL,FL,"Jacksonville, FL",2026-01-31,1789.386013
+125,834,Clay County,county,MN,MN,"Fargo, ND-MN",2026-01-31,1134.884259
+126,276,Clay County,county,MO,MO,"Kansas City, MO-KS",2026-01-31,1466.538124
+130,2166,Clay County,county,SD,SD,"Vermillion, SD",2026-01-31,1000.0
+1622,237,Clayton County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,1614.429946
+3091,2537,Clear Creek County,county,CO,CO,"Denver-Aurora-Lakewood, CO",2026-01-31,2106.666667
+2902,711,Clearfield County,county,PA,PA,"DuBois, PA",2026-01-31,1012.5
+2206,327,Clermont County,county,OH,OH,"Cincinnati, OH-KY-IN",2026-01-31,1510.76715
+2667,612,Cleveland County,county,NC,NC,"Shelby, NC",2026-01-31,1206.851852
+2668,240,Cleveland County,county,OK,OK,"Oklahoma City, OK",2026-01-31,1354.532157
+1624,1055,Clinton County,county,IA,IA,"Clinton, IA",2026-01-31,737.5
+1626,1392,Clinton County,county,IN,IN,"Frankfort, IN",2026-01-31,895.8333333
+1628,722,Clinton County,county,MI,MI,"Lansing-East Lansing, MI",2026-01-31,1607.333333
+1632,1253,Clinton County,county,PA,PA,"Lock Haven, PA",2026-01-31,939.8333333
+135,84,Cobb County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,1750.483742
+1634,513,Cochise County,county,AZ,AZ,"Sierra Vista-Douglas, AZ",2026-01-31,1311.370243
+2207,456,Coconino County,county,AZ,AZ,"Flagstaff, AZ",2026-01-31,2153.133987
+945,961,Coffee County,county,AL,AL,"Enterprise, AL",2026-01-31,1385.683761
+947,916,Coffee County,county,TN,TN,"Tullahoma-Manchester, TN",2026-01-31,1487.791667
+1636,926,Colbert County,county,AL,AL,"Florence-Muscle Shoals, AL",2026-01-31,1091.805556
+137,731,Cole County,county,MO,MO,"Jefferson City, MO",2026-01-31,950.978836
+453,1041,Coles County,county,IL,IL,"Charleston-Mattoon, IL",2026-01-31,822.0
+1638,191,Collier County,county,FL,FL,"Naples-Marco Island, FL",2026-01-31,2653.995001
+951,43,Collin County,county,TX,TX,"Dallas-Fort Worth-Arlington, TX",2026-01-31,1683.838371
+2210,1073,Colquitt County,county,GA,GA,"Moultrie, GA",2026-01-31,1195.0
+2212,784,Columbia County,county,FL,FL,"Lake City, FL",2026-01-31,1455.142857
+2213,437,Columbia County,county,GA,GA,"Augusta-Richmond County, GA-SC",2026-01-31,1764.860817
+2214,869,Columbia County,county,NY,NY,"Hudson, NY",2026-01-31,2256.761905
+2215,968,Columbia County,county,OR,OR,"Portland-Vancouver-Hillsboro, OR-WA",2026-01-31,1766.694444
+2216,836,Columbia County,county,PA,PA,"Bloomsburg-Berwick, PA",2026-01-31,1097.361111
+2218,905,Columbia County,county,WI,WI,"Madison, WI",2026-01-31,1032.291667
+2905,599,Columbiana County,county,OH,OH,"Salem, OH",2026-01-31,1050.0
+454,431,Comal County,county,TX,TX,"San Antonio-New Braunfels, TX",2026-01-31,1566.564263
+2221,524,Comanche County,county,OK,OK,"Lawton, OK",2026-01-31,1067.865448
+3159,37,Contra Costa County,county,CA,CA,"San Francisco-Oakland-Berkeley, CA",2026-01-31,2726.606871
+954,1835,Conway County,county,AR,AR,,2026-01-31,1250.0
+139,1,Cook County,county,IL,IL,"Chicago-Naperville-Elgin, IL-IN-WI",2026-01-31,2160.294413
+455,1171,Cooke County,county,TX,TX,"Gainesville, TX",2026-01-31,1397.166667
+955,2009,Cooper County,county,MO,MO,"Columbia, MO",2026-01-31,995.0
+141,1426,Coos County,county,NH,NH,"Berlin, NH",2026-01-31,1300.0
+142,843,Coos County,county,OR,OR,"Coos Bay, OR",2026-01-31,1579.642857
+2224,1050,Cortland County,county,NY,NY,"Cortland, NY",2026-01-31,1153.083333
+1643,705,Coryell County,county,TX,TX,"Killeen-Temple, TX",2026-01-31,1201.112332
+960,455,Coweta County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,1792.469728
+1644,561,Cowlitz County,county,WA,WA,"Longview, WA",2026-01-31,1415.871212
+2674,560,Craighead County,county,AR,AR,"Jonesboro, AR",2026-01-31,1339.734886
+962,602,Craven County,county,NC,NC,"New Bern, NC",2026-01-31,1529.018519
+2226,874,Crawford County,county,AR,AR,"Fort Smith, AR-OK",2026-01-31,1007.916667
+2231,1224,Crawford County,county,KS,KS,"Pittsburg, KS",2026-01-31,935.4166667
+2234,1162,Crawford County,county,OH,OH,"Bucyrus-Galion, OH",2026-01-31,975.0
+2235,688,Crawford County,county,PA,PA,"Meadville, PA",2026-01-31,780.625
+460,769,Creek County,county,OK,OK,"Tulsa, OK",2026-01-31,1106.25
+462,1679,Crook County,county,OR,OR,"Prineville, OR",2026-01-31,1651.166667
+2675,823,Crow Wing County,county,MN,MN,"Brainerd, MN",2026-01-31,1256.277778
+1647,673,Cullman County,county,AL,AL,"Cullman, AL",2026-01-31,1464.388889
+2240,977,Culpeper County,county,VA,VA,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,2089.444444
+2911,232,Cumberland County,county,ME,ME,"Portland-South Portland, ME",2026-01-31,2297.118363
+2912,213,Cumberland County,county,NC,NC,"Fayetteville, NC",2026-01-31,1421.610506
+2913,435,Cumberland County,county,NJ,NJ,"Vineland-Bridgeton, NJ",2026-01-31,1654.960317
+2914,273,Cumberland County,county,PA,PA,"Harrisburg-Carlisle, PA",2026-01-31,1483.241699
+2915,880,Cumberland County,county,TN,TN,"Crossville, TN",2026-01-31,1688.888889
+465,1024,Curry County,county,NM,NM,"Clovis, NM",2026-01-31,1254.332647
+466,1723,Curry County,county,OR,OR,"Brookings, OR",2026-01-31,2000.0
+967,2353,Custer County,county,MT,MT,,2026-01-31,750.0
+2241,34,Cuyahoga County,county,OH,OH,"Cleveland-Elyria, OH",2026-01-31,1378.493826
+971,162,Dakota County,county,MN,MN,"Minneapolis-St. Paul-Bloomington, MN-WI",2026-01-31,1631.782378
+145,1013,Dale County,county,AL,AL,"Ozark, AL",2026-01-31,1333.433333
+976,628,Dallas County,county,IA,IA,"Des Moines-West Des Moines, IA",2026-01-31,1440.632295
+978,8,Dallas County,county,TX,TX,"Dallas-Fort Worth-Arlington, TX",2026-01-31,1627.634371
+146,122,Dane County,county,WI,WI,"Madison, WI",2026-01-31,1633.86196
+3205,1145,Danville City,county,VA,VA,"Danville, VA",2026-01-31,1170.472222
+147,1289,Dare County,county,NC,NC,"Kill Devil Hills, NC",2026-01-31,2773.75
+467,980,Darke County,county,OH,OH,"Greenville, OH",2026-01-31,708.3333333
+2917,851,Darlington County,county,SC,SC,"Florence, SC",2026-01-31,1248.5
+1650,246,Dauphin County,county,PA,PA,"Harrisburg-Carlisle, PA",2026-01-31,1350.833259
+2242,398,Davidson County,county,NC,NC,"Winston-Salem, NC",2026-01-31,1425.055556
+2243,95,Davidson County,county,TN,TN,"Nashville-Davidson--Murfreesboro--Franklin, TN",2026-01-31,1770.261651
+468,1146,Davie County,county,NC,NC,"Winston-Salem, NC",2026-01-31,1878.194444
+1652,597,Daviess County,county,KY,KY,"Owensboro, KY",2026-01-31,1397.5
+470,200,Davis County,county,UT,UT,"Ogden-Clearfield, UT",2026-01-31,1836.339356
+1654,1880,Davison County,county,SD,SD,"Mitchell, SD",2026-01-31,1021.25
+979,1599,Dawson County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,2096.347222
+981,1689,Dawson County,county,NE,NE,"Lexington, NE",2026-01-31,1240.833333
+1657,604,DeKalb County,county,IL,IL,"Chicago-Naperville-Elgin, IL-IN-WI",2026-01-31,1460.512821
+983,362,DeSoto County,county,MS,MS,"Memphis, TN-MS-AR",2026-01-31,1709.985434
+984,86,Dekalb County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,1727.495909
+986,1881,Dekalb County,county,TN,TN,,2026-01-31,1580.0
+2678,1552,Del Norte County,county,CA,CA,"Crescent City, CA",2026-01-31,1575.0
+2247,549,Delaware County,county,IN,IN,"Muncie, IN",2026-01-31,1032.473969
+2248,1097,Delaware County,county,NY,NY,,2026-01-31,1062.5
+2249,322,Delaware County,county,OH,OH,"Columbus, OH",2026-01-31,1574.771861
+2251,119,Delaware County,county,PA,PA,"Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",2026-01-31,1622.375881
+988,63,Denton County,county,TX,TX,"Dallas-Fort Worth-Arlington, TX",2026-01-31,1637.861966
+989,96,Denver County,county,CO,CO,"Denver-Aurora-Lakewood, CO",2026-01-31,1819.662775
+2920,1223,Des Moines County,county,IA,IA,"Burlington, IA-IL",2026-01-31,829.5
+2679,344,Deschutes County,county,OR,OR,"Bend, OR",2026-01-31,2192.130924
+1668,950,Dickson County,county,TN,TN,"Nashville-Davidson--Murfreesboro--Franklin, TN",2026-01-31,1718.333333
+3289,98,District of Columbia,county,DC,DC,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,2394.085254
+484,1274,Dodge County,county,NE,NE,"Fremont, NE",2026-01-31,1098.230159
+485,664,Dodge County,county,WI,WI,"Beaver Dam, WI",2026-01-31,1223.416667
+2252,313,Dona Ana County,county,NM,NM,"Las Cruces, NM",2026-01-31,1380.533842
+2923,413,Dorchester County,county,SC,SC,"Charleston-North Charleston, SC",2026-01-31,1705.032686
+2686,674,Dougherty County,county,GA,GA,"Albany, GA",2026-01-31,912.4358974
+1670,204,Douglas County,county,CO,CO,"Denver-Aurora-Lakewood, CO",2026-01-31,2086.457069
+1671,461,Douglas County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,1739.277888
+1673,532,Douglas County,county,KS,KS,"Lawrence, KS",2026-01-31,1487.42476
+1674,1229,Douglas County,county,MN,MN,"Alexandria, MN",2026-01-31,1154.375
+1676,117,Douglas County,county,NE,NE,"Omaha-Council Bluffs, NE-IA",2026-01-31,1375.872232
+1677,1019,Douglas County,county,NV,NV,"Gardnerville Ranchos, NV",2026-01-31,2378.531746
+1678,555,Douglas County,county,OR,OR,"Roseburg, OR",2026-01-31,1354.698413
+1680,1143,Douglas County,county,WA,WA,"Wenatchee, WA",2026-01-31,2223.777778
+1681,1110,Douglas County,county,WI,WI,"Duluth, MN-WI",2026-01-31,1352.674603
+1682,58,DuPage County,county,IL,IL,"Chicago-Naperville-Elgin, IL-IN-WI",2026-01-31,2049.011686
+997,1123,Dubois County,county,IN,IN,"Jasper, IN",2026-01-31,1212.5
+1683,614,Dubuque County,county,IA,IA,"Dubuque, IA",2026-01-31,1066.318182
+152,1085,Dunn County,county,WI,WI,"Menomonie, WI",2026-01-31,1196.805556
+999,223,Durham County,county,NC,NC,"Durham-Chapel Hill, NC",2026-01-31,1621.463848
+2255,235,Dutchess County,county,NY,NY,"Poughkeepsie-Newburgh-Middletown, NY",2026-01-31,2048.150176
+489,49,Duval County,county,FL,FL,"Jacksonville, FL",2026-01-31,1579.73722
+153,1284,Dyer County,county,TN,TN,"Dyersburg, TN",2026-01-31,908.3333333
+491,932,Eagle County,county,CO,CO,"Edwards, CO",2026-01-31,3510.565476
+3266,156,East Baton Rouge Parish,county,LA,LA,"Baton Rouge, LA",2026-01-31,1322.75789
+493,564,Eaton County,county,MI,MI,"Lansing-East Lansing, MI",2026-01-31,1410.150794
+2924,584,Eau Claire County,county,WI,WI,"Eau Claire, WI",2026-01-31,1159.627778
+494,411,Ector County,county,TX,TX,"Odessa, TX",2026-01-31,1552.453823
+155,872,Eddy County,county,NM,NM,"Carlsbad-Artesia, NM",2026-01-31,1738.690476
+2687,1011,Edgecombe County,county,NC,NC,"Rocky Mount, NC",2026-01-31,1143.25
+2689,850,Effingham County,county,GA,GA,"Savannah, GA",2026-01-31,2177.345543
+2691,350,El Dorado County,county,CA,CA,"Sacramento-Roseville-Folsom, CA",2026-01-31,2321.132315
+1689,89,El Paso County,county,CO,CO,"Colorado Springs, CO",2026-01-31,1679.016015
+1690,68,El Paso County,county,TX,TX,"El Paso, TX",2026-01-31,1491.645984
+1691,330,Elkhart County,county,IN,IN,"Elkhart-Goshen, IN",2026-01-31,1113.981818
+156,956,Elko County,county,NV,NV,"Elko, NV",2026-01-31,1507.611111
+498,354,Ellis County,county,TX,TX,"Dallas-Fort Worth-Arlington, TX",2026-01-31,1858.77336
+1003,672,Elmore County,county,AL,AL,"Montgomery, AL",2026-01-31,1441.777778
+1004,1521,Elmore County,county,ID,ID,"Mountain Home, ID",2026-01-31,1661.071429
+502,1154,Erath County,county,TX,TX,"Stephenville, TX",2026-01-31,1204.533333
+157,55,Erie County,county,NY,NY,"Buffalo-Cheektowaga, NY",2026-01-31,1413.868863
+158,743,Erie County,county,OH,OH,"Sandusky, OH",2026-01-31,1332.266667
+159,256,Erie County,county,PA,PA,"Erie, PA",2026-01-31,1070.291173
+2259,224,Escambia County,county,FL,FL,"Pensacola-Ferry Pass-Brent, FL",2026-01-31,1610.685244
+503,79,Essex County,county,MA,MA,"Boston-Cambridge-Newton, MA-NH",2026-01-31,2566.097409
+504,71,Essex County,county,NJ,NJ,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,2218.660414
+1007,592,Etowah County,county,AL,AL,"Gadsden, AL",2026-01-31,879.0
+3290,627,Fairbanks North Star Borough,county,AK,AK,"Fairbanks, AK",2026-01-31,1837.85101
+3162,1690,Fairfax City,county,VA,VA,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,2340.563492
+1694,38,Fairfax County,county,VA,VA,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,2411.533212
+2694,53,Fairfield County,county,CT,CT,"Bridgeport-Stamford-Norwalk, CT",2026-01-31,2718.706136
+2695,427,Fairfield County,county,OH,OH,"Columbus, OH",2026-01-31,1668.722222
+3272,2198,Falls Church City,county,VA,VA,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,2589.444269
+1010,1640,Fannin County,county,GA,GA,,2026-01-31,1700.0
+1011,1325,Fannin County,county,TX,TX,"Bonham, TX",2026-01-31,1401.666667
+2260,517,Faulkner County,county,AR,AR,"Little Rock-North Little Rock-Conway, AR",2026-01-31,1282.282051
+2261,764,Fauquier County,county,VA,VA,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,2171.444444
+1697,536,Fayette County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,2067.566977
+1701,221,Fayette County,county,KY,KY,"Lexington-Fayette, KY",2026-01-31,1514.394249
+1703,501,Fayette County,county,PA,PA,"Pittsburgh, PA",2026-01-31,956.25
+1704,1167,Fayette County,county,TN,TN,"Memphis, TN-MS-AR",2026-01-31,1930.833333
+1707,547,Flagler County,county,FL,FL,"Deltona-Daytona Beach-Ormond Beach, FL",2026-01-31,1871.346627
+2265,593,Flathead County,county,MT,MT,"Kalispell, MT",2026-01-31,2078.523097
+2266,475,Florence County,county,SC,SC,"Florence, SC",2026-01-31,1236.465812
+512,617,Floyd County,county,GA,GA,"Rome, GA",2026-01-31,1181.989054
+514,719,Floyd County,county,IN,IN,"Louisville/Jefferson County, KY-IN",2026-01-31,1159.583333
+2268,1569,Fluvanna County,county,VA,VA,"Charlottesville, VA",2026-01-31,2100.0
+3092,590,Fond du Lac County,county,WI,WI,"Fond du Lac, WI",2026-01-31,1040.577778
+1710,730,Forrest County,county,MS,MS,"Hattiesburg, MS",2026-01-31,1146.766667
+1711,278,Forsyth County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,2184.174766
+1712,186,Forsyth County,county,NC,NC,"Winston-Salem, NC",2026-01-31,1467.678881
+2698,78,Fort Bend County,county,TX,TX,"Houston-The Woodlands-Sugar Land, TX",2026-01-31,1906.373198
+2276,1248,Franklin County,county,IL,IL,,2026-01-31,662.5
+2279,986,Franklin County,county,KY,KY,"Frankfort, KY",2026-01-31,1082.192593
+2281,775,Franklin County,county,MA,MA,"Springfield, MA",2026-01-31,1963.611111
+2283,587,Franklin County,county,MO,MO,"St. Louis, MO-IL",2026-01-31,1096.666667
+2285,799,Franklin County,county,NC,NC,"Raleigh-Cary, NC",2026-01-31,1778.0
+2288,30,Franklin County,county,OH,OH,"Columbus, OH",2026-01-31,1435.075955
+2289,434,Franklin County,county,PA,PA,"Chambersburg-Waynesboro, PA",2026-01-31,1204.361111
+2290,1147,Franklin County,county,TN,TN,"Tullahoma-Manchester, TN",2026-01-31,1381.25
+2292,941,Franklin County,county,VA,VA,"Roanoke, VA",2026-01-31,918.75
+2294,634,Franklin County,county,WA,WA,"Kennewick-Richland, WA",2026-01-31,1848.406433
+2699,258,Frederick County,county,MD,MD,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,2121.176022
+2700,661,Frederick County,county,VA,VA,"Winchester, VA-WV",2026-01-31,2019.444444
+3283,1540,Fredericksburg City,county,VA,VA,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,1974.641026
+2295,1448,Freeborn County,county,MN,MN,"Albert Lea, MN",2026-01-31,963.3333333
+1713,1021,Fremont County,county,CO,CO,"Ca-¦on City, CO",2026-01-31,1272.142857
+1715,2263,Fremont County,county,ID,ID,"Rexburg, ID",2026-01-31,1227.5
+1716,1215,Fremont County,county,WY,WY,"Riverton, WY",2026-01-31,1102.5
+1018,46,Fresno County,county,CA,CA,"Fresno, CA",2026-01-31,1840.932843
+1020,42,Fulton County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,1888.603573
+1024,954,Fulton County,county,NY,NY,"Gloversville, NY",2026-01-31,1018.055556
+2299,544,Gallatin County,county,MT,MT,"Bozeman, MT",2026-01-31,2101.176734
+2702,205,Galveston County,county,TX,TX,"Houston-The Woodlands-Sugar Land, TX",2026-01-31,1596.412097
+2300,871,Garfield County,county,CO,CO,"Glenwood Springs, CO",2026-01-31,2428.763889
+2303,858,Garfield County,county,OK,OK,"Enid, OK",2026-01-31,1061.074074
+1718,606,Garland County,county,AR,AR,"Hot Springs, AR",2026-01-31,1353.901515
+1032,303,Gaston County,county,NC,NC,"Charlotte-Concord-Gastonia, NC-SC",2026-01-31,1648.825784
+521,1300,Geary County,county,KS,KS,"Manhattan, KS",2026-01-31,1177.66792
+1033,633,Geauga County,county,OH,OH,"Cleveland-Elyria, OH",2026-01-31,1769.444444
+1721,173,Genesee County,county,MI,MI,"Flint, MI",2026-01-31,1066.448002
+2928,855,Georgetown County,county,SC,SC,"Georgetown, SC",2026-01-31,1937.333333
+1038,997,Gibson County,county,TN,TN,"Jackson, TN",2026-01-31,1390.833333
+164,959,Gila County,county,AZ,AZ,"Payson, AZ",2026-01-31,1777.694444
+2705,1579,Gillespie County,county,TX,TX,"Fredericksburg, TX",2026-01-31,1883.333333
+1039,1435,Gilmer County,county,GA,GA,,2026-01-31,1825.0
+524,1507,Glenn County,county,CA,CA,,2026-01-31,1210.0
+2929,233,Gloucester County,county,NJ,NJ,"Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",2026-01-31,2525.005112
+2930,1233,Gloucester County,county,VA,VA,"Virginia Beach-Norfolk-Newport News, VA-NC",2026-01-31,2000.0
+525,690,Glynn County,county,GA,GA,"Brunswick, GA",2026-01-31,1695.235328
+2707,1679,Goochland County,county,VA,VA,"Richmond, VA",2026-01-31,1841.8
+1727,1044,Goodhue County,county,MN,MN,"Red Wing, MN",2026-01-31,1112.5
+1044,917,Gordon County,county,GA,GA,"Calhoun, GA",2026-01-31,1649.888889
+1045,2302,Goshen County,county,WY,WY,,2026-01-31,700.0
+527,942,Grady County,county,OK,OK,"Oklahoma City, OK",2026-01-31,1309.722222
+1729,657,Grafton County,county,NH,NH,"Lebanon, NH-VT",2026-01-31,2278.788889
+1047,1244,Graham County,county,AZ,AZ,"Safford, AZ",2026-01-31,1743.75
+528,2123,Grand County,county,CO,CO,,2026-01-31,2585.555556
+529,2517,Grand County,county,UT,UT,,2026-01-31,1800.0
+3093,760,Grand Forks County,county,ND,ND,"Grand Forks, ND-MN",2026-01-31,1198.502315
+3240,641,Grand Traverse County,county,MI,MI,"Traverse City, MI",2026-01-31,1912.711111
+531,812,Grant County,county,IN,IN,"Marion, IN",2026-01-31,872.8333333
+538,1531,Grant County,county,NM,NM,"Silver City, NM",2026-01-31,1225.0
+542,622,Grant County,county,WA,WA,"Moses Lake, WA",2026-01-31,1518.304762
+543,973,Grant County,county,WI,WI,"Platteville, WI",2026-01-31,1378.333333
+2708,875,Granville County,county,NC,NC,"Durham-Chapel Hill, NC",2025-11-30,1282.618971
+3163,749,Grays Harbor County,county,WA,WA,"Aberdeen, WA",2026-01-31,1433.849206
+1733,482,Grayson County,county,TX,TX,"Sherman-Denison, TX",2026-01-31,1402.677919
+1052,1078,Greene County,county,AR,AR,"Paragould, AR",2026-01-31,902.7777778
+1057,234,Greene County,county,MO,MO,"Springfield, MO",2026-01-31,1256.910256
+1060,1036,Greene County,county,NY,NY,,2026-01-31,1756.25
+1061,401,Greene County,county,OH,OH,"Dayton-Kettering, OH",2026-01-31,1625.246405
+1063,779,Greene County,county,TN,TN,"Greeneville, TN",2026-01-31,1043.888889
+2934,137,Greenville County,county,SC,SC,"Greenville-Anderson, SC",2026-01-31,1568.56734
+2710,783,Greenwood County,county,SC,SC,"Greenwood, SC",2026-01-31,1038.333333
+548,515,Gregg County,county,TX,TX,"Longview, TX",2026-01-31,1134.225641
+1066,1501,Grimes County,county,TX,TX,,2026-01-31,1433.333333
+1068,969,Grundy County,county,IL,IL,"Chicago-Naperville-Elgin, IL-IN-WI",2026-01-31,1330.444444
+2712,388,Guadalupe County,county,TX,TX,"San Antonio-New Braunfels, TX",2026-01-31,1667.964596
+2311,1234,Guernsey County,county,OH,OH,"Cambridge, OH",2026-01-31,1000.0
+2312,129,Guilford County,county,NC,NC,"Greensboro-High Point, NC",2026-01-31,1425.932153
+2314,56,Gwinnett County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,1800.205669
+172,337,Hall County,county,GA,GA,"Gainesville, GA",2026-01-31,1645.478459
+173,859,Hall County,county,NE,NE,"Grand Island, NE",2026-01-31,1264.708333
+1745,846,Hamblen County,county,TN,TN,"Morristown, TN",2026-01-31,1450.0
+2316,2150,Hamilton County,county,IA,IA,,2026-01-31,695.0
+2318,210,Hamilton County,county,IN,IN,"Indianapolis-Carmel-Anderson, IN",2026-01-31,1791.472854
+2322,75,Hamilton County,county,OH,OH,"Cincinnati, OH-KY-IN",2026-01-31,1470.040982
+2323,197,Hamilton County,county,TN,TN,"Chattanooga, TN-GA",2026-01-31,1516.924879
+1746,153,Hampden County,county,MA,MA,"Springfield, MA",2026-01-31,1820.137284
+2714,410,Hampshire County,county,MA,MA,"Springfield, MA",2026-01-31,2283.862626
+3164,477,Hampton City,county,VA,VA,"Virginia Beach-Norfolk-Newport News, VA-NC",2026-01-31,1593.01425
+1751,725,Hancock County,county,IN,IN,"Indianapolis-Carmel-Anderson, IN",2026-01-31,1734.179832
+1753,936,Hancock County,county,ME,ME,,2026-01-31,1640.833333
+1754,1069,Hancock County,county,MS,MS,"Gulfport-Biloxi, MS",2026-01-31,1459.416667
+1755,745,Hancock County,county,OH,OH,"Findlay, OH",2026-01-31,1199.277778
+1757,1484,Hancock County,county,WV,WV,"Weirton-Steubenville, WV-OH",2026-01-31,796.6666667
+1758,563,Hanover County,county,VA,VA,"Richmond, VA",2026-01-31,1995.698413
+2326,1479,Haralson County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,1272.5
+1079,557,Hardin County,county,KY,KY,"Elizabethtown-Fort Knox, KY",2026-01-31,1273.637073
+1082,925,Hardin County,county,TX,TX,"Beaumont-Port Arthur, TX",2026-01-31,1612.694444
+1761,271,Harford County,county,MD,MD,"Baltimore-Columbia-Towson, MD",2026-01-31,1735.034722
+1762,486,Harnett County,county,NC,NC,"Fayetteville, NC",2026-01-31,1768.777778
+1090,2,Harris County,county,TX,TX,"Houston-The Woodlands-Sugar Land, TX",2026-01-31,1572.928263
+2333,328,Harrison County,county,MS,MS,"Gulfport-Biloxi, MS",2026-01-31,1416.763198
+2335,787,Harrison County,county,TX,TX,"Longview, TX",2026-01-31,1148.333333
+2336,821,Harrison County,county,WV,WV,"Clarksburg, WV",2026-01-31,1055.5
+3273,976,Harrisonburg City,county,VA,VA,"Harrisonburg, VA",2026-01-31,1412.407407
+2337,62,Hartford County,county,CT,CT,"Hartford-East Hartford-Middletown, CT",2026-01-31,1848.536537
+1091,1365,Harvey County,county,KS,KS,"Wichita, KS",2026-01-31,946.6666667
+1092,339,Hawaii County,county,HI,HI,"Hilo, HI",2026-01-31,2473.222222
+1768,919,Hawkins County,county,TN,TN,"Kingsport-Bristol, TN-VA",2026-01-31,1118.0
+178,289,Hays County,county,TX,TX,"Austin-Round Rock-Georgetown, TX",2026-01-31,1555.526929
+1769,868,Haywood County,county,NC,NC,"Asheville, NC",2026-01-31,1556.277778
+1770,1985,Haywood County,county,TN,TN,"Brownsville, TN",2026-01-31,1027.5
+2719,545,Henderson County,county,NC,NC,"Asheville, NC",2026-01-31,1976.444444
+2721,702,Henderson County,county,TX,TX,"Athens, TX",2026-01-31,1354.613095
+2722,384,Hendricks County,county,IN,IN,"Indianapolis-Carmel-Anderson, IN",2026-01-31,1743.930809
+2339,32,Hennepin County,county,MN,MN,"Minneapolis-St. Paul-Bloomington, MN-WI",2026-01-31,1709.903132
+1771,214,Henrico County,county,VA,VA,"Richmond, VA",2026-01-31,1680.015438
+553,285,Henry County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,1843.241624
+556,1023,Henry County,county,IN,IN,"New Castle, IN",2026-01-31,842.8333333
+558,1777,Henry County,county,MO,MO,,2026-01-31,858.3333333
+561,989,Henry County,county,VA,VA,"Martinsville, VA",2026-01-31,833.25
+2341,349,Hernando County,county,FL,FL,"Tampa-St. Petersburg-Clearwater, FL",2026-01-31,1797.337475
+1776,66,Hidalgo County,county,TX,TX,"McAllen-Edinburg-Mission, TX",2026-01-31,1103.118661
+2724,603,Highlands County,county,FL,FL,"Sebring-Avon Park, FL",2026-01-31,1534.611111
+180,1318,Hill County,county,TX,TX,,2026-01-31,1149.5
+3165,27,Hillsborough County,county,FL,FL,"Tampa-St. Petersburg-Clearwater, FL",2026-01-31,1986.348404
+3166,167,Hillsborough County,county,NH,NH,"Manchester-Nashua, NH",2026-01-31,2088.229737
+562,296,Hinds County,county,MS,MS,"Jackson, MS",2026-01-31,1353.402897
+181,974,Hoke County,county,NC,NC,"Fayetteville, NC",2026-01-31,1689.988889
+2347,45,Honolulu County,county,HI,HI,"Urban Honolulu, HI",2026-01-31,2772.858285
+184,881,Hood County,county,TX,TX,"Granbury, TX",2026-01-31,1691.319048
+2936,1692,Hood River County,county,OR,OR,"Hood River, OR",2026-01-31,1957.083333
+3209,1734,Hopewell City,county,VA,VA,"Richmond, VA",2026-01-31,1278.166667
+1780,1291,Hopkins County,county,TX,TX,"Sulphur Springs, TX",2026-01-31,1466.666667
+563,206,Horry County,county,SC,SC,"Myrtle Beach-Conway-North Myrtle Beach, SC-NC",2026-01-31,1673.769991
+2348,1263,Houghton County,county,MI,MI,"Houghton, MI",2026-01-31,1350.0
+1781,577,Houston County,county,AL,AL,"Dothan, AL",2026-01-31,1174.319444
+1782,412,Houston County,county,GA,GA,"Warner Robins, GA",2026-01-31,1559.123741
+1100,695,Howard County,county,IN,IN,"Kokomo, IN",2026-01-31,1017.694444
+1101,215,Howard County,county,MD,MD,"Baltimore-Columbia-Towson, MD",2026-01-31,2205.851148
+1104,1344,Howard County,county,TX,TX,"Big Spring, TX",2026-01-31,1272.222222
+1106,94,Hudson County,county,NJ,NJ,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,2960.8522
+2351,476,Humboldt County,county,CA,CA,"Eureka-Arcata, CA",2026-01-31,1580.108813
+185,613,Hunt County,county,TX,TX,"Dallas-Fort Worth-Arlington, TX",2026-01-31,1444.052429
+2729,503,Hunterdon County,county,NJ,NJ,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,2513.418519
+565,900,Huron County,county,OH,OH,"Norwalk, OH",2026-01-31,1258.0
+1109,776,Iberia Parish,county,LA,LA,"Lafayette, LA",2026-01-31,1243.333333
+2354,373,Imperial County,county,CA,CA,"El Centro, CA",2026-01-31,1585.5
+3167,1255,Independence County,county,AR,AR,"Batesville, AR",2026-01-31,971.6666667
+3168,423,Indian River County,county,FL,FL,"Sebastian-Vero Beach, FL",2026-01-31,2133.455714
+1788,692,Indiana County,county,PA,PA,"Indiana, PA",2026-01-31,852.5
+1110,244,Ingham County,county,MI,MI,"Lansing-East Lansing, MI",2026-01-31,1292.581005
+1789,361,Iredell County,county,NC,NC,"Charlotte-Concord-Gastonia, NC-SC",2026-01-31,1711.768799
+193,930,Iron County,county,UT,UT,"Cedar City, UT",2026-01-31,1478.522727
+2356,826,Isabella County,county,MI,MI,"Mount Pleasant, MI",2026-01-31,1172.638889
+1111,1190,Isanti County,county,MN,MN,"Minneapolis-St. Paul-Bloomington, MN-WI",2026-01-31,1467.5
+1112,680,Island County,county,WA,WA,"Oak Harbor, WA",2026-01-31,2049.302903
+3210,1242,Isle of Wight County,county,VA,VA,"Virginia Beach-Norfolk-Newport News, VA-NC",2026-01-31,2071.4
+1113,1089,Itasca County,county,MN,MN,"Grand Rapids, MN",2026-01-31,862.5
+1794,1034,Jackson County,county,FL,FL,,2026-01-31,1057.333333
+1795,754,Jackson County,county,GA,GA,"Jefferson, GA",2026-01-31,2109.535294
+1797,952,Jackson County,county,IL,IL,"Carbondale-Marion, IL",2026-01-31,708.5555556
+1802,416,Jackson County,county,MI,MI,"Jackson, MI",2026-01-31,1105.249074
+1804,92,Jackson County,county,MO,MO,"Kansas City, MO-KS",2026-01-31,1386.626542
+1805,463,Jackson County,county,MS,MS,"Gulfport-Biloxi, MS",2026-01-31,1377.931495
+1806,1135,Jackson County,county,NC,NC,"Cullowhee, NC",2026-01-31,1351.785714
+1809,310,Jackson County,county,OR,OR,"Medford, OR",2026-01-31,1706.931946
+1813,1822,Jackson County,county,WI,WI,,2026-01-31,1345.0
+2942,729,James City County,county,VA,VA,"Virginia Beach-Norfolk-Newport News, VA-NC",2026-01-31,1967.658897
+1115,1257,Jasper County,county,IA,IA,"Des Moines-West Des Moines, IA",2026-01-31,937.5
+1118,522,Jasper County,county,MO,MO,"Joplin, MO",2026-01-31,1155.079254
+1120,1517,Jasper County,county,SC,SC,"Hilton Head Island-Bluffton, SC",2026-01-31,1670.047619
+2732,100,Jefferson County,county,AL,AL,"Birmingham-Hoover, AL",2026-01-31,1320.094804
+2733,792,Jefferson County,county,AR,AR,"Pine Bluff, AR",2026-01-31,891.6666667
+2734,116,Jefferson County,county,CO,CO,"Denver-Aurora-Lakewood, CO",2026-01-31,1850.400768
+2737,2108,Jefferson County,county,IA,IA,"Fairfield, IA",2026-01-31,699.0
+2742,82,Jefferson County,county,KY,KY,"Louisville/Jefferson County, KY-IN",2026-01-31,1358.242235
+2744,304,Jefferson County,county,MO,MO,"St. Louis, MO-IL",2026-01-31,1547.939815
+2748,537,Jefferson County,county,NY,NY,"Watertown-Fort Drum, NY",2026-01-31,1258.791005
+2749,830,Jefferson County,county,OH,OH,"Weirton-Steubenville, WV-OH",2026-01-31,891.6666667
+2753,945,Jefferson County,county,TN,TN,"Morristown, TN",2026-01-31,1598.333333
+2754,274,Jefferson County,county,TX,TX,"Beaumont-Port Arthur, TX",2026-01-31,1268.07927
+2756,686,Jefferson County,county,WI,WI,"Watertown-Fort Atkinson, WI",2026-01-31,1231.111111
+2757,913,Jefferson County,county,WV,WV,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,1875.690476
+2743,160,Jefferson Parish,county,LA,LA,"New Orleans-Metairie, LA",2026-01-31,1500.969557
+2758,962,Jessamine County,county,KY,KY,"Lexington-Fayette, KY",2026-01-31,1401.071429
+1819,447,Johnson County,county,IA,IA,"Iowa City, IA",2026-01-31,1302.041882
+1821,419,Johnson County,county,IN,IN,"Indianapolis-Carmel-Anderson, IN",2026-01-31,1551.055556
+1822,110,Johnson County,county,KS,KS,"Kansas City, MO-KS",2026-01-31,1650.21392
+1824,951,Johnson County,county,MO,MO,"Warrensburg, MO",2026-01-31,1022.142857
+1827,377,Johnson County,county,TX,TX,"Dallas-Fort Worth-Arlington, TX",2026-01-31,1610.214399
+2360,323,Johnston County,county,NC,NC,"Raleigh-Cary, NC",2026-01-31,1816.12585
+574,804,Jones County,county,MS,MS,"Laurel, MS",2026-01-31,1223.5
+2760,671,Josephine County,county,OR,OR,"Grants Pass, OR",2026-01-31,1543.424242
+2761,268,Kalamazoo County,county,MI,MI,"Kalamazoo-Portage, MI",2026-01-31,1353.63289
+1832,367,Kanawha County,county,WV,WV,"Charleston, WV",2026-01-31,1008.652956
+197,138,Kane County,county,IL,IL,"Chicago-Naperville-Elgin, IL-IN-WI",2026-01-31,2076.264913
+2363,568,Kankakee County,county,IL,IL,"Kankakee, IL",2026-01-31,1399.978175
+578,758,Kauai County,county,HI,HI,"Kapaa, HI",2026-01-31,3450.0
+1833,468,Kaufman County,county,TX,TX,"Dallas-Fort Worth-Arlington, TX",2026-01-31,1868.672357
+76,1111,Kay County,county,OK,OK,"Ponca City, OK",2026-01-31,807.5
+3257,896,Kenai Peninsula Borough,county,AK,AK,,2026-01-31,1868.333333
+1835,494,Kendall County,county,IL,IL,"Chicago-Naperville-Elgin, IL-IN-WI",2026-01-31,2412.275835
+1836,1115,Kendall County,county,TX,TX,"San Antonio-New Braunfels, TX",2026-01-31,1549.447619
+2364,516,Kennebec County,county,ME,ME,"Augusta-Waterville, ME",2026-01-31,1406.792763
+1837,391,Kenosha County,county,WI,WI,"Chicago-Naperville-Elgin, IL-IN-WI",2026-01-31,1718.21721
+199,372,Kent County,county,DE,DE,"Dover, DE",2026-01-31,1724.597148
+201,103,Kent County,county,MI,MI,"Grand Rapids-Kentwood, MI",2026-01-31,1681.488346
+202,389,Kent County,county,RI,RI,"Providence-Warwick, RI-MA",2026-01-31,2276.762821
+1133,394,Kenton County,county,KY,KY,"Cincinnati, OH-KY-IN",2026-01-31,1439.236078
+204,61,Kern County,county,CA,CA,"Bakersfield, CA",2026-01-31,1746.448959
+205,966,Kerr County,county,TX,TX,"Kerrville, TX",2026-01-31,1885.833333
+1838,837,Kershaw County,county,SC,SC,"Columbia, SC",2026-01-31,1666.416667
+207,11,King County,county,WA,WA,"Seattle-Tacoma-Bellevue, WA",2026-01-31,2240.630958
+580,446,Kings County,county,CA,CA,"Hanford-Corcoran, CA",2026-01-31,1716.989262
+581,6,Kings County,county,NY,NY,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,3414.202913
+1138,253,Kitsap County,county,WA,WA,"Bremerton-Silverdale-Port Orchard, WA",2026-01-31,1970.878872
+2367,1109,Kittitas County,county,WA,WA,"Ellensburg, WA",2026-01-31,1479.793651
+1842,785,Klamath County,county,OR,OR,"Klamath Falls, OR",2026-01-31,1241.349116
+1843,1444,Kleberg County,county,TX,TX,"Kingsville, TX",2026-01-31,1291.666667
+2765,1749,Klickitat County,county,WA,WA,,2026-01-31,1504.166667
+211,1192,Knox County,county,ME,ME,,2026-01-31,1843.888889
+214,860,Knox County,county,OH,OH,"Mount Vernon, OH",2026-01-31,1339.222222
+215,149,Knox County,county,TN,TN,"Knoxville, TN",2026-01-31,1765.061042
+2368,393,Kootenai County,county,ID,ID,"Coeur d'Alene, ID",2026-01-31,1752.601513
+2766,714,Kosciusko County,county,IN,IN,"Warsaw, IN",2026-01-31,1123.377778
+2767,526,La Crosse County,county,WI,WI,"La Crosse-Onalaska, WI-MN",2026-01-31,1216.130952
+2369,933,La Plata County,county,CO,CO,"Durango, CO",2026-01-31,1903.475214
+2370,550,La Porte County,county,IN,IN,"Michigan City-La Porte, IN",2026-01-31,1196.388889
+2371,559,La Salle County,county,IL,IL,"Ottawa, IL",2026-01-31,1091.041667
+2949,318,Lackawanna County,county,PA,PA,"Scranton--Wilkes-Barre, PA",2026-01-31,1340.109428
+1846,1315,Laclede County,county,MO,MO,"Lebanon, MO",2026-01-31,881.25
+2772,931,Lafayette County,county,MS,MS,"Oxford, MS",2026-01-31,2443.239707
+2770,281,Lafayette Parish,county,LA,LA,"Lafayette, LA",2026-01-31,1331.233595
+2774,624,Lafourche Parish,county,LA,LA,"Houma-Thibodaux, LA",2026-01-31,1366.290476
+217,797,Lake County,county,CA,CA,"Clearlake, CA",2026-01-31,1647.476852
+219,189,Lake County,county,FL,FL,"Orlando-Kissimmee-Sanford, FL",2026-01-31,1987.98749
+220,91,Lake County,county,IL,IL,"Chicago-Naperville-Elgin, IL-IN-WI",2026-01-31,2062.368913
+221,142,Lake County,county,IN,IN,"Chicago-Naperville-Elgin, IL-IN-WI",2026-01-31,1415.446356
+225,292,Lake County,county,OH,OH,"Cleveland-Elyria, OH",2026-01-31,1399.770867
+589,847,Lamar County,county,MS,MS,"Hattiesburg, MS",2026-01-31,1385.876457
+2375,1614,Lamoille County,county,VT,VT,,2026-01-31,1533.333333
+2376,1802,Lampasas County,county,TX,TX,"Killeen-Temple, TX",2026-01-31,1345.833333
+2775,222,Lancaster County,county,NE,NE,"Lincoln, NE",2026-01-31,1276.868432
+2776,125,Lancaster County,county,PA,PA,"Lancaster, PA",2026-01-31,1490.415643
+2777,637,Lancaster County,county,SC,SC,"Charlotte-Concord-Gastonia, NC-SC",2026-01-31,1700.42849
+231,187,Lane County,county,OR,OR,"Eugene-Springfield, OR",2026-01-31,1907.735075
+1142,666,Lapeer County,county,MI,MI,"Detroit-Warren-Dearborn, MI",2026-01-31,1232.333333
+1848,605,Laramie County,county,WY,WY,"Cheyenne, WY",2026-01-31,1481.697531
+1849,202,Larimer County,county,CO,CO,"Fort Collins, CO",2026-01-31,1877.364485
+2950,2188,Las Animas County,county,CO,CO,,2026-01-31,1050.0
+1143,1396,Lassen County,county,CA,CA,"Susanville, CA",2026-01-31,1225.0
+593,1213,Latah County,county,ID,ID,"Moscow, ID",2026-01-31,1251.944444
+2952,643,Lauderdale County,county,AL,AL,"Florence-Muscle Shoals, AL",2026-01-31,1120.555556
+2953,756,Lauderdale County,county,MS,MS,"Meridian, MS",2026-01-31,1091.666667
+1144,864,Laurel County,county,KY,KY,"London, KY",2026-01-31,1031.25
+1851,1018,Laurens County,county,GA,GA,"Dublin, GA",2026-01-31,1045.416667
+1852,808,Laurens County,county,SC,SC,"Greenville-Anderson, SC",2026-01-31,1102.5
+2386,679,Lawrence County,county,PA,PA,"New Castle, PA",2026-01-31,1027.47619
+2387,1620,Lawrence County,county,SD,SD,"Spearfish, SD",2026-01-31,1397.5
+2388,1112,Lawrence County,county,TN,TN,"Lawrenceburg, TN",2026-01-31,1195.0
+77,762,Lea County,county,NM,NM,"Hobbs, NM",2026-01-31,1280.333333
+3100,706,Leavenworth County,county,KS,KS,"Kansas City, MO-KS",2026-01-31,1187.801347
+1854,464,Lebanon County,county,PA,PA,"Lebanon, PA",2026-01-31,1325.073737
+78,382,Lee County,county,AL,AL,"Auburn-Opelika, AL",2026-01-31,1618.731448
+80,88,Lee County,county,FL,FL,"Cape Coral-Fort Myers, FL",2026-01-31,1832.600398
+81,1407,Lee County,county,GA,GA,"Albany, GA",2026-01-31,1408.333333
+83,1350,Lee County,county,IL,IL,"Dixon, IL",2026-01-31,980.0
+85,694,Lee County,county,MS,MS,"Tupelo, MS",2026-01-31,1299.225589
+86,857,Lee County,county,NC,NC,"Sanford, NC",2026-01-31,1761.666667
+1146,193,Lehigh County,county,PA,PA,"Allentown-Bethlehem-Easton, PA-NJ",2026-01-31,1732.556046
+1856,608,Lenawee County,county,MI,MI,"Adrian, MI",2026-01-31,1112.5
+1147,937,Lenoir County,county,NC,NC,"Kinston, NC",2026-01-31,996.6666667
+232,242,Leon County,county,FL,FL,"Tallahassee, FL",2026-01-31,1465.555556
+601,707,Lewis County,county,WA,WA,"Centralia, WA",2026-01-31,1554.111111
+3258,778,Lewis and Clark County,county,MT,MT,"Helena, MT",2026-01-31,1507.632576
+2779,241,Lexington County,county,SC,SC,"Columbia, SC",2026-01-31,1581.21196
+1859,845,Liberty County,county,GA,GA,"Hinesville, GA",2026-01-31,1727.51252
+1861,662,Liberty County,county,TX,TX,"Houston-The Woodlands-Sugar Land, TX",2026-01-31,1506.180556
+1862,376,Licking County,county,OH,OH,"Columbus, OH",2026-01-31,1735.736859
+2780,601,Limestone County,county,AL,AL,"Huntsville, AL",2026-01-31,1549.771529
+2781,1762,Limestone County,county,TX,TX,,2026-01-31,950.0
+1872,898,Lincoln County,county,MO,MO,"St. Louis, MO-IL",2026-01-31,1316.666667
+1875,681,Lincoln County,county,NC,NC,"Charlotte-Concord-Gastonia, NC-SC",2026-01-31,1685.856838
+1877,1873,Lincoln County,county,NM,NM,"Ruidoso, NM",2026-01-31,1750.0
+1880,1003,Lincoln County,county,OR,OR,"Newport, OR",2026-01-31,1927.579365
+1881,853,Lincoln County,county,SD,SD,"Sioux Falls, SD",2026-01-31,1304.908696
+1869,1029,Lincoln Parish,county,LA,LA,"Ruston, LA",2026-01-31,1088.888889
+235,299,Linn County,county,IA,IA,"Cedar Rapids, IA",2026-01-31,1114.912271
+238,511,Linn County,county,OR,OR,"Albany-Lebanon, OR",2026-01-31,1617.0
+2955,358,Litchfield County,county,CT,CT,"Torrington, CT",2026-01-31,1782.068723
+2956,1314,Livingston County,county,IL,IL,"Pontiac, IL",2026-01-31,1055.166667
+2959,346,Livingston County,county,MI,MI,"Detroit-Warren-Dearborn, MI",2026-01-31,2009.821296
+2958,466,Livingston Parish,county,LA,LA,"Baton Rouge, LA",2026-01-31,1475.790313
+603,1812,Llano County,county,TX,TX,,2026-01-31,1631.666667
+605,1784,Logan County,county,CO,CO,"Sterling, CO",2026-01-31,1252.361111
+608,1561,Logan County,county,KY,KY,,2026-01-31,887.5
+611,1067,Logan County,county,OH,OH,"Bellefontaine, OH",2026-01-31,1099.5
+612,1022,Logan County,county,OK,OK,"Oklahoma City, OK",2026-01-31,1435.266667
+239,2074,Long County,county,GA,GA,"Hinesville, GA",2026-01-31,1713.888889
+1149,755,Lonoke County,county,AR,AR,"Little Rock-North Little Rock-Conway, AR",2026-01-31,1421.54902
+1150,227,Lorain County,county,OH,OH,"Cleveland-Elyria, OH",2026-01-31,1255.373439
+2962,1925,Los Alamos County,county,NM,NM,"Los Alamos, NM",2026-01-31,2758.333333
+3101,0,Los Angeles County,county,CA,CA,"Los Angeles-Long Beach-Anaheim, CA",2026-01-31,2779.812276
+1151,946,Loudon County,county,TN,TN,"Knoxville, TN",2026-01-31,1772.266667
+1887,172,Loudoun County,county,VA,VA,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,2549.847563
+1889,539,Lowndes County,county,GA,GA,"Valdosta, GA",2026-01-31,1392.081923
+1890,893,Lowndes County,county,MS,MS,"Columbus, MS",2026-01-31,1363.412698
+1891,230,Lubbock County,county,TX,TX,"Lubbock, TX",2026-01-31,1361.50949
+616,163,Lucas County,county,OH,OH,"Toledo, OH",2026-01-31,1096.730206
+1892,1386,Lumpkin County,county,GA,GA,,2026-01-31,1970.833333
+1893,218,Luzerne County,county,PA,PA,"Scranton--Wilkes-Barre, PA",2026-01-31,1281.372727
+2394,546,Lycoming County,county,PA,PA,"Williamsport, PA",2026-01-31,1789.62963
+3243,723,Lynchburg City,county,VA,VA,"Lynchburg, VA",2026-01-31,1311.777778
+246,1412,Lyon County,county,KS,KS,"Emporia, KS",2026-01-31,741.6666667
+249,908,Lyon County,county,NV,NV,"Fernley, NV",2026-01-31,1881.005291
+1155,64,Macomb County,county,MI,MI,"Detroit-Warren-Dearborn, MI",2026-01-31,1378.920898
+620,587,Macon County,county,IL,IL,"Decatur, IL",2026-01-31,1044.583333
+1156,430,Madera County,county,CA,CA,"Madera, CA",2026-01-31,2213.634921
+1894,184,Madison County,county,AL,AL,"Huntsville, AL",2026-01-31,1385.995795
+1899,990,Madison County,county,ID,ID,"Rexburg, ID",2026-01-31,1199.318783
+1900,262,Madison County,county,IL,IL,"St. Louis, MO-IL",2026-01-31,1130.983844
+1901,497,Madison County,county,IN,IN,"Indianapolis-Carmel-Anderson, IN",2026-01-31,1054.197368
+1902,652,Madison County,county,KY,KY,"Richmond-Berea, KY",2026-01-31,993.4668616
+1905,567,Madison County,county,MS,MS,"Jackson, MS",2026-01-31,1577.481073
+1908,1322,Madison County,county,NE,NE,"Norfolk, NE",2026-01-31,1268.541667
+1909,790,Madison County,county,NY,NY,"Syracuse, NY",2026-01-31,1355.138889
+1910,1113,Madison County,county,OH,OH,"Columbus, OH",2026-01-31,1779.0
+1911,616,Madison County,county,TN,TN,"Jackson, TN",2026-01-31,1381.00731
+2399,298,Mahoning County,county,OH,OH,"Youngstown-Warren-Boardman, OH-PA",2026-01-31,997.5356125
+3213,1139,Manassas City,county,VA,VA,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,2134.276335
+3282,2168,Manassas Park City,county,VA,VA,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,2108.988889
+1916,180,Manatee County,county,FL,FL,"North Port-Sarasota-Bradenton, FL",2026-01-31,2028.333247
+2783,708,Manitowoc County,county,WI,WI,"Manitowoc, WI",2026-01-31,897.9166667
+2401,474,Marathon County,county,WI,WI,"Wausau-Weston, WI",2026-01-31,974.2087542
+2402,3,Maricopa County,county,AZ,AZ,"Phoenix-Mesa-Chandler, AZ",2026-01-31,1713.789114
+625,266,Marin County,county,CA,CA,"San Francisco-Oakland-Berkeley, CA",2026-01-31,3543.317261
+1161,194,Marion County,county,FL,FL,"Ocala, FL",2026-01-31,1600.308744
+1163,1377,Marion County,county,IA,IA,"Pella, IA",2026-01-31,971.0
+1165,50,Marion County,county,IN,IN,"Indianapolis-Carmel-Anderson, IN",2026-01-31,1363.995065
+1170,829,Marion County,county,OH,OH,"Marion, OH",2026-01-31,1243.916667
+1171,208,Marion County,county,OR,OR,"Salem, OR",2026-01-31,1646.819613
+1175,923,Marion County,county,WV,WV,"Fairmont, WV",2026-01-31,1054.166667
+2785,819,Marquette County,county,MI,MI,"Marquette, MI",2026-01-31,1376.190476
+2405,626,Marshall County,county,AL,AL,"Albertville, AL",2026-01-31,1511.111111
+2406,1198,Marshall County,county,IA,IA,"Marshalltown, IA",2026-01-31,848.6666667
+2415,1368,Marshall County,county,TN,TN,"Lewisburg, TN",2026-01-31,1565.0
+2416,1451,Marshall County,county,WV,WV,"Wheeling, WV-OH",2026-01-31,800.0
+1176,424,Martin County,county,FL,FL,"Port St. Lucie, FL",2026-01-31,2327.186425
+630,838,Mason County,county,WA,WA,"Shelton, WA",2026-01-31,1852.555556
+3277,574,Matanuska Susitna Borough,county,AK,AK,"Anchorage, AK",2026-01-31,1671.123136
+250,405,Maui County,county,HI,HI,"Kahului-Wailuku-Lahaina, HI",2026-01-31,3532.708333
+632,611,Maury County,county,TN,TN,"Nashville-Davidson--Murfreesboro--Franklin, TN",2026-01-31,1663.233498
+2417,912,Maverick County,county,TX,TX,"Eagle Pass, TX",2026-01-31,1184.375
+633,1219,Mayes County,county,OK,OK,,2026-01-31,1182.333333
+1921,1172,McClain County,county,OK,OK,"Oklahoma City, OK",2026-01-31,1500.25
+2789,803,McCracken County,county,KY,KY,"Paducah, KY-IL",2026-01-31,1325.0
+2792,1551,McDonough County,county,IL,IL,"Macomb, IL",2026-01-31,1166.666667
+2421,1100,McDowell County,county,NC,NC,"Marion, NC",2026-01-31,1470.0
+1922,229,McHenry County,county,IL,IL,"Chicago-Naperville-Elgin, IL-IN-WI",2026-01-31,2096.653571
+2427,2245,McKenzie County,county,ND,ND,,2026-01-31,1209.5
+1186,385,McLean County,county,IL,IL,"Bloomington, IL",2026-01-31,1280.387124
+2429,272,McLennan County,county,TX,TX,"Waco, TX",2026-01-31,1453.384548
+1189,1292,McLeod County,county,MN,MN,"Hutchinson, MN",2026-01-31,1375.0
+1190,960,McMinn County,county,TN,TN,"Athens, TN",2026-01-31,1148.730159
+2793,1469,McPherson County,county,KS,KS,"McPherson, KS",2026-01-31,1050.0
+636,1482,Meade County,county,SD,SD,"Rapid City, SD",2026-01-31,1284.5
+3102,40,Mecklenburg County,county,NC,NC,"Charlotte-Concord-Gastonia, NC-SC",2026-01-31,1698.211371
+3103,1464,Mecklenburg County,county,VA,VA,,2026-01-31,1462.777778
+1191,370,Medina County,county,OH,OH,"Cleveland-Elyria, OH",2026-01-31,1735.540741
+1192,995,Medina County,county,TX,TX,"San Antonio-New Braunfels, TX",2026-01-31,1836.111111
+2796,654,Mendocino County,county,CA,CA,"Ukiah, CA",2026-01-31,1787.5
+1196,249,Merced County,county,CA,CA,"Merced, CA",2026-01-31,1853.689825
+1201,182,Mercer County,county,NJ,NJ,"Trenton-Princeton, NJ",2026-01-31,2439.045611
+1202,1158,Mercer County,county,OH,OH,"Celina, OH",2026-01-31,1000.0
+1203,554,Mercer County,county,PA,PA,"Youngstown-Warren-Boardman, OH-PA",2026-01-31,945.5396825
+1204,885,Mercer County,county,WV,WV,"Bluefield, WV-VA",2026-01-31,903.0
+2799,443,Merrimack County,county,NH,NH,"Concord, NH",2026-01-31,1979.188889
+251,436,Mesa County,county,CO,CO,"Grand Junction, CO",2026-01-31,1721.369529
+641,570,Miami County,county,OH,OH,"Dayton-Kettering, OH",2026-01-31,1387.805556
+2964,7,Miami-Dade County,county,FL,FL,"Miami-Fort Lauderdale-Pompano Beach, FL",2026-01-31,2774.562473
+2800,405,Middlesex County,county,CT,CT,"Hartford-East Hartford-Middletown, CT",2026-01-31,1951.446053
+2801,21,Middlesex County,county,MA,MA,"Boston-Cambridge-Newton, MA-NH",2026-01-31,2845.112043
+2802,69,Middlesex County,county,NJ,NJ,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,2484.164441
+1929,693,Midland County,county,MI,MI,"Midland, MI",2026-01-31,1515.088889
+1930,402,Midland County,county,TX,TX,"Midland, TX",2026-01-31,1569.808167
+1205,1138,Miller County,county,AR,AR,"Texarkana, TX-AR",2026-01-31,1155.0
+1207,1669,Miller County,county,MO,MO,,2026-01-31,875.0
+2804,57,Milwaukee County,county,WI,WI,"Milwaukee-Waukesha, WI",2026-01-31,1437.222116
+2805,345,Minnehaha County,county,SD,SD,"Sioux Falls, SD",2026-01-31,1198.407854
+3104,1179,Mississippi County,county,AR,AR,"Blytheville, AR",2026-01-31,975.0
+2434,540,Missoula County,county,MT,MT,"Missoula, MT",2026-01-31,1545.522383
+1208,171,Mobile County,county,AL,AL,"Mobile, AL",2026-01-31,1253.337352
+1210,321,Mohave County,county,AZ,AZ,"Lake Havasu City-Kingman, AZ",2026-01-31,1510.341084
+2441,107,Monmouth County,county,NJ,NJ,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,2845.903445
+2966,580,Monongalia County,county,WV,WV,"Morgantown, WV",2026-01-31,1460.595136
+1214,698,Monroe County,county,FL,FL,"Key West, FL",2026-01-31,3513.170291
+1217,1299,Monroe County,county,IL,IL,"St. Louis, MO-IL",2026-01-31,1047.5
+1218,467,Monroe County,county,IN,IN,"Bloomington, IN",2026-01-31,1553.308953
+1220,440,Monroe County,county,MI,MI,"Monroe, MI",2026-01-31,1136.930556
+1223,87,Monroe County,county,NY,NY,"Rochester, NY",2026-01-31,1474.925695
+1225,396,Monroe County,county,PA,PA,"East Stroudsburg, PA",2026-01-31,1794.957143
+1226,1065,Monroe County,county,TN,TN,,2026-01-31,1190.0
+1227,1063,Monroe County,county,WI,WI,,2026-01-31,1043.944444
+2443,818,Montcalm County,county,MI,MI,"Grand Rapids-Kentwood, MI",2026-01-31,1326.25
+2444,161,Monterey County,county,CA,CA,"Salinas, CA",2026-01-31,2868.096507
+2807,1609,Montezuma County,county,CO,CO,,2026-01-31,1795.833333
+2967,297,Montgomery County,county,AL,AL,"Montgomery, AL",2026-01-31,1331.452374
+2972,1249,Montgomery County,county,IN,IN,"Crawfordsville, IN",2026-01-31,922.2111111
+2973,1420,Montgomery County,county,KS,KS,"Coffeyville, KS",2026-01-31,789.1666667
+2974,1537,Montgomery County,county,KY,KY,"Mount Sterling, KY",2026-01-31,1054.166667
+2975,41,Montgomery County,county,MD,MD,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,2257.88923
+2979,1012,Montgomery County,county,NY,NY,"Amsterdam, NY",2026-01-31,1202.777778
+2980,130,Montgomery County,county,OH,OH,"Dayton-Kettering, OH",2026-01-31,1246.146987
+2981,72,Montgomery County,county,PA,PA,"Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",2026-01-31,2006.888611
+2982,317,Montgomery County,county,TN,TN,"Clarksville, TN-KY",2026-01-31,1384.28904
+2983,109,Montgomery County,county,TX,TX,"Houston-The Woodlands-Sugar Land, TX",2026-01-31,1658.477023
+2984,609,Montgomery County,county,VA,VA,"Blacksburg-Christiansburg, VA",2026-01-31,1911.378019
+1937,1967,Montour County,county,PA,PA,"Bloomsburg-Berwick, PA",2026-01-31,1400.0
+2445,1152,Montrose County,county,CO,CO,"Montrose, CO",2026-01-31,1995.555556
+649,615,Moore County,county,NC,NC,"Pinehurst-Southern Pines, NC",2026-01-31,1834.478763
+1229,520,Morgan County,county,AL,AL,"Decatur, AL",2026-01-31,1060.809722
+1230,1502,Morgan County,county,CO,CO,"Fort Morgan, CO",2026-01-31,1395.833333
+1231,1893,Morgan County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,1870.0
+1232,1385,Morgan County,county,IL,IL,"Jacksonville, IL",2026-01-31,925.0
+1233,773,Morgan County,county,IN,IN,"Indianapolis-Carmel-Anderson, IN",2026-01-31,1523.333333
+1241,140,Morris County,county,NJ,NJ,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,2812.154392
+1244,2357,Morrow County,county,OR,OR,"Hermiston-Pendleton, OR",2026-01-31,1850.0
+1246,1398,Morton County,county,ND,ND,"Bismarck, ND",2026-01-31,1131.716667
+652,1203,Mower County,county,MN,MN,"Austin, MN",2026-01-31,741.3888889
+2810,77,Multnomah County,county,OR,OR,"Portland-Vancouver-Hillsboro, OR-WA",2026-01-31,1678.288259
+1248,1206,Murray County,county,GA,GA,"Dalton, GA",2026-01-31,930.0
+2811,1128,Muscatine County,county,IA,IA,"Muscatine, IA",2026-01-31,818.75
+2448,333,Muscogee County,county,GA,GA,"Columbus, GA-AL",2026-01-31,1248.009406
+2449,379,Muskegon County,county,MI,MI,"Muskegon, MI",2026-01-31,1195.555556
+2812,678,Muskingum County,county,OH,OH,"Zanesville, OH",2026-01-31,958.1555556
+2450,811,Muskogee County,county,OK,OK,"Muskogee, OK",2026-01-31,1003.888889
+3108,839,Nacogdoches County,county,TX,TX,"Nacogdoches, TX",2026-01-31,966.7777778
+255,472,Napa County,county,CA,CA,"Napa, CA",2026-01-31,2814.929885
+256,639,Nash County,county,NC,NC,"Rocky Mount, NC",2026-01-31,1284.166667
+1251,667,Nassau County,county,FL,FL,"Jacksonville, FL",2026-01-31,2066.161471
+1252,29,Nassau County,county,NY,NY,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,3500.280184
+1941,718,Natrona County,county,WY,WY,"Casper, WY",2026-01-31,1231.231602
+1253,575,Navajo County,county,AZ,AZ,"Show Low, AZ",2026-01-31,1895.634921
+1942,978,Navarro County,county,TX,TX,"Corsicana, TX",2026-01-31,1403.280556
+1254,1058,Nelson County,county,KY,KY,"Bardstown, KY",2026-01-31,1143.75
+1261,600,Nevada County,county,CA,CA,"Truckee-Grass Valley, CA",2026-01-31,2397.686688
+2986,121,New Castle County,county,DE,DE,"Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",2026-01-31,1847.53326
+3109,306,New Hanover County,county,NC,NC,"Wilmington, NC",2026-01-31,1661.438767
+2815,67,New Haven County,county,CT,CT,"New Haven-Milford, CT",2026-01-31,1984.410669
+2987,257,New London County,county,CT,CT,"Norwich-New London, CT",2026-01-31,1860.030828
+2452,20,New York County,county,NY,NY,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,4387.194047
+2453,1252,Newberry County,county,SC,SC,"Newberry, SC",2026-01-31,1100.0
+1945,683,Newport County,county,RI,RI,"Providence-Warwick, RI-MA",2026-01-31,2922.847222
+3278,363,Newport News City,county,VA,VA,"Virginia Beach-Norfolk-Newport News, VA-NC",2026-01-31,1571.402669
+1263,553,Newton County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,1825.504819
+1265,899,Newton County,county,MO,MO,"Joplin, MO",2026-01-31,1350.340909
+2816,1163,Nez Perce County,county,ID,ID,"Lewiston, ID-WA",2026-01-31,1576.666667
+1946,319,Niagara County,county,NY,NY,"Buffalo-Cheektowaga, NY",2026-01-31,1096.971867
+2456,1355,Nicollet County,county,MN,MN,"Mankato, MN",2026-01-31,990.0
+1947,1793,Nodaway County,county,MO,MO,"Maryville, MO",2026-01-31,651.2179487
+3173,284,Norfolk City,county,VA,VA,"Virginia Beach-Norfolk-Newport News, VA-NC",2026-01-31,1678.584126
+1948,90,Norfolk County,county,MA,MA,"Boston-Cambridge-Newton, MA-NH",2026-01-31,2983.261918
+3112,228,Northampton County,county,PA,PA,"Allentown-Bethlehem-Easton, PA-NJ",2026-01-31,1773.35814
+3113,2332,Northampton County,county,VA,VA,,2026-01-31,1900.0
+3244,653,Northumberland County,county,PA,PA,"Sunbury, PA",2026-01-31,945.1388889
+2458,2121,Nottoway County,county,VA,VA,,2026-01-31,1197.5
+1272,203,Nueces County,county,TX,TX,"Corpus Christi, TX",2026-01-31,1439.979059
+90,999,Nye County,county,NV,NV,"Pahrump, NV",2026-01-31,1608.5
+1950,31,Oakland County,county,MI,MI,"Detroit-Warren-Dearborn, MI",2026-01-31,1669.580455
+659,108,Ocean County,county,NJ,NJ,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,2893.672138
+1275,1178,Oconee County,county,GA,GA,"Athens-Clarke County, GA",2026-01-31,1982.222222
+1276,728,Oconee County,county,SC,SC,"Seneca, SC",2026-01-31,1428.388889
+262,1144,Ohio County,county,WV,WV,"Wheeling, WV-OH",2026-01-31,956.75
+2460,325,Okaloosa County,county,FL,FL,"Crestview-Fort Walton Beach-Destin, FL",2026-01-31,1906.212877
+2990,1208,Okeechobee County,county,FL,FL,"Okeechobee, FL",2026-01-31,1850.0
+2463,81,Oklahoma County,county,OK,OK,"Oklahoma City, OK",2026-01-31,1302.335988
+2818,985,Oktibbeha County,county,MS,MS,"Starkville, MS",2026-01-31,1499.861111
+1279,800,Oldham County,county,KY,KY,"Louisville/Jefferson County, KY-IN",2026-01-31,2060.642857
+1951,415,Olmsted County,county,MN,MN,"Rochester, MN",2026-01-31,1632.2657
+1283,293,Oneida County,county,NY,NY,"Utica-Rome, NY",2026-01-31,1393.518519
+1284,1264,Oneida County,county,WI,WI,,2026-01-31,1023.333333
+2465,150,Onondaga County,county,NY,NY,"Syracuse, NY",2026-01-31,1632.092222
+1285,338,Onslow County,county,NC,NC,"Jacksonville, NC",2026-01-31,1476.676607
+1952,551,Ontario County,county,NY,NY,"Rochester, NY",2026-01-31,1804.958333
+1286,5,Orange County,county,CA,CA,"Los Angeles-Long Beach-Anaheim, CA",2026-01-31,3143.261077
+1287,28,Orange County,county,FL,FL,"Orlando-Kissimmee-Sanford, FL",2026-01-31,1912.156949
+1289,452,Orange County,county,NC,NC,"Durham-Chapel Hill, NC",2026-01-31,1779.122713
+1290,178,Orange County,county,NY,NY,"Poughkeepsie-Newburgh-Middletown, NY",2026-01-31,2200.867876
+1291,684,Orange County,county,TX,TX,"Beaumont-Port Arthur, TX",2026-01-31,1294.412698
+2991,685,Orangeburg County,county,SC,SC,"Orangeburg, SC",2026-01-31,1313.75
+1953,183,Orleans Parish,county,LA,LA,"New Orleans-Metairie, LA",2026-01-31,1614.805421
+662,1062,Osage County,county,OK,OK,"Tulsa, OK",2026-01-31,1000.0
+1957,188,Osceola County,county,FL,FL,"Orlando-Kissimmee-Sanford, FL",2026-01-31,2015.216116
+1296,534,Oswego County,county,NY,NY,"Syracuse, NY",2026-01-31,1366.388889
+664,805,Otero County,county,NM,NM,"Alamogordo, NM",2026-01-31,1475.940741
+1298,890,Otsego County,county,NY,NY,"Oneonta, NY",2026-01-31,1360.527778
+1300,238,Ottawa County,county,MI,MI,"Grand Rapids-Kentwood, MI",2026-01-31,1577.28325
+2992,886,Otter Tail County,county,MN,MN,"Fergus Falls, MN",2026-01-31,886.25
+2468,417,Ouachita Parish,county,LA,LA,"Monroe, LA",2026-01-31,1132.929293
+2820,352,Outagamie County,county,WI,WI,"Appleton, WI",2026-01-31,1142.111111
+1305,910,Oxford County,county,ME,ME,,2026-01-31,1362.5
+1961,658,Ozaukee County,county,WI,WI,"Milwaukee-Waukesha, WI",2026-01-31,1680.833333
+2993,25,Palm Beach County,county,FL,FL,"Miami-Fort Lauderdale-Pompano Beach, FL",2026-01-31,2580.723223
+2994,1525,Palo Pinto County,county,TX,TX,"Mineral Wells, TX",2026-01-31,1287.5
+269,2030,Park County,county,MT,MT,,2026-01-31,1838.888889
+270,1480,Park County,county,WY,WY,,2026-01-31,1587.5
+1308,457,Parker County,county,TX,TX,"Dallas-Fort Worth-Arlington, TX",2026-01-31,1654.346047
+669,123,Pasco County,county,FL,FL,"Tampa-St. Petersburg-Clearwater, FL",2026-01-31,1986.910598
+2995,1197,Pasquotank County,county,NC,NC,"Elizabeth City, NC",2026-01-31,1509.555556
+1964,135,Passaic County,county,NJ,NJ,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,2243.158265
+2470,403,Paulding County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,1965.593298
+1966,1650,Payette County,county,ID,ID,"Ontario, OR-ID",2026-01-31,1637.5
+670,701,Payne County,county,OK,OK,"Stillwater, OK",2026-01-31,1388.4729
+671,1548,Peach County,county,GA,GA,"Warner Robins, GA",2026-01-31,1492.5
+1313,883,Pender County,county,NC,NC,"Wilmington, NC",2026-01-31,1889.383459
+2997,566,Pennington County,county,SD,SD,"Rapid City, SD",2026-01-31,1330.415349
+2824,444,Penobscot County,county,ME,ME,"Bangor, ME",2026-01-31,1546.442874
+1314,365,Peoria County,county,IL,IL,"Peoria, IL",2026-01-31,1157.448485
+3259,1384,Petersburg City,county,VA,VA,"Richmond, VA",2026-01-31,1319.022589
+1316,1137,Pettis County,county,MO,MO,"Sedalia, MO",2026-01-31,1053.722222
+1317,1095,Phelps County,county,MO,MO,"Rolla, MO",2026-01-31,788.2807018
+3175,22,Philadelphia County,county,PA,PA,"Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",2026-01-31,1709.625497
+1972,499,Pickens County,county,SC,SC,"Greenville-Anderson, SC",2026-01-31,1432.798951
+1322,60,Pierce County,county,WA,WA,"Seattle-Tacoma-Bellevue, WA",2026-01-31,1941.374401
+1323,1156,Pierce County,county,WI,WI,"Minneapolis-St. Paul-Bloomington, MN-WI",2026-01-31,1448.333333
+271,1387,Pike County,county,AL,AL,"Troy, AL",2026-01-31,1129.527778
+280,903,Pike County,county,PA,PA,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,1920.5
+281,44,Pima County,county,AZ,AZ,"Tucson, AZ",2026-01-31,1464.724284
+685,166,Pinal County,county,AZ,AZ,"Phoenix-Mesa-Chandler, AZ",2026-01-31,1783.640152
+2480,51,Pinellas County,county,FL,FL,"Tampa-St. Petersburg-Clearwater, FL",2026-01-31,2009.579991
+1324,2008,Pitkin County,county,CO,CO,"Glenwood Springs, CO",2026-01-31,16722.22222
+283,387,Pitt County,county,NC,NC,"Greenville, NC",2026-01-31,1412.492222
+1325,177,Placer County,county,CA,CA,"Sacramento-Roseville-Folsom, CA",2026-01-31,2490.549128
+3117,1707,Plaquemines Parish,county,LA,LA,"New Orleans-Metairie, LA",2026-01-31,1622.222222
+1326,585,Platte County,county,MO,MO,"Kansas City, MO-KS",2026-01-31,1580.1886
+1327,1358,Platte County,county,NE,NE,"Columbus, NE",2026-01-31,1463.958333
+2482,133,Plymouth County,county,MA,MA,"Boston-Cambridge-Newton, MA-NH",2026-01-31,2615.197559
+285,93,Polk County,county,FL,FL,"Lakeland-Winter Haven, FL",2026-01-31,1825.671938
+286,1141,Polk County,county,GA,GA,"Cedartown, GA",2026-01-31,1311.25
+287,145,Polk County,county,IA,IA,"Des Moines-West Des Moines, IA",2026-01-31,1193.245455
+288,1429,Polk County,county,MN,MN,"Grand Forks, ND-MN",2026-01-31,685.0
+289,1424,Polk County,county,MO,MO,"Springfield, MO",2026-01-31,1000.0
+290,1912,Polk County,county,NC,NC,,2026-01-31,1925.0
+292,677,Polk County,county,OR,OR,"Salem, OR",2026-01-31,1767.027778
+294,1016,Polk County,county,TX,TX,,2026-01-31,1367.333333
+2485,1246,Pontotoc County,county,OK,OK,"Ada, OK",2026-01-31,984.0277778
+296,854,Pope County,county,AR,AR,"Russellville, AR",2026-01-31,874.8888889
+1975,409,Portage County,county,OH,OH,"Akron, OH",2026-01-31,1446.291005
+1976,777,Portage County,county,WI,WI,"Stevens Point, WI",2026-01-31,1188.392857
+1330,381,Porter County,county,IN,IN,"Chicago-Naperville-Elgin, IL-IN-WI",2026-01-31,1425.347701
+3260,625,Portsmouth City,county,VA,VA,"Virginia Beach-Norfolk-Newport News, VA-NC",2026-01-31,1565.495427
+688,1631,Posey County,county,IN,IN,"Evansville, IN-KY",2026-01-31,1000.0
+3178,767,Pottawatomie County,county,OK,OK,"Shawnee, OK",2026-01-31,1117.365079
+3216,644,Pottawattamie County,county,IA,IA,"Omaha-Council Bluffs, NE-IA",2026-01-31,1207.651961
+1333,530,Potter County,county,TX,TX,"Amarillo, TX",2026-01-31,979.6666667
+2486,1470,Powhatan County,county,VA,VA,"Richmond, VA",2026-01-31,1684.166667
+3246,52,Prince Georges County,county,MD,MD,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,1988.736189
+3247,148,Prince William County,county,VA,VA,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,2241.890283
+3001,102,Providence County,county,RI,RI,"Providence-Warwick, RI-MA",2026-01-31,1995.383238
+1337,399,Pueblo County,county,CO,CO,"Pueblo, CO",2026-01-31,1250.877778
+1981,179,Pulaski County,county,AR,AR,"Little Rock-North Little Rock-Conway, AR",2026-01-31,1147.749022
+1986,955,Pulaski County,county,MO,MO,"Fort Leonard Wood, MO",2026-01-31,1107.330591
+1338,759,Putnam County,county,FL,FL,"Palatka, FL",2026-01-31,1337.119048
+1341,1286,Putnam County,county,IN,IN,"Indianapolis-Carmel-Anderson, IN",2026-01-31,1175.0
+1343,620,Putnam County,county,NY,NY,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,2574.305556
+1345,721,Putnam County,county,TN,TN,"Cookeville, TN",2026-01-31,1466.841667
+1346,915,Putnam County,county,WV,WV,"Huntington-Ashland, WV-KY-OH",2026-01-31,1147.916667
+3118,1009,Queen Annes County,county,MD,MD,"Baltimore-Columbia-Towson, MD",2026-01-31,2298.333333
+1347,10,Queens County,county,NY,NY,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,2974.948691
+692,2052,Rabun County,county,GA,GA,,2026-01-31,2283.333333
+1348,342,Racine County,county,WI,WI,"Racine, WI",2026-01-31,1322.390523
+3182,2088,Radford City,county,VA,VA,"Blacksburg-Christiansburg, VA",2026-01-31,1200.0
+1990,748,Raleigh County,county,WV,WV,"Beckley, WV",2026-01-31,1091.666667
+1349,126,Ramsey County,county,MN,MN,"Minneapolis-St. Paul-Bloomington, MN-WI",2026-01-31,1492.31385
+1991,471,Randall County,county,TX,TX,"Amarillo, TX",2026-01-31,1396.510421
+2493,1665,Randolph County,county,IN,IN,,2026-01-31,675.0
+2495,460,Randolph County,county,NC,NC,"Greensboro-High Point, NC",2026-01-31,979.6666667
+1351,432,Rankin County,county,MS,MS,"Jackson, MS",2026-01-31,1718.13604
+1992,496,Rapides Parish,county,LA,LA,"Alexandria, LA",2026-01-31,990.1904762
+301,865,Reno County,county,KS,KS,"Hutchinson, KS",2026-01-31,828.1298701
+3004,414,Rensselaer County,county,NY,NY,"Albany-Schenectady-Troy, NY",2026-01-31,1471.128385
+302,1404,Rhea County,county,TN,TN,"Dayton, TN",2026-01-31,815.0
+304,813,Rice County,county,MN,MN,"Faribault-Northfield, MN",2026-01-31,1566.388889
+2505,2064,Richland County,county,ND,ND,"Wahpeton, ND-MN",2026-01-31,886.3333333
+2506,514,Richland County,county,OH,OH,"Mansfield, OH",2026-01-31,854.3111111
+2507,170,Richland County,county,SC,SC,"Columbia, SC",2026-01-31,1515.80135
+3219,305,Richmond City,county,VA,VA,"Richmond, VA",2026-01-31,1540.683716
+2509,331,Richmond County,county,GA,GA,"Augusta-Richmond County, GA-SC",2026-01-31,1339.5948
+2511,143,Richmond County,county,NY,NY,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,2616.712001
+695,763,Riley County,county,KS,KS,"Manhattan, KS",2026-01-31,1147.540835
+2832,9,Riverside County,county,CA,CA,"Riverside-San Bernardino-Ontario, CA",2026-01-31,2510.899364
+696,957,Roane County,county,TN,TN,"Knoxville, TN",2026-01-31,1266.111111
+3184,607,Roanoke City,county,VA,VA,"Roanoke, VA",2026-01-31,1242.616167
+1998,629,Roanoke County,county,VA,VA,"Roanoke, VA",2026-01-31,1606.449074
+2834,768,Robertson County,county,TN,TN,"Nashville-Davidson--Murfreesboro--Franklin, TN",2026-01-31,1685.789174
+2001,531,Robeson County,county,NC,NC,"Lumberton, NC",2026-01-31,1087.5
+308,408,Rock County,county,WI,WI,"Janesville-Beloit, WI",2026-01-31,1219.104437
+3010,1743,Rockbridge County,county,VA,VA,,2026-01-31,1425.0
+2514,647,Rockdale County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,1683.1122
+3012,659,Rockingham County,county,NC,NC,"Greensboro-High Point, NC",2026-01-31,1234.555556
+3013,226,Rockingham County,county,NH,NH,"Boston-Cambridge-Newton, MA-NH",2026-01-31,2377.436364
+3014,696,Rockingham County,county,VA,VA,"Harrisonburg, VA",2026-01-31,1928.181818
+2515,211,Rockland County,county,NY,NY,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,2872.159174
+2516,583,Rockwall County,county,TX,TX,"Dallas-Fort Worth-Arlington, TX",2026-01-31,1919.955556
+1358,638,Rogers County,county,OK,OK,"Tulsa, OK",2026-01-31,1448.603175
+2837,1922,Roosevelt County,county,NM,NM,"Portales, NM",2026-01-31,956.8333333
+699,1654,Routt County,county,CO,CO,"Steamboat Springs, CO",2026-01-31,3377.777778
+700,1668,Rowan County,county,KY,KY,,2026-01-31,1206.666667
+701,453,Rowan County,county,NC,NC,"Charlotte-Concord-Gastonia, NC-SC",2026-01-31,1408.341991
+312,965,Rusk County,county,TX,TX,"Longview, TX",2026-01-31,1208.833333
+2005,897,Russell County,county,AL,AL,"Columbus, GA-AL",2026-01-31,1282.0
+3016,212,Rutherford County,county,TN,TN,"Nashville-Davidson--Murfreesboro--Franklin, TN",2026-01-31,1686.425583
+2009,879,Rutland County,county,VT,VT,"Rutland, VT",2026-01-31,1541.666667
+3017,23,Sacramento County,county,CA,CA,"Sacramento-Roseville-Folsom, CA",2026-01-31,2118.768627
+2839,1298,Sagadahoc County,county,ME,ME,"Portland-South Portland, ME",2026-01-31,1872.5
+2010,351,Saginaw County,county,MI,MI,"Saginaw, MI",2026-01-31,987.525641
+3221,1117,Saint Bernard Parish,county,LA,LA,"New Orleans-Metairie, LA",2026-01-31,1441.666667
+3223,176,Saint Charles County,county,MO,MO,"St. Louis, MO-IL",2026-01-31,1643.154068
+3222,970,Saint Charles Parish,county,LA,LA,"New Orleans-Metairie, LA",2026-01-31,1394.166667
+3121,660,Saint Clair County,county,AL,AL,"Birmingham-Hoover, AL",2026-01-31,1719.534392
+3122,270,Saint Clair County,county,IL,IL,"St. Louis, MO-IL",2026-01-31,1250.462375
+3123,418,Saint Clair County,county,MI,MI,"Detroit-Warren-Dearborn, MI",2026-01-31,1119.053968
+3126,650,Saint Croix County,county,WI,WI,"Minneapolis-St. Paul-Bloomington, MN-WI",2026-01-31,1746.132479
+3248,810,Saint Francois County,county,MO,MO,"Farmington, MO",2026-01-31,1118.75
+3285,1149,Saint John the Baptist Parish,county,LA,LA,"New Orleans-Metairie, LA",2026-01-31,1569.444444
+3128,263,Saint Johns County,county,FL,FL,"Jacksonville, FL",2026-01-31,2136.490301
+2849,255,Saint Joseph County,county,IN,IN,"South Bend-Mishawaka, IN-MI",2026-01-31,1366.368263
+3187,697,Saint Landry Parish,county,LA,LA,"Opelousas, LA",2026-01-31,959.375
+3249,565,Saint Lawrence County,county,NY,NY,"Ogdensburg-Massena, NY",2026-01-31,985.6666667
+3269,231,Saint Louis City,county,MO,MO,"St. Louis, MO-IL",2026-01-31,1307.790374
+3129,340,Saint Louis County,county,MN,MN,"Duluth, MN-WI",2026-01-31,1802.951724
+3130,47,Saint Louis County,county,MO,MO,"St. Louis, MO-IL",2026-01-31,1474.632356
+3131,217,Saint Lucie County,county,FL,FL,"Port St. Lucie, FL",2026-01-31,2332.012561
+3188,972,Saint Martin Parish,county,LA,LA,"Lafayette, LA",2026-01-31,1481.25
+3132,548,Saint Marys County,county,MD,MD,"California-Lexington Park, MD",2026-01-31,1839.426336
+3225,265,Saint Tammany Parish,county,LA,LA,"New Orleans-Metairie, LA",2026-01-31,1525.108332
+703,1633,Salem City,county,VA,VA,"Roanoke, VA",2026-01-31,1495.460317
+702,841,Salem County,county,NJ,NJ,"Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",2026-01-31,1741.666667
+1362,521,Saline County,county,AR,AR,"Little Rock-North Little Rock-Conway, AR",2026-01-31,1514.751225
+1364,944,Saline County,county,KS,KS,"Salina, KS",2026-01-31,1100.833333
+2840,36,Salt Lake County,county,UT,UT,"Salt Lake City, UT",2026-01-31,1578.723186
+3020,852,San Benito County,county,CA,CA,"San Jose-Sunnyvale-Santa Clara, CA",2026-01-31,2829.047619
+3250,13,San Bernardino County,county,CA,CA,"Riverside-San Bernardino-Ontario, CA",2026-01-31,2407.318259
+2841,4,San Diego County,county,CA,CA,"San Diego-Chula Vista-Carlsbad, CA",2026-01-31,2870.518287
+3227,65,San Francisco County,county,CA,CA,"San Francisco-Oakland-Berkeley, CA",2026-01-31,3722.540388
+3134,83,San Joaquin County,county,CA,CA,"Stockton, CA",2026-01-31,2328.003037
+2519,519,San Juan County,county,NM,NM,"Farmington, NM",2026-01-31,1439.388889
+3261,247,San Luis Obispo County,county,CA,CA,"San Luis Obispo-Paso Robles, CA",2026-01-31,2996.487685
+2842,85,San Mateo County,county,CA,CA,"San Francisco-Oakland-Berkeley, CA",2026-01-31,3471.513661
+3190,789,San Patricio County,county,TX,TX,"Corpus Christi, TX",2026-01-31,1199.412963
+2524,451,Sandoval County,county,NM,NM,"Albuquerque, NM",2026-01-31,1883.418254
+2526,343,Sangamon County,county,IL,IL,"Springfield, IL",2026-01-31,1153.321167
+3229,159,Santa Barbara County,county,CA,CA,"Santa Maria-Santa Barbara, CA",2026-01-31,3358.617364
+3136,16,Santa Clara County,county,CA,CA,"San Jose-Sunnyvale-Santa Clara, CA",2026-01-31,3413.358013
+3024,1045,Santa Cruz County,county,AZ,AZ,"Nogales, AZ",2026-01-31,1433.333333
+3025,254,Santa Cruz County,county,CA,CA,"Santa Cruz-Watsonville, CA",2026-01-31,3432.760187
+2527,442,Santa Fe County,county,NM,NM,"Santa Fe, NM",2026-01-31,1961.731783
+3026,360,Santa Rosa County,county,FL,FL,"Pensacola-Ferry Pass-Brent, FL",2026-01-31,1964.778502
+2528,164,Sarasota County,county,FL,FL,"North Port-Sarasota-Bradenton, FL",2026-01-31,2124.992508
+2529,288,Saratoga County,county,NY,NY,"Albany-Schenectady-Troy, NY",2026-01-31,1750.474137
+704,353,Sarpy County,county,NE,NE,"Omaha-Council Bluffs, NE-IA",2026-01-31,1474.266063
+314,832,Sauk County,county,WI,WI,"Baraboo, WI",2026-01-31,1123.113889
+3137,428,Schenectady County,county,NY,NY,"Albany-Schenectady-Troy, NY",2026-01-31,1384.742521
+3028,462,Schuylkill County,county,PA,PA,"Pottsville, PA",2026-01-31,1150.896825
+706,380,Scott County,county,IA,IA,"Davenport-Moline-Rock Island, IA-IL",2026-01-31,1057.381481
+710,922,Scott County,county,KY,KY,"Lexington-Fayette, KY",2026-01-31,1539.417989
+711,450,Scott County,county,MN,MN,"Minneapolis-St. Paul-Bloomington, MN-WI",2026-01-31,1733.324916
+3192,1306,Scotts Bluff County,county,NE,NE,"Scottsbluff, NE",2026-01-31,892.5
+2844,509,Sebastian County,county,AR,AR,"Fort Smith, AR-OK",2026-01-31,1036.180808
+2537,136,Sedgwick County,county,KS,KS,"Wichita, KS",2026-01-31,1185.680694
+2538,152,Seminole County,county,FL,FL,"Orlando-Kissimmee-Sanford, FL",2026-01-31,1825.543942
+1374,940,Seneca County,county,OH,OH,"Tiffin, OH",2026-01-31,700.0
+1376,619,Sevier County,county,TN,TN,"Sevierville, TN",2026-01-31,1753.175
+1380,368,Shasta County,county,CA,CA,"Redding, CA",2026-01-31,1589.792421
+2022,1181,Shawano County,county,WI,WI,"Shawano, WI",2026-01-31,810.0
+2023,375,Shawnee County,county,KS,KS,"Topeka, KS",2026-01-31,1146.346898
+2845,538,Sheboygan County,county,WI,WI,"Sheboygan, WI",2026-01-31,949.1666667
+1381,312,Shelby County,county,AL,AL,"Birmingham-Hoover, AL",2026-01-31,1679.422057
+1384,1091,Shelby County,county,IN,IN,"Indianapolis-Carmel-Anderson, IN",2026-01-31,1413.777778
+1385,1043,Shelby County,county,KY,KY,"Louisville/Jefferson County, KY-IN",2026-01-31,1623.333333
+1387,1030,Shelby County,county,OH,OH,"Sidney, OH",2026-01-31,1325.583333
+1388,59,Shelby County,county,TN,TN,"Memphis, TN-MS-AR",2026-01-31,1358.098048
+3030,1106,Shenandoah County,county,VA,VA,,2026-01-31,1540.0
+2846,630,Sherburne County,county,MN,MN,"Minneapolis-St. Paul-Bloomington, MN-WI",2026-01-31,1480.555556
+2546,1452,Sheridan County,county,WY,WY,"Sheridan, WY",2026-01-31,1591.666667
+3031,791,Shiawassee County,county,MI,MI,"Lansing-East Lansing, MI",2026-01-31,1089.0
+3032,1332,Silver Bow County,county,MT,MT,"Butte-Silver Bow, MT",2026-01-31,1340.555556
+2028,1918,Simpson County,county,KY,KY,,2026-01-31,1395.0
+2548,1108,Siskiyou County,county,CA,CA,,2026-01-31,1546.666667
+1393,504,Skagit County,county,WA,WA,"Mount Vernon-Anacortes, WA",2026-01-31,2121.593137
+725,294,Smith County,county,TX,TX,"Tyler, TX",2026-01-31,1330.594345
+2847,76,Snohomish County,county,WA,WA,"Seattle-Tacoma-Bellevue, WA",2026-01-31,2134.458011
+1395,158,Solano County,county,CA,CA,"Vallejo, CA",2026-01-31,2385.097893
+2552,209,Somerset County,county,NJ,NJ,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,2580.305283
+2553,751,Somerset County,county,PA,PA,"Somerset, PA",2026-01-31,887.25
+1396,144,Sonoma County,county,CA,CA,"Santa Rosa-Petaluma, CA",2026-01-31,2600.577011
+2554,814,Spalding County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,1313.924242
+3141,219,Spartanburg County,county,SC,SC,"Spartanburg, SC",2026-01-31,1408.47216
+2033,132,Spokane County,county,WA,WA,"Spokane-Spokane Valley, WA",2026-01-31,1480.488222
+3193,473,Spotsylvania County,county,VA,VA,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,1935.129175
+2556,439,Stafford County,county,VA,VA,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,2216.077861
+3033,124,Stanislaus County,county,CA,CA,"Modesto, CA",2026-01-31,2096.914426
+1397,863,Stanly County,county,NC,NC,"Albemarle, NC",2026-01-31,1493.333333
+729,1405,Stark County,county,ND,ND,"Dickinson, ND",2026-01-31,1210.055556
+730,190,Stark County,county,OH,OH,"Canton-Massillon, OH",2026-01-31,1052.116183
+3230,1637,Staunton City,county,VA,VA,"Staunton, VA",2026-01-31,1402.055556
+2037,426,Stearns County,county,MN,MN,"St. Cloud, MN",2026-01-31,1245.748904
+1399,1267,Steele County,county,MN,MN,"Owatonna, MN",2026-01-31,1136.0
+2558,1135,Stephens County,county,OK,OK,"Duncan, OK",2026-01-31,986.1111111
+2038,1349,Steuben County,county,IN,IN,"Angola, IN",2026-01-31,1251.333333
+2039,642,Steuben County,county,NY,NY,"Corning, NY",2026-01-31,1338.571429
+2042,1064,Stevens County,county,WA,WA,"Spokane-Spokane Valley, WA",2026-01-31,1600.0
+1401,1099,Stokes County,county,NC,NC,"Winston-Salem, NC",2026-01-31,1395.0
+735,618,Story County,county,IA,IA,"Ames, IA",2026-01-31,1119.864078
+2851,495,Strafford County,county,NH,NH,"Boston-Cambridge-Newton, MA-NH",2026-01-31,2062.539683
+2562,1788,Stutsman County,county,ND,ND,"Jamestown, ND",2026-01-31,1132.305556
+3194,645,Suffolk City,county,VA,VA,"Virginia Beach-Norfolk-Newport News, VA-NC",2026-01-31,1884.867662
+2045,80,Suffolk County,county,MA,MA,"Boston-Cambridge-Newton, MA-NH",2026-01-31,3531.255844
+2046,24,Suffolk County,county,NY,NY,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,5139.855147
+2566,1129,Sullivan County,county,NH,NH,"Lebanon, NH-VT",2026-01-31,1654.305556
+2567,727,Sullivan County,county,NY,NY,,2026-01-31,1828.888889
+2569,425,Sullivan County,county,TN,TN,"Kingsport-Bristol, TN-VA",2026-01-31,1372.445055
+1403,1440,Summit County,county,CO,CO,"Breckenridge, CO",2026-01-31,3504.1
+1404,128,Summit County,county,OH,OH,"Akron, OH",2026-01-31,1213.147211
+1405,1157,Summit County,county,UT,UT,"Heber, UT",2026-01-31,3197.513228
+1407,347,Sumner County,county,TN,TN,"Nashville-Davidson--Murfreesboro--Franklin, TN",2026-01-31,1630.941065
+1409,510,Sumter County,county,FL,FL,"The Villages, FL",2026-01-31,1658.14916
+1410,1478,Sumter County,county,GA,GA,"Americus, GA",2026-01-31,958.3333333
+1411,582,Sumter County,county,SC,SC,"Sumter, SC",2026-01-31,1470.741758
+737,772,Surry County,county,NC,NC,"Mount Airy, NC",2026-01-31,1299.166667
+1412,290,Sussex County,county,DE,DE,"Salisbury, MD-DE",2026-01-31,2233.739899
+1413,454,Sussex County,county,NJ,NJ,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,2394.309524
+1415,610,Sutter County,county,CA,CA,"Yuba City, CA",2026-01-31,1870.759259
+3036,1148,Sweetwater County,county,WY,WY,"Rock Springs, WY",2026-01-31,1009.388889
+1418,1260,Talbot County,county,MD,MD,"Easton, MD",2026-01-31,2450.0
+2853,700,Talladega County,county,AL,AL,"Talladega-Sylacauga, AL",2026-01-31,1210.277778
+741,929,Taney County,county,MO,MO,"Branson, MO",2026-01-31,1402.896825
+3039,491,Tangipahoa Parish,county,LA,LA,"Hammond, LA",2026-01-31,1241.711988
+316,1352,Taos County,county,NM,NM,"Taos, NM",2026-01-31,1987.5
+2049,14,Tarrant County,county,TX,TX,"Dallas-Fort Worth-Arlington, TX",2026-01-31,1570.324426
+1423,465,Taylor County,county,TX,TX,"Abilene, TX",2026-01-31,1777.940118
+2572,488,Tazewell County,county,IL,IL,"Peoria, IL",2026-01-31,1205.292308
+1426,831,Tehama County,county,CA,CA,"Red Bluff, CA",2026-01-31,1419.861111
+1427,1671,Teller County,county,CO,CO,"Colorado Springs, CO",2026-01-31,2041.694444
+3040,558,Terrebonne Parish,county,LA,LA,"Houma-Thibodaux, LA",2026-01-31,1269.608328
+743,2385,Teton County,county,ID,ID,"Jackson, WY-ID",2026-01-31,2942.5
+1430,1077,Thomas County,county,GA,GA,"Thomasville, GA",2026-01-31,1647.222222
+2575,243,Thurston County,county,WA,WA,"Olympia-Lacey-Tumwater, WA",2026-01-31,2028.23209
+2854,1568,Tillamook County,county,OR,OR,,2026-01-31,1900.0
+3041,355,Tippecanoe County,county,IN,IN,"Lafayette-West Lafayette, IN",2026-01-31,1382.744444
+1435,873,Tipton County,county,TN,TN,"Memphis, TN-MS-AR",2026-01-31,1794.166667
+2054,449,Tolland County,county,CT,CT,"Hartford-East Hartford-Middletown, CT",2026-01-31,1904.202381
+2855,529,Tom Green County,county,TX,TX,"San Angelo, TX",2026-01-31,1317.230769
+2578,581,Tompkins County,county,NY,NY,"Ithaca, NY",2026-01-31,2095.854444
+1436,774,Tooele County,county,UT,UT,"Salt Lake City, UT",2026-01-31,2051.5
+1437,1573,Toombs County,county,GA,GA,"Vidalia, GA",2026-01-31,1500.0
+3197,1395,Transylvania County,county,NC,NC,"Brevard, NC",2026-01-31,1966.666667
+1440,33,Travis County,county,TX,TX,"Austin-Round Rock-Georgetown, TX",2026-01-31,1562.519907
+756,782,Troup County,county,GA,GA,"LaGrange, GA-AL",2026-01-31,1286.970782
+2583,336,Trumbull County,county,OH,OH,"Youngstown-Warren-Boardman, OH-PA",2026-01-31,1135.638889
+1442,151,Tulare County,county,CA,CA,"Visalia, CA",2026-01-31,1771.159609
+757,101,Tulsa County,county,OK,OK,"Tulsa, OK",2026-01-31,1333.222154
+2584,938,Tuolumne County,county,CA,CA,"Sonora, CA",2026-01-31,1565.0
+3043,308,Tuscaloosa County,county,AL,AL,"Tuscaloosa, AL",2026-01-31,1533.914451
+3044,646,Tuscarawas County,county,OH,OH,"New Philadelphia-Dover, OH",2026-01-31,1034.027778
+3045,665,Twin Falls County,county,ID,ID,"Twin Falls, ID",2026-01-31,1648.875926
+1447,1324,Uintah County,county,UT,UT,"Vernal, UT",2026-01-31,1469.166667
+1448,369,Ulster County,county,NY,NY,"Kingston, NY",2026-01-31,2151.445238
+2585,717,Umatilla County,county,OR,OR,"Hermiston-Pendleton, OR",2026-01-31,1423.553571
+770,286,Union County,county,NC,NC,"Charlotte-Concord-Gastonia, NC-SC",2026-01-31,2001.863437
+771,120,Union County,county,NJ,NJ,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,2546.380505
+773,867,Union County,county,OH,OH,"Columbus, OH",2026-01-31,1477.238095
+774,1597,Union County,county,OR,OR,"La Grande, OR",2026-01-31,1317.333333
+775,1130,Union County,county,PA,PA,"Lewisburg, PA",2026-01-31,1253.333333
+322,105,Utah County,county,UT,UT,"Provo-Orem, UT",2026-01-31,1740.196276
+2857,1038,Val Verde County,county,TX,TX,"Del Rio, TX",2026-01-31,1388.888889
+2586,742,Valencia County,county,NM,NM,"Albuquerque, NM",2026-01-31,1908.555556
+2860,744,Van Buren County,county,MI,MI,,2026-01-31,1127.916667
+2862,895,Van Zandt County,county,TX,TX,,2026-01-31,1422.222222
+781,1142,Vance County,county,NC,NC,"Henderson, NC",2026-01-31,1060.416667
+3146,374,Vanderburgh County,county,IN,IN,"Evansville, IN-KY",2026-01-31,1015.815551
+2060,991,Venango County,county,PA,PA,"Oil City, PA",2026-01-31,887.5
+2061,74,Ventura County,county,CA,CA,"Oxnard-Thousand Oaks-Ventura, CA",2026-01-31,2967.269811
+2865,747,Vermilion County,county,IL,IL,"Danville, IL",2026-01-31,824.9047619
+2866,911,Vermilion Parish,county,LA,LA,"Lafayette, LA",2026-01-31,1814.166667
+1457,1020,Vernon Parish,county,LA,LA,"Fort Polk South, LA",2026-01-31,1171.666667
+2588,656,Victoria County,county,TX,TX,"Victoria, TX",2026-01-31,1178.58664
+323,576,Vigo County,county,IN,IN,"Terre Haute, IN",2026-01-31,979.6436497
+3286,155,Virginia Beach City,county,VA,VA,"Virginia Beach-Norfolk-Newport News, VA-NC",2026-01-31,1974.855731
+2063,127,Volusia County,county,FL,FL,"Deltona-Daytona Beach-Ormond Beach, FL",2026-01-31,1762.58218
+2065,712,Wagoner County,county,OK,OK,"Tulsa, OK",2026-01-31,1679.655556
+324,39,Wake County,county,NC,NC,"Raleigh-Cary, NC",2026-01-31,1641.63192
+2066,1388,Wakulla County,county,FL,FL,"Tallahassee, FL",2026-01-31,1620.833333
+1464,833,Walker County,county,AL,AL,"Jasper, AL",2026-01-31,1285.277778
+1465,796,Walker County,county,GA,GA,"Chattanooga, TN-GA",2026-01-31,1361.444444
+1466,739,Walker County,county,TX,TX,"Huntsville, TX",2026-01-31,1293.372222
+3147,862,Walla Walla County,county,WA,WA,"Walla Walla, WA",2026-01-31,1478.461538
+1467,935,Waller County,county,TX,TX,"Houston-The Woodlands-Sugar Land, TX",2026-01-31,2277.99537
+1468,757,Walton County,county,FL,FL,"Crestview-Fort Walton Beach-Destin, FL",2026-01-31,1982.448797
+1469,632,Walton County,county,GA,GA,"Atlanta-Sandy Springs-Alpharetta, GA",2026-01-31,1903.910256
+2592,578,Walworth County,county,WI,WI,"Whitewater, WI",2026-01-31,1404.761905
+325,781,Ward County,county,ND,ND,"Minot, ND",2026-01-31,1012.264706
+327,1310,Ware County,county,GA,GA,"Waycross, GA",2026-01-31,950.0
+1471,979,Warren County,county,IA,IA,"Des Moines-West Des Moines, IA",2026-01-31,1257.333333
+1474,487,Warren County,county,KY,KY,"Bowling Green, KY",2026-01-31,1255.224638
+1475,1331,Warren County,county,MO,MO,"St. Louis, MO-IL",2026-01-31,1118.75
+1478,562,Warren County,county,NJ,NJ,"Allentown-Bethlehem-Easton, PA-NJ",2026-01-31,1938.7886
+1479,827,Warren County,county,NY,NY,"Glens Falls, NY",2026-01-31,1491.25
+1480,283,Warren County,county,OH,OH,"Cincinnati, OH-KY-IN",2026-01-31,1933.830421
+1483,1195,Warren County,county,VA,VA,"Washington-Arlington-Alexandria, DC-VA-MD-WV",2026-01-31,1766.666667
+2070,848,Warrick County,county,IN,IN,"Evansville, IN-KY",2026-01-31,1292.166667
+2071,1362,Wasatch County,county,UT,UT,"Heber, UT",2026-01-31,2442.956044
+785,1586,Wasco County,county,OR,OR,"The Dalles, OR",2026-01-31,1702.083333
+1484,1933,Waseca County,county,MN,MN,,2026-01-31,990.0
+3048,279,Washington County,county,AR,AR,"Fayetteville-Springdale-Rogers, AR",2026-01-31,1620.771136
+3059,441,Washington County,county,MD,MD,"Hagerstown-Martinsburg, MD-WV",2026-01-31,1466.000556
+3061,264,Washington County,county,MN,MN,"Minneapolis-St. Paul-Bloomington, MN-WI",2026-01-31,1941.813617
+3067,884,Washington County,county,OH,OH,"Marietta, OH",2026-01-31,1223.75
+3068,967,Washington County,county,OK,OK,"Bartlesville, OK",2026-01-31,1114.962302
+3069,112,Washington County,county,OR,OR,"Portland-Vancouver-Hillsboro, OR-WA",2026-01-31,1840.069211
+3070,326,Washington County,county,PA,PA,"Pittsburgh, PA",2026-01-31,1340.397185
+3071,498,Washington County,county,RI,RI,"Providence-Warwick, RI-MA",2026-01-31,2508.641026
+3072,489,Washington County,county,TN,TN,"Johnson City, TN",2026-01-31,1429.572125
+3073,1321,Washington County,county,TX,TX,"Brenham, TX",2026-01-31,1586.0
+3074,378,Washington County,county,UT,UT,"St. George, UT",2026-01-31,1901.33832
+3076,887,Washington County,county,VT,VT,"Barre, VT",2026-01-31,1485.0
+3077,478,Washington County,county,WI,WI,"Milwaukee-Waukesha, WI",2026-01-31,1483.747619
+1485,147,Washoe County,county,NV,NV,"Reno, NV",2026-01-31,1902.192795
+2869,192,Washtenaw County,county,MI,MI,"Ann Arbor, MI",2026-01-31,2049.807486
+2073,948,Watauga County,county,NC,NC,"Boone, NC",2026-01-31,1800.915825
+2596,174,Waukesha County,county,WI,WI,"Milwaukee-Waukesha, WI",2026-01-31,1585.395944
+789,815,Wayne County,county,IN,IN,"Richmond, IN",2026-01-31,854.3055556
+791,18,Wayne County,county,MI,MI,"Detroit-Warren-Dearborn, MI",2026-01-31,1358.678209
+794,535,Wayne County,county,NC,NC,"Goldsboro, NC",2026-01-31,1421.805556
+796,655,Wayne County,county,NY,NY,"Rochester, NY",2026-01-31,1386.25
+797,541,Wayne County,county,OH,OH,"Wooster, OH",2026-01-31,1331.5
+798,987,Wayne County,county,PA,PA,,2026-01-31,1339.722222
+3262,1767,Waynesboro City,county,VA,VA,"Staunton, VA",2026-01-31,1368.333333
+2075,1397,Weakley County,county,TN,TN,"Martin, TN",2026-01-31,895.8333333
+328,261,Webb County,county,TX,TX,"Laredo, TX",2026-01-31,1273.625
+802,269,Weber County,county,UT,UT,"Ogden-Clearfield, UT",2026-01-31,1498.41849
+2077,1278,Webster County,county,IA,IA,"Fort Dodge, IA",2026-01-31,819.6666667
+2080,1226,Webster County,county,MO,MO,"Springfield, MO",2026-01-31,972.5
+329,220,Weld County,county,CO,CO,"Greeley, CO",2026-01-31,1711.377255
+803,1535,Wells County,county,IN,IN,"Bluffton, IN",2026-01-31,899.0
+3271,1570,West Baton Rouge Parish,county,LA,LA,"Baton Rouge, LA",2026-01-31,1168.944444
+3148,48,Westchester County,county,NY,NY,"New York-Newark-Jersey City, NY-NJ-PA",2026-01-31,2955.391384
+3200,201,Westmoreland County,county,PA,PA,"Pittsburgh, PA",2026-01-31,1028.128268
+3201,1964,Westmoreland County,county,VA,VA,,2026-01-31,1878.333333
+2085,1166,Wharton County,county,TX,TX,"El Campo, TX",2026-01-31,1587.5
+2086,307,Whatcom County,county,WA,WA,"Bellingham, WA",2026-01-31,1882.20841
+805,735,White County,county,AR,AR,"Searcy, AR",2026-01-31,1236.428571
+2872,596,Whitfield County,county,GA,GA,"Dalton, GA",2026-01-31,1524.904762
+2091,1359,Whitley County,county,IN,IN,"Fort Wayne, IN",2026-01-31,1030.0
+2093,1032,Whitman County,county,WA,WA,"Pullman, WA",2026-01-31,1461.467768
+2095,500,Wichita County,county,TX,TX,"Wichita Falls, TX",2026-01-31,1199.249881
+2598,595,Wicomico County,county,MD,MD,"Salisbury, MD-DE",2026-01-31,1479.055861
+1492,820,Wilkes County,county,NC,NC,"North Wilkesboro, NC",2026-01-31,1100.0
+330,97,Will County,county,IL,IL,"Chicago-Naperville-Elgin, IL-IN-WI",2026-01-31,2112.363515
+2599,1238,Williams County,county,ND,ND,"Williston, ND",2026-01-31,1361.350996
+3279,2147,Williamsburg City,county,VA,VA,"Virginia Beach-Norfolk-Newport News, VA-NC",2026-01-31,2090.166667
+3079,807,Williamson County,county,IL,IL,"Carbondale-Marion, IL",2026-01-31,970.1904762
+3080,280,Williamson County,county,TN,TN,"Nashville-Davidson--Murfreesboro--Franklin, TN",2026-01-31,2008.645149
+3081,114,Williamson County,county,TX,TX,"Austin-Round Rock-Georgetown, TX",2026-01-31,1541.200229
+1495,724,Wilson County,county,NC,NC,"Wilson, NC",2026-01-31,1375.648148
+1496,458,Wilson County,county,TN,TN,"Nashville-Davidson--Murfreesboro--Franklin, TN",2026-01-31,1979.196748
+1497,1015,Wilson County,county,TX,TX,"San Antonio-New Braunfels, TX",2026-01-31,1681.25
+3263,1529,Winchester City,county,VA,VA,"Winchester, VA-WV",2026-01-31,1534.623932
+2097,542,Windham County,county,CT,CT,"Worcester, MA-CT",2026-01-31,1703.703704
+2098,1071,Windham County,county,VT,VT,,2026-01-31,1733.333333
+2099,914,Windsor County,county,VT,VT,"Lebanon, NH-VT",2026-01-31,1770.0
+2877,245,Winnebago County,county,IL,IL,"Rockford, IL",2026-01-31,1193.20332
+2878,386,Winnebago County,county,WI,WI,"Oshkosh-Neenah, WI",2026-01-31,1112.997995
+1498,1002,Winona County,county,MN,MN,"Winona, MN",2026-01-31,1060.388889
+333,794,Wise County,county,TX,TX,"Dallas-Fort Worth-Arlington, TX",2026-01-31,1684.396825
+335,490,Wood County,county,OH,OH,"Toledo, OH",2026-01-31,1497.969577
+337,753,Wood County,county,WI,WI,"Wisconsin Rapids-Marshfield, WI",2026-01-31,904.6666667
+338,687,Wood County,county,WV,WV,"Parkersburg-Vienna, WV",2026-01-31,937.9166667
+2601,586,Woodbury County,county,IA,IA,"Sioux City, IA-NE-SD",2026-01-31,1168.809524
+2603,1571,Woodford County,county,KY,KY,"Lexington-Fayette, KY",2026-01-31,1785.916667
+2879,70,Worcester County,county,MA,MA,"Worcester, MA-CT",2026-01-31,2102.800661
+2880,971,Worcester County,county,MD,MD,"Salisbury, MD-DE",2026-01-31,2066.333333
+1500,469,Wright County,county,MN,MN,"Minneapolis-St. Paul-Bloomington, MN-WI",2026-01-31,1650.701923
+2881,392,Wyandotte County,county,KS,KS,"Kansas City, MO-KS",2026-01-31,1260.200894
+1503,275,Yakima County,county,WA,WA,"Yakima, WA",2026-01-31,1301.708333
+2110,572,Yamhill County,county,OR,OR,"Portland-Vancouver-Hillsboro, OR-WA",2026-01-31,1870.980159
+2112,291,Yavapai County,county,AZ,AZ,"Prescott Valley-Prescott, AZ",2026-01-31,1822.779084
+3149,407,Yellowstone County,county,MT,MT,"Billings, MT",2026-01-31,1388.920338
+340,315,Yolo County,county,CA,CA,"Sacramento-Roseville-Folsom, CA",2026-01-31,2278.284962
+341,324,York County,county,ME,ME,"Portland-South Portland, ME",2026-01-31,2079.577117
+343,157,York County,county,PA,PA,"York-Hanover, PA",2026-01-31,1309.84778
+344,250,York County,county,SC,SC,"Charlotte-Concord-Gastonia, NC-SC",2026-01-31,1629.170185
+345,770,York County,county,VA,VA,"Virginia Beach-Norfolk-Newport News, VA-NC",2026-01-31,1964.766717
+819,1989,Young County,county,TX,TX,,2026-01-31,1095.0
+346,713,Yuba County,county,CA,CA,"Yuba City, CA",2026-01-31,1983.444444
+347,334,Yuma County,county,AZ,AZ,"Yuma, AZ",2026-01-31,1380.75601
