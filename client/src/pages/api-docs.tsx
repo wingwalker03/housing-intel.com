@@ -49,6 +49,13 @@ export function ApiDocumentation() {
       params: [
         { name: "stateCode", description: "Optional 2-letter state code" },
       ]
+    },
+    {
+      name: "Market Summary",
+      description: "Get high-level national housing market indicators.",
+      path: "/api/summary",
+      method: "GET",
+      params: []
     }
   ];
 

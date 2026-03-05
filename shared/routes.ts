@@ -113,6 +113,18 @@ export const api = {
         })),
       },
     },
+    summary: {
+      method: 'GET' as const,
+      path: '/api/summary',
+      responses: {
+        200: z.object({
+          nationalMedianHomeValue: z.number(),
+          latestDate: z.string(),
+          totalStatesTracked: z.number(),
+          totalMetrosTracked: z.number(),
+        }),
+      },
+    },
   },
 };
 

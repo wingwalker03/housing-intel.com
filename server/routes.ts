@@ -167,5 +167,22 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     res.json(data);
   });
 
+  app.get('/api/summary', async (_req, res) => {
+    try {
+      const states = await storage.getAllStates();
+      const nationalData = await storage.getHousingStats('US');
+      const latest = nationalData[nationalData.length - 1];
+      
+      res.json({
+        nationalMedianHomeValue: latest?.medianHomeValue || 0,
+        latestDate: latest?.date || "",
+        totalStatesTracked: states.length,
+        totalMetrosTracked: 895, // Hardcoded from seo-data or could be queried
+      });
+    } catch (err) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   return httpServer;
 }
