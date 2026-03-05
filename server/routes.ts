@@ -232,3 +232,83 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   return httpServer;
 }
+ // --- PUBLIC API V1 (For External Developers & Widgets) ---                                                                                             
+                                                                                                                                                              
+     // 1. Get State Data (JSON)                                                                                                                              
+     app.get("/api/v1/public/states/:stateCode", async (req, res) => {                                                                                        
+       try {                                                                                                                                                  
+         const { stateCode } = req.params;                                                                                                                    
+         const { startDate, endDate } = req.query;                                                                                                            
+                                                                                                                                                              
+         // Basic Validation                                                                                                                                  
+         if (!stateCode || stateCode.length !== 2) {                                                                                                          
+           return res.status(400).json({ error: "Invalid state code (e.g., TX, CA)" });                                                                       
+         }                                                                                                                                                    
+                                                                                                                                                              
+         // Fetch Data                                                                                                                                        
+         const data = await storage.getHousingStats(stateCod e.toUpperCase(), startDate as string, endDate as string);                                        
+                                                                                                                                                              
+         // Add CORS for public access                                                                                                                        
+         res.header("Access-Control-Allow -Origin", "*");                                                                                                     
+         res.json({                                                                                                                                           
+           meta: { source: "Housing Intel", license: "CC-BY-SA" },                                                                                            
+           data                                                                                                                                               
+         });                                                                                                                                                  
+       } catch (err) {                                                                                                                                        
+         console.error("Public API Error:", err);                                                                                                             
+         res.status(500).json({ error: "Internal Server Error" });                                                                                            
+       }                                                                                                                                                      
+     });                                                                                                                                                      
+                                                                                                                                                              
+     // 2. Get Rental Data for a County (JSON)                                                                                                                
+     app.get("/api/v1/public/rent/:stateCode/:countyName", async (req, res) => {                                                                              
+       try {                                                                                                                                                  
+         const { stateCode, countyName } = req.params;                                                                                                        
+                                                                                                                                                              
+         // Fetch Data (You might need to adjust storage method to filter by county name if not exists)                                                       
+         // Assuming getCountyRentalStats filters by state, we filter locally for now:                                                                        
+         const allCounties = await storage.getCountyRentalStats(sta teCode.toUpperCase());                                                                    
+         const specificCounty = allCounties.filter(c =>                                                                                                       
+           c.countyName.toLowerCase().inclu des(countyName.toLowerCase())                                                                                     
+         );                                                                                                                                                   
+                                                                                                                                                              
+         res.header("Access-Control-Allow -Origin", "*");                                                                                                     
+         res.json({                                                                                                                                           
+           meta: { source: "Housing Intel", region: `${countyName}, ${stateCode}` },                                                                          
+           data: specificCounty                                                                                                                               
+         });                                                                                                                                                  
+       } catch (err) {                                                                                                                                        
+         res.status(500).json({ error: "Server Error" });                                                                                                     
+       }                                                                                                                                                      
+     });                              
+     // --- EMBED WIDGET GENERATOR ---                                                                                                                        
+     // Usage: <script src="https://housing-intel.com/api/v1/widget.js?state=TX"></script>                                                                    
+                                                                                                                                                              
+     app.get("/api/v1/widget.js", (req, res) => {                                                                                                             
+       const { state, metro, theme = "light" } = req.query;                                                                                                   
+       const targetUrl = `https://housing-intel.com/embed?state=${state || ''}&metro=${metro || ''}&theme=${theme}`;                                          
+                                                                                                                                                              
+       const scriptContent = `                                                                                                                                
+         (function() {                                                                                                                                        
+           var container = document.createElement('div');                                                                                                     
+           container.id = 'housing-intel-widget-' + Math.random().toString(36).subst r(2, 9);                                                                 
+           container.style.width = '100%';                                                                                                                    
+           container.style.height = '400px';                                                                                                                  
+           container.style.border = '1px solid #e2e8f0';                                                                                                      
+           container.style.borderRadius = '8px';                                                                                                              
+           container.style.overflow = 'hidden';                                                                                                               
+                                                                                                                                                              
+           var iframe = document.createElement('iframe') ;                                                                                                    
+           iframe.src = '${targetUrl}';                                                                                                                       
+           iframe.style.width = '100%';                                                                                                                       
+           iframe.style.height = '100%';                                                                                                                      
+           iframe.style.border = 'none';                                                                                                                      
+                                                                                                                                                              
+           container.appendChild(iframe);                                                                                                                     
+           document.write(container.outerHT ML);                                                                                                              
+         })();                                                                                                                                                
+       `;                                                                                                                                                     
+                                                                                                                                                              
+       res.setHeader("Content-Type", "application/javascript");                                                                                               
+       res.send(scriptContent);                                                                                                                               
+     });
