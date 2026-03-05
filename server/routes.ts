@@ -171,13 +171,29 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     try {
       const states = await storage.getAllStates();
       const nationalData = await storage.getHousingStats('US');
-      const latest = nationalData[nationalData.length - 1];
+      let latestValue = 0;
+      let latestDate = "";
+
+      if (nationalData.length > 0) {
+        const latest = nationalData[nationalData.length - 1];
+        latestValue = latest.medianHomeValue;
+        latestDate = String(latest.date);
+      } else {
+        // Fallback: aggregate from states
+        const allStats = await storage.getHousingStats();
+        if (allStats.length > 0) {
+          const dates = [...new Set(allStats.map(s => String(s.date)))].sort();
+          latestDate = dates[dates.length - 1];
+          const latestStats = allStats.filter(s => String(s.date) === latestDate);
+          latestValue = Math.round(latestStats.reduce((sum, s) => sum + s.medianHomeValue, 0) / latestStats.length);
+        }
+      }
       
       res.json({
-        nationalMedianHomeValue: latest?.medianHomeValue || 0,
-        latestDate: latest?.date || "",
+        nationalMedianHomeValue: latestValue,
+        latestDate: latestDate,
         totalStatesTracked: states.length,
-        totalMetrosTracked: 895, // Hardcoded from seo-data or could be queried
+        totalMetrosTracked: 895, 
       });
     } catch (err) {
       res.status(500).json({ message: "Internal server error" });
