@@ -167,6 +167,28 @@ function renderClientAssets(): string {
     </script>
     <script type="module" src="/src/main.tsx"></script>`;
   }
+
+  // In production, find the main JS file from dist/public/assets
+  try {
+    const isProd = process.env.NODE_ENV === "production";
+    const distPublic = path.resolve(process.cwd(), "dist", "public", "assets");
+    const distPublicAlt = path.resolve(process.cwd(), "server", "..", "dist", "public", "assets");
+    const searchPath = fs.existsSync(distPublic) ? distPublic : (fs.existsSync(distPublicAlt) ? distPublicAlt : null);
+    
+    if (isProd && searchPath) {
+      const files = fs.readdirSync(searchPath);
+      const mainJs = files.find(f => f.startsWith("index-") && f.endsWith(".js"));
+      const mainCss = files.find(f => f.startsWith("index-") && f.endsWith(".css"));
+      
+      let assets = "";
+      if (mainCss) assets += `<link rel="stylesheet" href="/assets/${mainCss}">`;
+      if (mainJs) assets += `<script type="module" src="/assets/${mainJs}"></script>`;
+      return assets;
+    }
+  } catch (err) {
+    console.error("Error reading production assets:", err);
+  }
+  
   return `<script type="module" src="/src/main.tsx"></script>`;
 }
 

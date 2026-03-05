@@ -21,6 +21,9 @@ export function log(message: string, source = "express") {
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 
+log(`Environment: ${process.env.NODE_ENV}`);
+log(`Base URL: ${process.env.SITE_BASE_URL || "https://housing-intel.com"}`);
+
 app.use((req, res, next) => {
   const start = Date.now();
   const reqPath = req.path;

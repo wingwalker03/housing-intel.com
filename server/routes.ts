@@ -1,5 +1,7 @@
 import type { Express } from "express";
 import type { Server } from "http";
+import fs from "fs";
+import path from "path";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { insertLeadEmailSchema } from "@shared/schema";
@@ -59,6 +61,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.get("/", (req, res, next) => {
     try {
       res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("X-SSR-Mode", "ssr");
       res.send(renderHomepage());
     } catch (err) { next(err); }
   });
@@ -69,6 +72,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       const html = renderStatePage(slug);
       if (!html) return next();
       res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("X-SSR-Mode", "ssr");
       res.send(html);
     } catch (err) { next(err); }
   });
@@ -76,6 +80,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.get("/states", (req, res, next) => {
     try {
       res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("X-SSR-Mode", "ssr");
       res.send(renderStatesPage());
     } catch (err) { next(err); }
   });
@@ -83,6 +88,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.get("/metros", (req, res, next) => {
     try {
       res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("X-SSR-Mode", "ssr");
       res.send(renderMetrosPage());
     } catch (err) { next(err); }
   });
@@ -92,6 +98,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       const html = renderMetroPage(req.params.slug);
       if (!html) return next();
       res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("X-SSR-Mode", "ssr");
       res.send(html);
     } catch (err) { next(err); }
   });
@@ -99,6 +106,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.get("/crawl-hub", (req, res, next) => {
     try {
       res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("X-SSR-Mode", "ssr");
       res.send(renderCrawlHubPage());
     } catch (err) { next(err); }
   });
@@ -106,6 +114,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.get("/embed-info", (req, res, next) => {
     try {
       res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("X-SSR-Mode", "ssr");
       res.send(renderEmbedInfoPage());
     } catch (err) { next(err); }
   });
@@ -198,6 +207,32 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     } catch (err) {
       res.status(500).json({ message: "Internal server error" });
     }
+  });
+
+  app.get("/api/health", async (_req, res) => {
+    try {
+      const seoData = await storage.getAllStates();
+      const distPath = path.resolve(process.cwd(), "dist", "public");
+      const distExists = fs.existsSync(distPath);
+      res.setHeader("X-SSR-Mode", "ssr");
+      res.json({
+        status: "ok",
+        env: process.env.NODE_ENV,
+        db: seoData.length > 0 ? "connected" : "empty",
+        assets: distExists ? "present" : "missing",
+        distPath,
+        timestamp: new Date().toISOString()
+      });
+    } catch (err) {
+      res.status(500).json({ status: "error", message: String(err) });
+    }
+  });
+
+  app.use((req, res, next) => {
+    if (!req.path.startsWith("/api")) {
+      res.setHeader("X-SSR-Mode", "ssr");
+    }
+    next();
   });
 
   return httpServer;
