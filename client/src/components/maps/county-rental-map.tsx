@@ -113,15 +113,25 @@ function CountyRentalMap({
     Promise.all([
       fetch(US_COUNTIES_URL).then(r => r.json()),
       fetch(US_STATES_URL).then(r => r.json()),
-      fetch(LATEST_RENTAL_CSV).then(r => r.text()).then(csv => {
+      fetch(LATEST_RENTAL_CSV + "?v=" + Date.now()).then(r => {
+        if (!r.ok) throw new Error("Failed to fetch rental CSV");
+        return r.text();
+      }).then(csv => {
         try {
           const records = parse(csv, { columns: true, skip_empty_lines: true });
           const lookup: Record<string, { zori: number, date: string }> = {};
           records.forEach((r: any) => {
-            if (r.geoid) {
-              lookup[r.geoid] = { zori: parseFloat(r.zori), date: r.date };
+            const rawGeoid = r.geoid || r.GEOID || r.Geoid;
+            if (rawGeoid) {
+              const geoid = String(rawGeoid).padStart(5, "0");
+              lookup[geoid] = { zori: parseFloat(r.zori || r.ZORI), date: r.date || r.Date };
             }
           });
+          if (DEBUG_RENTAL_MAP) {
+            console.log("[RentalMap Debug] Records length:", records.length);
+            console.log("[RentalMap Debug] First record keys:", Object.keys(records[0] || {}));
+            console.log("[RentalMap Debug] Lookup size:", Object.keys(lookup).length);
+          }
           return lookup;
         } catch (e) {
           console.error("Failed to parse latest rental CSV:", e);
@@ -135,15 +145,13 @@ function CountyRentalMap({
 
       if (DEBUG_RENTAL_MAP) {
         const features = counties.objects.counties.geometries;
-        const matched = features.filter((f: any) => rentalLookup[f.id.padStart(5, "0")]);
-        const unmatched = features.filter((f: any) => !rentalLookup[f.id.padStart(5, "0")]);
+        const matched = features.filter((f: any) => rentalLookup[String(f.id).padStart(5, "0")]);
         console.log(`[RentalMap Debug] Total features: ${features.length}`);
         console.log(`[RentalMap Debug] Matched latest-month rows: ${matched.length}`);
-        console.log(`[RentalMap Debug] Unmatched GEOIDs: ${unmatched.length}`);
-        if (unmatched.length > 0) {
-          console.log("[RentalMap Debug] Top 20 unmatched names:", unmatched.slice(0, 20).map((f: any) => f.properties.name));
-        }
+        console.log(`[RentalMap Debug] Sample matched GEOIDs:`, Object.keys(rentalLookup).slice(0, 5));
       }
+    }).catch(err => {
+      console.error("Initialization error:", err);
     });
   }, []);
 

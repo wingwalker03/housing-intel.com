@@ -540,6 +540,11 @@ export default function Dashboard() {
     }
   };
 
+  const handleMetroSelect = (metroName: string | undefined, metroId: string | undefined) => {
+    setSelectedMetroName(metroName);
+    setSelectedMetroId(metroId);
+  };
+
   const handleCountySelect = async (countyName: string | undefined, stateCode: string | undefined) => {
     if (!countyName || !stateCode) return;
     
@@ -548,15 +553,7 @@ export default function Dashboard() {
         title: `Viewing ${countyName}, ${stateCode}`,
         description: "Loading historical rental trends...",
       });
-      // In a real app, we'd fetch specific county history here.
-      // For now, we'll maintain the state-level or national-level trend 
-      // but the map will show the specific county highlight.
     }
-  };
-
-  const handleMetroSelect = (metroName: string | undefined, metroId: string | undefined) => {
-    setSelectedMetroName(metroName);
-    setSelectedMetroId(metroId);
   };
 
   const handleMetroDropdownSelect = (value: string) => {
