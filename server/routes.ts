@@ -8,6 +8,7 @@ import { insertLeadEmailSchema } from "@shared/schema";
 import multer from "multer";
 import { parse } from "csv-parse";
 import { renderHomepage, renderStatePage, renderMetroPage, renderStatesPage, renderMetrosPage, renderCrawlHubPage, renderEmbedInfoPage, renderSitemap, getSEOData } from "./ssr";
+import { getLatestSentiment, getAllLatestSentiments } from "./newsbriefs";
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -220,6 +221,26 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       });
     } catch (err) {
       res.status(500).json({ status: "error", message: String(err) });
+    }
+  });
+
+  app.get("/api/sentiment", async (_req, res) => {
+    try {
+      const sentiments = await getAllLatestSentiments();
+      res.json(sentiments);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch sentiments" });
+    }
+  });
+
+  app.get("/api/sentiment/:marketType/:marketSlug", async (req, res) => {
+    try {
+      const { marketType, marketSlug } = req.params;
+      const sentiment = await getLatestSentiment(marketType, marketSlug);
+      if (!sentiment) return res.status(404).json({ message: "No sentiment data found" });
+      res.json(sentiment);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch sentiment" });
     }
   });
 
