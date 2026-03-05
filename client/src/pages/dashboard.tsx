@@ -825,13 +825,13 @@ export default function Dashboard() {
                   <span className="hidden sm:inline">Embed</span>
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl">
+              <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto bg-background text-foreground">
                 <DialogHeader>
-                  <DialogTitle>Embed this Visualization</DialogTitle>
+                  <DialogTitle className="text-foreground">Create an Embed</DialogTitle>
                 </DialogHeader>
-                <EmbedBuilder 
-                  stateCode={selectedStateCode} 
-                  metroName={selectedMetroName} 
+                <EmbedBuilder
+                  stateCode={selectedStateCode}
+                  metroName={selectedMetroName}
                 />
               </DialogContent>
             </Dialog>
