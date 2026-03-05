@@ -37,7 +37,7 @@ export function EmbedBuilder({
   currentMetroName,
 }: EmbedBuilderProps) {
   const { toast } = useToast();
-  const [view, setView] = useState<"map" | "chart" | "both">("both");
+  const [view, setView] = useState<"map" | "chart" | "both" | "rental">("both");
   const [stateCode, setStateCode] = useState(currentStateCode || "");
   const [metro, setMetro] = useState(currentMetroName || "");
   const [metric, setMetric] = useState<"medianHomeValue" | "yoyChange">("medianHomeValue");
@@ -121,15 +121,16 @@ export function EmbedBuilder({
           <TabsContent value="web" className="space-y-4 mt-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-xs text-muted-foreground mb-1.5 block">View</Label>
+                <Label className="text-xs text-muted-foreground mb-1.5 block">View Type</Label>
                 <Select value={view} onValueChange={(v) => setView(v as any)}>
                   <SelectTrigger data-testid="select-embed-view">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="both">Map + Chart (Combined)</SelectItem>
-                    <SelectItem value="map">Map Only</SelectItem>
-                    <SelectItem value="chart">Chart Only</SelectItem>
+                    <SelectItem value="both">Both (Map + Chart)</SelectItem>
+                    <SelectItem value="map">Housing Map Only</SelectItem>
+                    <SelectItem value="chart">Growth Chart Only</SelectItem>
+                    <SelectItem value="rental">Rental Map Only</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

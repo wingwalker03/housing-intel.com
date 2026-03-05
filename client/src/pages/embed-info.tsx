@@ -66,52 +66,45 @@ export default function EmbedLandingPage() {
       {/* Main Content */}
       <main className="flex-1 py-20">
         <div className="container max-w-5xl mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-16 items-center mb-32">
-            <div>
-              <h2 className="text-3xl font-bold mb-6">Interactive Web Widgets</h2>
-              <p className="text-lg text-muted-foreground mb-8">
-                Enhance your real estate blog or corporate site with high-quality, interactive visualizations. Our widgets are fully responsive and adapt to your site's design.
-              </p>
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span><strong>Live Drill-Down Maps:</strong> Allow users to explore states and metros directly on your page.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span><strong>Dynamic Trend Charts:</strong> Show historical home values and YoY changes with interactive tooltips.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span><strong>Theme Support:</strong> Choose between light and dark modes to match your brand.</span>
-                </li>
-              </ul>
-              <Button variant="outline" className="gap-2" asChild>
-                <Link href="/">View Demo <ExternalLink className="w-4 h-4" /></Link>
-              </Button>
-            </div>
-            <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-primary to-blue-600 rounded-xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
-              <Card className="relative bg-card border-border overflow-hidden shadow-2xl">
-                <CardContent className="p-0">
-                  <div className="bg-muted px-4 py-2 border-b flex items-center gap-2">
-                    <div className="flex gap-1.5">
-                      <div className="w-3 h-3 rounded-full bg-red-500/20" />
-                      <div className="w-3 h-3 rounded-full bg-yellow-500/20" />
-                      <div className="w-3 h-3 rounded-full bg-green-500/20" />
-                    </div>
-                    <div className="flex-1 text-[10px] text-muted-foreground text-center font-mono">your-real-estate-site.com</div>
-                  </div>
-                  <div className="p-6">
-                     <div className="h-64 rounded-lg bg-muted/50 flex flex-col items-center justify-center border border-dashed border-border p-8 text-center">
-                        <Globe className="w-12 h-12 text-muted-foreground/30 mb-4" />
-                        <p className="text-sm font-medium text-muted-foreground">Interactive Housing Widget Live Preview</p>
-                        <p className="text-xs text-muted-foreground/60 mt-1">Configurable map & chart views</p>
-                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+          <div className="grid md:grid-cols-3 gap-8 mb-32">
+            <Card className="bg-card border-border overflow-hidden">
+              <CardContent className="p-6">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                  <Globe className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="font-bold mb-2">Interactive Maps</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Choropleth maps showing median home values across states and metros.
+                </p>
+                <div className="text-[10px] font-mono bg-muted p-2 rounded">view=map</div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card border-border overflow-hidden">
+              <CardContent className="p-6">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                  <BarChart3 className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="font-bold mb-2">Trend Charts</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Historical time-series charts for market growth and price fluctuations.
+                </p>
+                <div className="text-[10px] font-mono bg-muted p-2 rounded">view=chart</div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card border-border overflow-hidden">
+              <CardContent className="p-6">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                  <TrendingUp className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="font-bold mb-2">Rental Maps</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  County-level rental price heatmaps powered by Zillow ZORI data.
+                </p>
+                <div className="text-[10px] font-mono bg-muted p-2 rounded">view=rental</div>
+              </CardContent>
+            </Card>
           </div>
 
           <div className="grid md:grid-cols-2 gap-16 items-center mb-32 md:flex-row-reverse">

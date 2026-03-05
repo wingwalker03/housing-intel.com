@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import DrillDownMap from "@/components/maps/drill-down-map";
+import { CountyRentalMap } from "@/components/maps/county-rental-map";
 import { HousingTrendChart } from "@/components/charts/housing-trend-chart";
 import { STATE_NAME_TO_CODE, STATE_CODE_TO_NAME } from "@/lib/slugs";
 import metroPointsData from "@/data/metro_points.json";
@@ -220,6 +221,7 @@ export default function EmbedPage() {
 
   const showMap = view === "map" || view === "both";
   const showChart = view === "chart" || view === "both";
+  const showRental = view === "rental";
 
   const displayName = selectedMetroName || stateName || "United States";
 
@@ -260,6 +262,13 @@ export default function EmbedPage() {
       </div>
 
       <div className={`flex-1 flex ${view === "both" ? "flex-col md:flex-row" : "flex-col"} min-h-0 overflow-hidden`}>
+        {showRental && (
+          <div className="w-full h-full relative min-h-0">
+            <CountyRentalMap 
+              onCountySelect={(county) => console.log("Embed county selected:", county)}
+            />
+          </div>
+        )}
         {showMap && (
           <div className={`${view === "both" ? "md:w-1/2 h-1/2 md:h-full" : "w-full h-full"} relative min-h-0`}>
             <DrillDownMap
