@@ -88,7 +88,7 @@ interface CountyRentalMapProps {
   onReset: () => void;
 }
 
-function CountyRentalMap({
+export function CountyRentalMap({
   selectedStateCode,
   selectedStateName,
   countyRentalLookup,

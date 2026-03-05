@@ -265,6 +265,9 @@ export default function EmbedPage() {
         {showRental && (
           <div className="w-full h-full relative min-h-0">
             <CountyRentalMap 
+              countyRentalLookup={{}}
+              onStateSelect={() => {}}
+              onReset={() => {}}
               onCountySelect={(county) => console.log("Embed county selected:", county)}
             />
           </div>
