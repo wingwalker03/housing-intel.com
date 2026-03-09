@@ -205,20 +205,20 @@ export function EmbedBuilder({ stateCode: initialStateCode, metroName: initialMe
               </div>
             )}
 
-            {isChartView && (
+            {view === "chart" && (
               <div>
                 <Label className="text-xs text-muted-foreground mb-1.5 block">
                   Metro Area <span className="text-muted-foreground/60">(optional)</span>
                 </Label>
                 <Input
-                  placeholder={view === "rental-chart" ? "e.g. Austin-Round Rock, TX" : "e.g. New York, NY"}
+                  placeholder="e.g. New York, NY"
                   value={metro}
                   onChange={(e) => setMetro(e.target.value)}
                   data-testid="input-embed-metro"
                   className="bg-muted/30 border-border text-foreground placeholder:text-muted-foreground/50 text-sm h-9"
                 />
                 <p className="text-[10px] text-muted-foreground/60 mt-1">
-                  {view === "rental-chart" ? "Use full MSA name — overrides state" : "Overrides state selection when provided"}
+                  Overrides state selection when provided
                 </p>
               </div>
             )}
