@@ -4,6 +4,7 @@ import { createServer } from "http";
 import { registerRoutes } from "./routes";
 import { setupVite } from "./vite";
 import { serveStatic } from "./static";
+import { seedIfEmpty } from "./startup-seed";
 
 const app = express();
 app.use(express.json());
@@ -50,6 +51,9 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Seed database from CSV files if empty (handles fresh production deploys)
+  await seedIfEmpty();
+
   // Register API and SSR routes first
   await registerRoutes(httpServer, app);
 

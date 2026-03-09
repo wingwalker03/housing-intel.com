@@ -545,14 +545,11 @@ export default function Dashboard() {
     setSelectedMetroId(metroId);
   };
 
-  const handleCountySelect = async (countyName: string | undefined, stateCode: string | undefined) => {
+  const handleCountySelect = (countyName: string | undefined, stateCode: string | undefined) => {
     if (!countyName || !stateCode) return;
-    
     if (dataView === 'rental') {
-      toast({
-        title: `Viewing ${countyName}, ${stateCode}`,
-        description: "Loading historical rental trends...",
-      });
+      const state = states.find(s => s.code === stateCode);
+      handleStateSelect(stateCode, state?.name);
     }
   };
 
