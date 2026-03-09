@@ -24,6 +24,8 @@ Preferred communication style: Simple, everyday language.
   - react-simple-maps with d3-scale for interactive US state choropleth map
   - County-level choropleth heat map for rental prices (ZORI data)
   - Housing/Rental toggle switch to switch between data views
+  - Embeddable iframe widgets: housing map, housing chart, rental map, rental chart (ZORI), metro-level charts
+  - Dark/light theme support for embeds via CSS variable override (`:root` = light grey, `.dark` = dark)
 
 ### Backend Architecture
 - **Framework**: Express.js with TypeScript

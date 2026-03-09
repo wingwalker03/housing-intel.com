@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import DrillDownMap from "@/components/maps/drill-down-map";
 import { CountyRentalMap } from "@/components/maps/county-rental-map";
 import { HousingTrendChart } from "@/components/charts/housing-trend-chart";
@@ -82,7 +83,13 @@ export default function EmbedPage() {
     };
   }, [themeParam]);
 
+  const isRentalChart = view === "rental-chart";
+
   useEffect(() => {
+    if (isRentalChart) {
+      setIsLoading(false);
+      return;
+    }
     const fetchData = async () => {
       try {
         setIsLoading(true);
@@ -130,11 +137,12 @@ export default function EmbedPage() {
       }
     };
     fetchData();
-  }, []);
+  }, [isRentalChart]);
 
   const isMetroMode = !!selectedMetroName;
 
   const stats = useMemo(() => {
+    if (isRentalChart) return [];
     const rawData = isMetroMode ? metroCsvData : stateCsvData;
     if (!rawData.length) return [];
 
@@ -194,7 +202,7 @@ export default function EmbedPage() {
     const cutoffDate = "2001-01-01";
     filtered = filtered.filter((row: any) => row.date >= cutoffDate);
     return filtered.sort((a: any, b: any) => (a.date || "").localeCompare(b.date || ""));
-  }, [isMetroMode, selectedMetroName, selectedStateCode, metroCsvData, stateCsvData]);
+  }, [isRentalChart, isMetroMode, selectedMetroName, selectedStateCode, metroCsvData, stateCsvData]);
 
   const metroYoYLookup = useMemo(() => {
     if (metroCsvData.length === 0) return {};
@@ -240,19 +248,70 @@ export default function EmbedPage() {
     }
   }, [timeRangeParam]);
 
+  const rentalTrendQueryKey = isRentalChart
+    ? ['/api/county-rental/trend', stateParam, metroParam]
+    : null;
+
+  const rentalTrendUrl = useMemo(() => {
+    if (!isRentalChart) return '';
+    const p = new URLSearchParams();
+    if (stateParam) p.set('stateCode', stateParam.toUpperCase());
+    if (metroParam) p.set('metro', metroParam);
+    return `/api/county-rental/trend?${p.toString()}`;
+  }, [isRentalChart, stateParam, metroParam]);
+
+  const { data: rawRentalTrend = [], isLoading: rentalLoading } = useQuery<{ date: string; avgZori: number; count: number }[]>({
+    queryKey: rentalTrendQueryKey || ['disabled'],
+    enabled: isRentalChart,
+    queryFn: () => fetch(rentalTrendUrl).then(r => r.json()),
+  });
+
+  const rentalStats = useMemo(() => {
+    if (!rawRentalTrend.length) return [];
+    const sorted = [...rawRentalTrend].sort((a, b) => a.date.localeCompare(b.date));
+    const withYoY = sorted.map((row, i) => {
+      let yoyChange = 0;
+      if (i >= 12) {
+        const prev = sorted[i - 12];
+        if (prev.avgZori > 0) {
+          yoyChange = ((row.avgZori - prev.avgZori) / prev.avgZori) * 100;
+        }
+      }
+      return { date: row.date, medianHomeValue: row.avgZori, yoyChange };
+    });
+    const cutoff = startDate;
+    return cutoff ? withYoY.filter(r => r.date >= cutoff) : withYoY;
+  }, [rawRentalTrend, startDate]);
+
   const showMap = view === "map" || view === "both";
   const showChart = view === "chart" || view === "both";
   const showRental = view === "rental";
+  const showRentalChart = view === "rental-chart";
 
   const displayName = selectedMetroName || selectedStateName || "United States";
 
-  const latestStat = stats.length > 0 ? stats[stats.length - 1] : null;
+  const rentalDisplayName = metroParam
+    ? metroParam
+    : stateParam
+      ? (STATE_CODE_TO_NAME[stateParam.toUpperCase()] || stateParam.toUpperCase())
+      : "United States";
+
   const formatCurrency = (val: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(val);
+  const formatRent = (val: number) => `$${Math.round(val).toLocaleString()}/mo`;
+
+  const latestStat = stats.length > 0 ? stats[stats.length - 1] : null;
   const latestValue = latestStat ? formatCurrency(latestStat.medianHomeValue) : "--";
   const latestYoY = latestStat ? `${latestStat.yoyChange >= 0 ? "+" : ""}${latestStat.yoyChange.toFixed(1)}%` : "--";
   const historicalHigh = stats.length > 0 ? formatCurrency(Math.max(...stats.map(s => s.medianHomeValue))) : "--";
 
-  if (isLoading) {
+  const latestRentalStat = rentalStats.length > 0 ? rentalStats[rentalStats.length - 1] : null;
+  const latestRent = latestRentalStat ? formatRent(latestRentalStat.medianHomeValue) : "--";
+  const rentalHigh = rentalStats.length > 0 ? formatRent(Math.max(...rentalStats.map(s => s.medianHomeValue))) : "--";
+  const rentalYoY = latestRentalStat ? `${latestRentalStat.yoyChange >= 0 ? "+" : ""}${latestRentalStat.yoyChange.toFixed(1)}%` : "--";
+
+  const pageIsLoading = isLoading || (isRentalChart && rentalLoading);
+
+  if (pageIsLoading) {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-background text-foreground">
         <div className="flex flex-col items-center gap-3">
@@ -267,12 +326,27 @@ export default function EmbedPage() {
     <div className="w-full h-screen flex flex-col bg-background text-foreground overflow-hidden" data-testid="embed-container">
       <div className="flex items-center justify-between px-4 py-2 border-b border-border/40 bg-background/95 shrink-0 z-10">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-sm font-semibold" data-testid="text-embed-title">{displayName}</span>
-          <span className="text-xs text-muted-foreground" data-testid="text-embed-median">Median: {latestValue}</span>
-          <span className="text-xs text-muted-foreground" data-testid="text-embed-high">High: {historicalHigh}</span>
-          <span className={`text-xs font-medium ${latestStat && latestStat.yoyChange >= 0 ? "text-emerald-500" : "text-red-500"}`} data-testid="text-embed-yoy">
-            YoY: {latestYoY}
-          </span>
+          {showRentalChart ? (
+            <>
+              <span className="text-sm font-semibold" data-testid="text-embed-title">{rentalDisplayName}</span>
+              <span className="text-xs text-muted-foreground" data-testid="text-embed-rent">Avg Rent: {latestRent}</span>
+              <span className="text-xs text-muted-foreground" data-testid="text-embed-rent-high">High: {rentalHigh}</span>
+              <span className={`text-xs font-medium ${latestRentalStat && latestRentalStat.yoyChange >= 0 ? "text-emerald-500" : "text-red-500"}`} data-testid="text-embed-rent-yoy">
+                YoY: {rentalYoY}
+              </span>
+            </>
+          ) : showRental ? (
+            <span className="text-sm font-semibold" data-testid="text-embed-title">Rental Prices</span>
+          ) : (
+            <>
+              <span className="text-sm font-semibold" data-testid="text-embed-title">{displayName}</span>
+              <span className="text-xs text-muted-foreground" data-testid="text-embed-median">Median: {latestValue}</span>
+              <span className="text-xs text-muted-foreground" data-testid="text-embed-high">High: {historicalHigh}</span>
+              <span className={`text-xs font-medium ${latestStat && latestStat.yoyChange >= 0 ? "text-emerald-500" : "text-red-500"}`} data-testid="text-embed-yoy">
+                YoY: {latestYoY}
+              </span>
+            </>
+          )}
         </div>
         <a
           href={`https://housing-intel.com`}
@@ -325,6 +399,19 @@ export default function EmbedPage() {
               selectedStateName={displayName}
               isLoading={false}
               startDate={startDate}
+              theme={themeParam as 'dark' | 'light'}
+            />
+          </div>
+        )}
+        {showRentalChart && (
+          <div className="w-full h-full relative min-h-0 bg-background">
+            <HousingTrendChart
+              data={rentalStats}
+              metric="medianHomeValue"
+              selectedStateName={rentalDisplayName}
+              isLoading={false}
+              startDate={startDate}
+              isRentalData={true}
               theme={themeParam as 'dark' | 'light'}
             />
           </div>

@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -14,7 +15,7 @@ import {
   TabsTrigger,
   TabsContent,
 } from "@/components/ui/tabs";
-import { Copy, Check, Mail, Globe, Map, TrendingUp, Home, ArrowLeft } from "lucide-react";
+import { Copy, Check, Mail, Globe, Map, TrendingUp, Home, ArrowLeft, BarChart3 } from "lucide-react";
 import { STATE_CODE_TO_NAME } from "@/lib/slugs";
 import { useToast } from "@/hooks/use-toast";
 
@@ -23,7 +24,7 @@ interface EmbedBuilderProps {
   metroName?: string;
 }
 
-type ViewType = "rental" | "map" | "chart";
+type ViewType = "rental" | "map" | "chart" | "rental-chart";
 
 const VIEW_OPTIONS: {
   value: ViewType;
@@ -46,8 +47,14 @@ const VIEW_OPTIONS: {
   {
     value: "chart",
     icon: TrendingUp,
-    label: "Housing Graph",
-    description: "Time-series trend chart for a state or national market",
+    label: "Housing Price Graph",
+    description: "Median home value trend for a state, metro, or national market",
+  },
+  {
+    value: "rental-chart",
+    icon: BarChart3,
+    label: "Rental Price Graph",
+    description: "Average ZORI rent trend for a state, metro, or national market",
   },
 ];
 
@@ -65,23 +72,25 @@ export function EmbedBuilder({ stateCode: initialStateCode, metroName: initialMe
 
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://housing-intel.com";
 
+  const isChartView = view === "chart" || view === "rental-chart";
+
   const embedUrl = useMemo(() => {
     if (!view) return "";
     const params = new URLSearchParams();
     params.set("view", view);
     if (stateCode) params.set("state", stateCode);
-    if (metro) params.set("metro", metro);
-    params.set("metric", metric);
+    if (metro && isChartView) params.set("metro", metro);
+    if (view === "chart") params.set("metric", metric);
     params.set("range", timeRange);
     params.set("theme", theme);
     return `${baseUrl}/embed?${params.toString()}`;
-  }, [view, stateCode, metro, metric, timeRange, theme, baseUrl]);
+  }, [view, stateCode, metro, metric, timeRange, theme, baseUrl, isChartView]);
 
   const iframeCode = useMemo(() => {
     if (!view) return "";
     const h = `${height}px`;
     const label = metro || (stateCode ? STATE_CODE_TO_NAME[stateCode] : "US");
-    return `<iframe src="${embedUrl}" width="100%" height="${h}" frameborder="0" style="border:none;border-radius:8px;overflow:hidden;" loading="lazy" title="Housing Intel - ${label} Housing Data"></iframe>`;
+    return `<iframe src="${embedUrl}" width="100%" height="${h}" frameborder="0" style="border:none;border-radius:8px;overflow:hidden;" loading="lazy" title="Housing Intel - ${label} ${view === 'rental-chart' ? 'Rental' : 'Housing'} Data"></iframe>`;
   }, [embedUrl, height, metro, stateCode, view]);
 
   const emailApiUrl = useMemo(() => {
@@ -196,6 +205,24 @@ export function EmbedBuilder({ stateCode: initialStateCode, metroName: initialMe
               </div>
             )}
 
+            {isChartView && (
+              <div>
+                <Label className="text-xs text-muted-foreground mb-1.5 block">
+                  Metro Area <span className="text-muted-foreground/60">(optional)</span>
+                </Label>
+                <Input
+                  placeholder={view === "rental-chart" ? "e.g. Austin-Round Rock, TX" : "e.g. New York, NY"}
+                  value={metro}
+                  onChange={(e) => setMetro(e.target.value)}
+                  data-testid="input-embed-metro"
+                  className="bg-muted/30 border-border text-foreground placeholder:text-muted-foreground/50 text-sm h-9"
+                />
+                <p className="text-[10px] text-muted-foreground/60 mt-1">
+                  {view === "rental-chart" ? "Use full MSA name — overrides state" : "Overrides state selection when provided"}
+                </p>
+              </div>
+            )}
+
             {view === "chart" && (
               <>
                 <div>
@@ -210,22 +237,24 @@ export function EmbedBuilder({ stateCode: initialStateCode, metroName: initialMe
                     </SelectContent>
                   </Select>
                 </div>
-
-                <div>
-                  <Label className="text-xs text-muted-foreground mb-1.5 block">Time Range</Label>
-                  <Select value={timeRange} onValueChange={setTimeRange}>
-                    <SelectTrigger data-testid="select-embed-range" className="bg-muted/30 border-border text-foreground">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="5y">5 Years</SelectItem>
-                      <SelectItem value="10y">10 Years</SelectItem>
-                      <SelectItem value="20y">20 Years</SelectItem>
-                      <SelectItem value="all">All Time</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
               </>
+            )}
+
+            {isChartView && (
+              <div>
+                <Label className="text-xs text-muted-foreground mb-1.5 block">Time Range</Label>
+                <Select value={timeRange} onValueChange={setTimeRange}>
+                  <SelectTrigger data-testid="select-embed-range" className="bg-muted/30 border-border text-foreground">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5y">5 Years</SelectItem>
+                    <SelectItem value="10y">10 Years</SelectItem>
+                    <SelectItem value="20y">20 Years</SelectItem>
+                    <SelectItem value="all">All Time</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             )}
 
             <div>

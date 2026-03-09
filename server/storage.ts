@@ -25,7 +25,7 @@ export interface IStorage {
   saveLeadEmail(data: InsertLeadEmail): Promise<LeadEmail>;
   getCountyRentalStats(stateCode?: string, startDate?: string, endDate?: string): Promise<CountyRentalStat[]>;
   getLatestCountyRentals(stateCode?: string): Promise<{ countyName: string, normalizedName: string, stateCode: string, stateName: string, zori: number, date: string }[]>;
-  getCountyRentalTrend(stateCode?: string): Promise<{ date: string, avgZori: number, count: number }[]>;
+  getCountyRentalTrend(stateCode?: string, metro?: string): Promise<{ date: string, avgZori: number, count: number }[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -131,9 +131,10 @@ export class DatabaseStorage implements IStorage {
 
     return results.map(r => ({ ...r, date: String(r.date) }));
   }
-  async getCountyRentalTrend(stateCode?: string): Promise<{ date: string, avgZori: number, count: number }[]> {
+  async getCountyRentalTrend(stateCode?: string, metro?: string): Promise<{ date: string, avgZori: number, count: number }[]> {
     let conditions = [];
     if (stateCode) conditions.push(eq(countyRentalStats.stateCode, stateCode));
+    if (metro) conditions.push(eq(countyRentalStats.metro, metro));
 
     const results = await db.select({
       date: countyRentalStats.date,

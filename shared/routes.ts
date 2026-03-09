@@ -104,6 +104,7 @@ export const api = {
       path: '/api/county-rental/trend',
       input: z.object({
         stateCode: z.string().optional(),
+        metro: z.string().optional(),
       }).optional(),
       responses: {
         200: z.array(z.object({

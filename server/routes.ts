@@ -164,7 +164,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   app.get(api.countyRental.trend.path, async (req, res) => {
     const input = api.countyRental.trend.input.parse(req.query);
-    const data = await storage.getCountyRentalTrend(input?.stateCode);
+    const data = await storage.getCountyRentalTrend(input?.stateCode, input?.metro);
     res.json(data);
   });
 
