@@ -37,15 +37,36 @@ export default function EmbedPage() {
   const timeRangeParam = (params.get("range") as "5y" | "10y" | "20y" | "all") || "10y";
   const themeParam = params.get("theme") || "dark";
 
-  const stateCode = stateParam ? stateParam.toUpperCase() : undefined;
-  const stateName = stateCode ? STATE_CODE_TO_NAME[stateCode] : undefined;
+  const initialStateCode = stateParam ? stateParam.toUpperCase() : undefined;
+  const initialStateName = initialStateCode ? STATE_CODE_TO_NAME[initialStateCode] : undefined;
 
   const [metroCsvData, setMetroCsvData] = useState<any[]>([]);
   const [stateCsvData, setStateCsvData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const selectedMetroName = metroParam || undefined;
-  const selectedMetroId = selectedMetroName;
+  const [selectedStateCode, setSelectedStateCode] = useState<string | undefined>(initialStateCode);
+  const [selectedStateName, setSelectedStateName] = useState<string | undefined>(initialStateName);
+  const [selectedMetroName, setSelectedMetroName] = useState<string | undefined>(metroParam || undefined);
+  const [selectedMetroId, setSelectedMetroId] = useState<string | undefined>(metroParam || undefined);
+
+  const handleStateSelect = (code: string | undefined, name: string | undefined) => {
+    setSelectedStateCode(code);
+    setSelectedStateName(name);
+    setSelectedMetroName(undefined);
+    setSelectedMetroId(undefined);
+  };
+
+  const handleMetroSelect = (metroName: string | undefined, metroId: string | undefined) => {
+    setSelectedMetroName(metroName);
+    setSelectedMetroId(metroId);
+  };
+
+  const handleReset = () => {
+    setSelectedStateCode(initialStateCode);
+    setSelectedStateName(initialStateName);
+    setSelectedMetroName(metroParam || undefined);
+    setSelectedMetroId(metroParam || undefined);
+  };
 
   useEffect(() => {
     if (themeParam === "light") {
@@ -138,8 +159,8 @@ export default function EmbedPage() {
 
     if (isMetroMode) {
       filtered = filtered.filter((row: any) => row.metroName === selectedMetroName);
-    } else if (stateCode && stateCode !== "US") {
-      filtered = filtered.filter((row: any) => row.stateCode === stateCode);
+    } else if (selectedStateCode && selectedStateCode !== "US") {
+      filtered = filtered.filter((row: any) => row.stateCode === selectedStateCode);
     } else {
       const usData = filtered.filter((row: any) => row.stateCode === "US");
       if (usData.length > 0) {
@@ -173,7 +194,7 @@ export default function EmbedPage() {
     const cutoffDate = "2001-01-01";
     filtered = filtered.filter((row: any) => row.date >= cutoffDate);
     return filtered.sort((a: any, b: any) => (a.date || "").localeCompare(b.date || ""));
-  }, [isMetroMode, selectedMetroName, stateCode, metroCsvData, stateCsvData]);
+  }, [isMetroMode, selectedMetroName, selectedStateCode, metroCsvData, stateCsvData]);
 
   const metroYoYLookup = useMemo(() => {
     if (metroCsvData.length === 0) return {};
@@ -223,7 +244,7 @@ export default function EmbedPage() {
   const showChart = view === "chart" || view === "both";
   const showRental = view === "rental";
 
-  const displayName = selectedMetroName || stateName || "United States";
+  const displayName = selectedMetroName || selectedStateName || "United States";
 
   const latestStat = stats.length > 0 ? stats[stats.length - 1] : null;
   const latestValue = latestStat ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(latestStat.medianHomeValue) : "--";
@@ -264,25 +285,32 @@ export default function EmbedPage() {
       <div className={`flex-1 flex ${view === "both" ? "flex-col md:flex-row" : "flex-col"} min-h-0 overflow-hidden`}>
         {showRental && (
           <div className="w-full h-full relative min-h-0">
-            <CountyRentalMap 
+            <CountyRentalMap
+              selectedStateCode={selectedStateCode}
+              selectedStateName={selectedStateName}
               countyRentalLookup={{}}
-              onStateSelect={() => {}}
-              onReset={() => {}}
-              onCountySelect={(county) => console.log("Embed county selected:", county)}
+              onStateSelect={handleStateSelect}
+              onReset={handleReset}
+              onCountySelect={(_, stateCode) => {
+                if (stateCode) {
+                  const name = STATE_CODE_TO_NAME[stateCode];
+                  handleStateSelect(stateCode, name);
+                }
+              }}
             />
           </div>
         )}
         {showMap && (
           <div className={`${view === "both" ? "md:w-1/2 h-1/2 md:h-full" : "w-full h-full"} relative min-h-0`}>
             <DrillDownMap
-              selectedStateCode={stateCode}
-              selectedStateName={stateName}
+              selectedStateCode={selectedStateCode}
+              selectedStateName={selectedStateName}
               selectedMetroName={selectedMetroName}
               selectedMetroId={selectedMetroId}
               metroYoYLookup={metroYoYLookup}
-              onStateSelect={() => {}}
-              onMetroSelect={() => {}}
-              onReset={() => {}}
+              onStateSelect={handleStateSelect}
+              onMetroSelect={handleMetroSelect}
+              onReset={handleReset}
             />
           </div>
         )}
