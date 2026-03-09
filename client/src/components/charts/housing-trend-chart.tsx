@@ -24,6 +24,7 @@ interface HousingTrendChartProps {
   };
   startDate?: string;
   isRentalData?: boolean;
+  theme?: 'dark' | 'light';
 }
 
 export function HousingTrendChart({ 
@@ -33,7 +34,8 @@ export function HousingTrendChart({
   isLoading,
   movingAverages = { ma12: false, ma24: false, ma60: false },
   startDate,
-  isRentalData = false
+  isRentalData = false,
+  theme = 'dark'
 }: HousingTrendChartProps) {
   
   const processedData = useMemo(() => {
@@ -292,13 +294,13 @@ export function HousingTrendChart({
             dragmode: 'pan',
             xaxis: {
               showgrid: true,
-              gridcolor: 'rgba(255, 255, 255, 0.05)',
+              gridcolor: theme === 'light' ? 'rgba(0, 0, 0, 0.07)' : 'rgba(255, 255, 255, 0.05)',
               zeroline: false,
-              tickfont: { color: '#6b7280', size: 10 },
+              tickfont: { color: theme === 'light' ? '#374151' : '#6b7280', size: 10 },
               type: 'date',
               spikethickness: 1,
               spikedash: 'dot',
-              spikecolor: '#9ca3af',
+              spikecolor: theme === 'light' ? '#6b7280' : '#9ca3af',
               spikemode: 'across',
               autorange: true,
               fixedrange: false,
@@ -306,17 +308,17 @@ export function HousingTrendChart({
             yaxis: {
               side: 'right',
               showgrid: true,
-              gridcolor: 'rgba(255, 255, 255, 0.05)',
+              gridcolor: theme === 'light' ? 'rgba(0, 0, 0, 0.07)' : 'rgba(255, 255, 255, 0.05)',
               zeroline: false,
-              tickfont: { color: '#6b7280', size: 10 },
+              tickfont: { color: theme === 'light' ? '#374151' : '#6b7280', size: 10 },
               tickformat: isValueMetric ? '$,.0f' : '.2f%',
               autorange: true,
               fixedrange: false,
             },
             hoverlabel: {
-              bgcolor: '#1f2937',
-              bordercolor: '#374151',
-              font: { color: '#f3f4f6', size: 12 }
+              bgcolor: theme === 'light' ? '#f9fafb' : '#1f2937',
+              bordercolor: theme === 'light' ? '#d1d5db' : '#374151',
+              font: { color: theme === 'light' ? '#111827' : '#f3f4f6', size: 12 }
             }
           } }
           config={ {

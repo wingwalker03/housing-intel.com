@@ -247,8 +247,10 @@ export default function EmbedPage() {
   const displayName = selectedMetroName || selectedStateName || "United States";
 
   const latestStat = stats.length > 0 ? stats[stats.length - 1] : null;
-  const latestValue = latestStat ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(latestStat.medianHomeValue) : "--";
+  const formatCurrency = (val: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(val);
+  const latestValue = latestStat ? formatCurrency(latestStat.medianHomeValue) : "--";
   const latestYoY = latestStat ? `${latestStat.yoyChange >= 0 ? "+" : ""}${latestStat.yoyChange.toFixed(1)}%` : "--";
+  const historicalHigh = stats.length > 0 ? formatCurrency(Math.max(...stats.map(s => s.medianHomeValue))) : "--";
 
   if (isLoading) {
     return (
@@ -264,10 +266,11 @@ export default function EmbedPage() {
   return (
     <div className="w-full h-screen flex flex-col bg-background text-foreground overflow-hidden" data-testid="embed-container">
       <div className="flex items-center justify-between px-4 py-2 border-b border-border/40 bg-background/95 shrink-0 z-10">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 flex-wrap">
           <span className="text-sm font-semibold" data-testid="text-embed-title">{displayName}</span>
-          <span className="text-xs text-muted-foreground">Median: {latestValue}</span>
-          <span className={`text-xs font-medium ${latestStat && latestStat.yoyChange >= 0 ? "text-emerald-500" : "text-red-500"}`}>
+          <span className="text-xs text-muted-foreground" data-testid="text-embed-median">Median: {latestValue}</span>
+          <span className="text-xs text-muted-foreground" data-testid="text-embed-high">High: {historicalHigh}</span>
+          <span className={`text-xs font-medium ${latestStat && latestStat.yoyChange >= 0 ? "text-emerald-500" : "text-red-500"}`} data-testid="text-embed-yoy">
             YoY: {latestYoY}
           </span>
         </div>
@@ -322,6 +325,7 @@ export default function EmbedPage() {
               selectedStateName={displayName}
               isLoading={false}
               startDate={startDate}
+              theme={themeParam as 'dark' | 'light'}
             />
           </div>
         )}

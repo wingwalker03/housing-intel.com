@@ -228,7 +228,7 @@ function renderFooter(): string {
 
 function renderDocument(meta: SEOMeta, bodyInnerHtml: string): string {
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-M94YQSRPZJ"></script>
