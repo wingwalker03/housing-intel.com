@@ -37,6 +37,7 @@ export default function EmbedPage() {
   const metricParam = (params.get("metric") as "medianHomeValue" | "yoyChange") || "medianHomeValue";
   const timeRangeParam = (params.get("range") as "5y" | "10y" | "20y" | "all") || "10y";
   const themeParam = params.get("theme") || "dark";
+  const bgColorParam = params.get("bgColor") || null;
 
   const initialStateCode = stateParam ? stateParam.toUpperCase() : undefined;
   const initialStateName = initialStateCode ? STATE_CODE_TO_NAME[initialStateCode] : undefined;
@@ -77,11 +78,15 @@ export default function EmbedPage() {
       document.documentElement.classList.add("dark");
       document.documentElement.style.colorScheme = "dark";
     }
+    if (bgColorParam) {
+      document.body.style.backgroundColor = bgColorParam;
+    }
     return () => {
       document.documentElement.classList.add("dark");
       document.documentElement.style.colorScheme = "dark";
+      document.body.style.backgroundColor = "";
     };
-  }, [themeParam]);
+  }, [themeParam, bgColorParam]);
 
   const isRentalChart = view === "rental-chart";
 

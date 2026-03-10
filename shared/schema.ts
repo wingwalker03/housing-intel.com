@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, real, timestamp, date } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, real, timestamp, date, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -90,3 +90,34 @@ export type WeeklyMarketBrief = typeof weeklyMarketBriefs.$inferSelect;
 export type InsertWeeklyMarketBrief = z.infer<typeof insertWeeklyMarketBriefSchema>;
 export type NewsCache = typeof newsCache.$inferSelect;
 export type InsertNewsCache = z.infer<typeof insertNewsCacheSchema>;
+
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  email: text("email").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  emailConfirmed: boolean("email_confirmed").default(false).notNull(),
+  confirmToken: text("confirm_token"),
+  stripeCustomerId: text("stripe_customer_id"),
+  subscriptionPlan: text("subscription_plan"),
+  subscriptionStatus: text("subscription_status"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const contactMessages = pgTable("contact_messages", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  message: text("message").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
+export const insertContactMessageSchema = createInsertSchema(contactMessages).omit({ id: true, createdAt: true });
+
+export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
+export type ContactMessage = typeof contactMessages.$inferSelect;
+export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;

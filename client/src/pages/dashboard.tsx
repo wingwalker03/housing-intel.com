@@ -45,6 +45,8 @@ import { SentimentBadge } from "@/components/ui/sentiment-badge";
 import { useMarketSentiment } from "@/hooks/use-housing";
 import { EmbedBuilder } from "@/components/embed-builder";
 import { ApiDocumentation } from "@/pages/api-docs";
+import { ContactDialog } from "@/components/contact-dialog";
+import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
 import { format, subYears, isSameMonth } from "date-fns";
 
@@ -113,6 +115,7 @@ export default function Dashboard() {
   const [dataView, setDataView] = useState<'housing' | 'rental'>('housing');
 
   const { toast } = useToast();
+  const authData = useAuth();
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -835,10 +838,13 @@ export default function Dashboard() {
 
             <div className="h-4 w-[1px] bg-border mx-1 hidden sm:block" />
 
-            <div className="hidden md:flex items-center text-sm text-muted-foreground mr-2">
-              <Info className="w-4 h-4 mr-1.5" />
-              <span>Data updated Jan 2026</span>
-            </div>
+            <ContactDialog />
+
+            <Link href={authData.isLoggedIn ? "/account" : "/login"}>
+              <Button variant="default" size="sm" className="h-8 gap-2" data-testid="button-header-auth">
+                {authData.isLoggedIn ? authData.user?.firstName || "Account" : "Login"}
+              </Button>
+            </Link>
           </div>
         </div>
       </header>

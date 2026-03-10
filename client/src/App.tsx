@@ -8,7 +8,14 @@ import Dashboard from "@/pages/dashboard";
 import EmbedPage from "@/pages/embed";
 import EmbedLandingPage from "@/pages/embed-info";
 import { ApiDocumentation } from "@/pages/api-docs";
-import React, { Component, ErrorInfo, ReactNode } from "react";
+import LoginPage from "@/pages/login";
+import RegisterPage from "@/pages/register";
+import SubscribePage from "@/pages/subscribe";
+import AccountPage from "@/pages/account";
+import ForBusinessPage from "@/pages/for-business";
+import ContactPage from "@/pages/contact";
+import { SignupPrompt } from "@/components/signup-prompt";
+import { Component, ErrorInfo, ReactNode } from "react";
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null }> {
   constructor(props: { children: ReactNode }) {
@@ -50,12 +57,17 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 function Router() {
   return (
     <Switch>
-      {/* Embed route - minimal chrome, no dashboard wrapper */}
       <Route path="/embed" component={EmbedPage} />
       <Route path="/embed-info" component={EmbedLandingPage} />
       <Route path="/api-docs" component={ApiDocumentation} />
 
-      {/* SEO Routes */}
+      <Route path="/login" component={LoginPage} />
+      <Route path="/register" component={RegisterPage} />
+      <Route path="/subscribe" component={SubscribePage} />
+      <Route path="/account" component={AccountPage} />
+      <Route path="/for-business" component={ForBusinessPage} />
+      <Route path="/contact" component={ContactPage} />
+
       <Route path="/" component={Dashboard} />
       <Route path="/states" component={Dashboard} />
       <Route path="/state/:stateSlug" component={Dashboard} />
@@ -63,7 +75,6 @@ function Router() {
       <Route path="/metro/:metroSlug" component={Dashboard} />
       <Route path="/crawl-hub" component={Dashboard} />
       
-      {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>
   );
@@ -76,6 +87,7 @@ function App() {
         <TooltipProvider delayDuration={100}>
           <Toaster />
           <Router />
+          <SignupPrompt />
         </TooltipProvider>
       </QueryClientProvider>
     </ErrorBoundary>

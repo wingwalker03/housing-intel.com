@@ -4,11 +4,17 @@ import fs from "fs";
 import path from "path";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
-import { insertLeadEmailSchema } from "@shared/schema";
+import { insertLeadEmailSchema, insertContactMessageSchema } from "@shared/schema";
 import multer from "multer";
 import { parse } from "csv-parse";
 import { renderHomepage, renderStatePage, renderMetroPage, renderStatesPage, renderMetrosPage, renderCrawlHubPage, renderEmbedInfoPage, renderSitemap, getSEOData } from "./ssr";
 import { getLatestSentiment, getAllLatestSentiments } from "./newsbriefs";
+import { createUser, loginUser, confirmEmail, getUserById, getUserByEmail, updateUserStripeInfo, requireAuth } from "./auth";
+import { sendContactFormEmail } from "./emailService";
+import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
+import { db } from "./db";
+import { users, contactMessages } from "@shared/schema";
+import { eq, sql } from "drizzle-orm";
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -50,6 +56,244 @@ async function processZillowCsv(buffer: Buffer): Promise<any[]> {
 }
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
+  // ── AUTH ROUTES ──
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const { firstName, lastName, email, password } = req.body;
+      if (!firstName || !lastName || !email || !password) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+      if (password.length < 6) {
+        return res.status(400).json({ message: "Password must be at least 6 characters" });
+      }
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      const user = await createUser(firstName, lastName, email, password, baseUrl);
+      req.session.userId = user.id;
+      res.json({ user: { id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, emailConfirmed: user.emailConfirmed } });
+    } catch (err: any) {
+      res.status(400).json({ message: err.message });
+    }
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required" });
+      }
+      const user = await loginUser(email, password);
+      req.session.userId = user.id;
+      res.json({
+        user: {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          emailConfirmed: user.emailConfirmed,
+          subscriptionPlan: user.subscriptionPlan,
+          subscriptionStatus: user.subscriptionStatus,
+        }
+      });
+    } catch (err: any) {
+      res.status(401).json({ message: err.message });
+    }
+  });
+
+  app.get("/api/auth/me", async (req, res) => {
+    if (!req.session.userId) {
+      return res.json({ user: null });
+    }
+    const user = await getUserById(req.session.userId);
+    if (!user) {
+      return res.json({ user: null });
+    }
+    res.json({
+      user: {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        emailConfirmed: user.emailConfirmed,
+        subscriptionPlan: user.subscriptionPlan,
+        subscriptionStatus: user.subscriptionStatus,
+      }
+    });
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    req.session.destroy((err) => {
+      if (err) return res.status(500).json({ message: "Logout failed" });
+      res.json({ success: true });
+    });
+  });
+
+  app.get("/api/auth/confirm/:token", async (req, res) => {
+    const success = await confirmEmail(req.params.token);
+    if (success) {
+      res.redirect("/login?confirmed=true");
+    } else {
+      res.redirect("/login?confirmed=false");
+    }
+  });
+
+  // ── CONTACT FORM ──
+  app.post("/api/contact", async (req, res) => {
+    try {
+      const data = insertContactMessageSchema.parse(req.body);
+      await db.insert(contactMessages).values(data);
+      sendContactFormEmail(data.name, data.email, data.message).catch(console.error);
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(400).json({ message: err.message });
+    }
+  });
+
+  // ── STRIPE SUBSCRIPTION ROUTES ──
+  app.get("/api/stripe/publishable-key", async (_req, res) => {
+    try {
+      const key = await getStripePublishableKey();
+      res.json({ publishableKey: key });
+    } catch (err) {
+      res.status(500).json({ message: "Failed to get Stripe key" });
+    }
+  });
+
+  app.post("/api/subscriptions/create-checkout", requireAuth, async (req, res) => {
+    try {
+      const { plan } = req.body;
+      if (!["api", "embed", "both"].includes(plan)) {
+        return res.status(400).json({ message: "Invalid plan" });
+      }
+
+      const user = await getUserById(req.session.userId!);
+      if (!user) return res.status(401).json({ message: "User not found" });
+
+      const stripe = await getUncachableStripeClient();
+
+      let customerId = user.stripeCustomerId;
+      if (!customerId) {
+        const customer = await stripe.customers.create({
+          email: user.email,
+          name: `${user.firstName} ${user.lastName}`,
+          metadata: { userId: String(user.id) },
+        });
+        customerId = customer.id;
+        await updateUserStripeInfo(user.id, { stripeCustomerId: customerId });
+      }
+
+      const priceAmounts: Record<string, number> = { api: 1499, embed: 2499, both: 2999 };
+      const planNames: Record<string, string> = { api: "API Access", embed: "Embed Widgets", both: "API + Embed Bundle" };
+
+      const session = await stripe.checkout.sessions.create({
+        customer: customerId,
+        payment_method_types: ["card"],
+        line_items: [{
+          price_data: {
+            currency: "usd",
+            product_data: { name: planNames[plan] },
+            unit_amount: priceAmounts[plan],
+            recurring: { interval: "month" },
+          },
+          quantity: 1,
+        }],
+        mode: "subscription",
+        success_url: `${req.protocol}://${req.get("host")}/account?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${req.protocol}://${req.get("host")}/subscribe`,
+        metadata: { userId: String(user.id), plan },
+      });
+
+      res.json({ url: session.url });
+    } catch (err: any) {
+      console.error("Checkout error:", err);
+      res.status(500).json({ message: "Failed to create checkout session" });
+    }
+  });
+
+  app.post("/api/subscriptions/verify-session", requireAuth, async (req, res) => {
+    try {
+      const { sessionId } = req.body;
+      if (!sessionId) return res.status(400).json({ message: "Session ID required" });
+
+      const stripe = await getUncachableStripeClient();
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+      if (session.payment_status === "paid" && session.metadata?.userId) {
+        const userId = parseInt(session.metadata.userId);
+        if (userId !== req.session.userId) {
+          return res.status(403).json({ message: "Session does not belong to this user" });
+        }
+        const plan = session.metadata.plan || "api";
+        const subscriptionId = session.subscription as string;
+
+        await updateUserStripeInfo(userId, {
+          subscriptionPlan: plan,
+          subscriptionStatus: "active",
+          stripeSubscriptionId: subscriptionId,
+        });
+
+        const user = await getUserById(userId);
+        res.json({ success: true, user: {
+          id: user!.id,
+          firstName: user!.firstName,
+          lastName: user!.lastName,
+          email: user!.email,
+          emailConfirmed: user!.emailConfirmed,
+          subscriptionPlan: user!.subscriptionPlan,
+          subscriptionStatus: user!.subscriptionStatus,
+        }});
+      } else {
+        res.json({ success: false });
+      }
+    } catch (err: any) {
+      console.error("Verify session error:", err);
+      res.status(500).json({ message: "Failed to verify session" });
+    }
+  });
+
+  app.post("/api/subscriptions/cancel", requireAuth, async (req, res) => {
+    try {
+      const user = await getUserById(req.session.userId!);
+      if (!user || !user.stripeSubscriptionId) {
+        return res.status(400).json({ message: "No active subscription" });
+      }
+
+      const stripe = await getUncachableStripeClient();
+      await stripe.subscriptions.cancel(user.stripeSubscriptionId);
+
+      await updateUserStripeInfo(user.id, {
+        subscriptionPlan: null,
+        subscriptionStatus: "canceled",
+        stripeSubscriptionId: null,
+      });
+
+      res.json({ success: true });
+    } catch (err: any) {
+      console.error("Cancel error:", err);
+      res.status(500).json({ message: "Failed to cancel subscription" });
+    }
+  });
+
+  app.get("/api/subscriptions/portal", requireAuth, async (req, res) => {
+    try {
+      const user = await getUserById(req.session.userId!);
+      if (!user || !user.stripeCustomerId) {
+        return res.status(400).json({ message: "No Stripe customer" });
+      }
+
+      const stripe = await getUncachableStripeClient();
+      const portalSession = await stripe.billingPortal.sessions.create({
+        customer: user.stripeCustomerId,
+        return_url: `${req.protocol}://${req.get("host")}/account`,
+      });
+
+      res.json({ url: portalSession.url });
+    } catch (err: any) {
+      console.error("Portal error:", err);
+      res.status(500).json({ message: "Failed to create portal session" });
+    }
+  });
+
+  // ── SSR ROUTES ──
   app.get("/", (req, res, next) => {
     try {
       res.setHeader("Content-Type", "text/html; charset=utf-8");
@@ -171,24 +415,13 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.get('/api/summary', async (_req, res) => {
     try {
       const seoData = getSEOData();
-      
-      const states = Object.values(seoData.states).map(s => ({
-        code: s.code,
-        name: s.name,
-        latestValue: s.latestValue,
-        latestDate: s.latestDate
+      const states = Object.values(seoData.states).map((s: any) => ({
+        code: s.code, name: s.name, latestValue: s.latestValue, latestDate: s.latestDate
       }));
-
       const topMetros = Object.values(seoData.metros)
-        .sort((a, b) => b.latestValue - a.latestValue)
+        .sort((a: any, b: any) => b.latestValue - a.latestValue)
         .slice(0, 50)
-        .map(m => ({
-          name: m.name,
-          stateCode: m.stateCode,
-          latestValue: m.latestValue,
-          latestDate: m.latestDate
-        }));
-
+        .map((m: any) => ({ name: m.name, stateCode: m.stateCode, latestValue: m.latestValue, latestDate: m.latestDate }));
       res.json({
         national: {
           medianHomeValue: seoData.national.latestValue,
@@ -196,8 +429,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
           totalStates: seoData.national.totalStates,
           totalMetros: seoData.national.totalMetros,
         },
-        states,
-        topMetros
+        states, topMetros
       });
     } catch (err) {
       console.error("Summary API Error:", err);
@@ -212,12 +444,10 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       const distExists = fs.existsSync(distPath);
       res.setHeader("X-SSR-Mode", "ssr");
       res.json({
-        status: "ok",
-        env: process.env.NODE_ENV,
+        status: "ok", env: process.env.NODE_ENV,
         db: seoData.length > 0 ? "connected" : "empty",
         assets: distExists ? "present" : "missing",
-        distPath,
-        timestamp: new Date().toISOString()
+        distPath, timestamp: new Date().toISOString()
       });
     } catch (err) {
       res.status(500).json({ status: "error", message: String(err) });
@@ -251,85 +481,60 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     next();
   });
 
-  // --- PUBLIC API V1 (For External Developers & Widgets) ---                                                                                             
+  // ── PUBLIC API V1 ──
+  app.get("/api/v1/public/states/:stateCode", async (req, res) => {
+    try {
+      const { stateCode } = req.params;
+      const { startDate, endDate } = req.query;
+      if (!stateCode || stateCode.length !== 2) {
+        return res.status(400).json({ error: "Invalid state code (e.g., TX, CA)" });
+      }
+      const data = await storage.getHousingStats(stateCode.toUpperCase(), startDate as string, endDate as string);
+      res.header("Access-Control-Allow-Origin", "*");
+      res.json({ meta: { source: "Housing Intel", license: "CC-BY-SA" }, data });
+    } catch (err) {
+      console.error("Public API Error:", err);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
 
-  // 1. Get State Data (JSON)                                                                                                                              
-  app.get("/api/v1/public/states/:stateCode", async (req, res) => {                                                                                        
-    try {                                                                                                                                                  
-      const { stateCode } = req.params;                                                                                                                    
-      const { startDate, endDate } = req.query;                                                                                                            
+  app.get("/api/v1/public/rent/:stateCode/:countyName", async (req, res) => {
+    try {
+      const { stateCode, countyName } = req.params;
+      const allCounties = await storage.getCountyRentalStats(stateCode.toUpperCase());
+      const specificCounty = allCounties.filter(c =>
+        c.countyName.toLowerCase().includes(countyName.toLowerCase())
+      );
+      res.header("Access-Control-Allow-Origin", "*");
+      res.json({ meta: { source: "Housing Intel", region: `${countyName}, ${stateCode}` }, data: specificCounty });
+    } catch (err) {
+      res.status(500).json({ error: "Server Error" });
+    }
+  });
 
-      // Basic Validation                                                                                                                                  
-      if (!stateCode || stateCode.length !== 2) {                                                                                                          
-        return res.status(400).json({ error: "Invalid state code (e.g., TX, CA)" });                                                                       
-      }                                                                                                                                                    
-
-      // Fetch Data                                                                                                                                        
-      const data = await storage.getHousingStats(stateCode.toUpperCase(), startDate as string, endDate as string);                                        
-
-      // Add CORS for public access                                                                                                                        
-      res.header("Access-Control-Allow-Origin", "*");                                                                                                     
-      res.json({                                                                                                                                           
-        meta: { source: "Housing Intel", license: "CC-BY-SA" },                                                                                            
-        data                                                                                                                                               
-      });                                                                                                                                                  
-    } catch (err) {                                                                                                                                        
-      console.error("Public API Error:", err);                                                                                                             
-      res.status(500).json({ error: "Internal Server Error" });                                                                                            
-    }                                                                                                                                                      
-  });                                                                                                                                                      
-
-  // 2. Get Rental Data for a County (JSON)                                                                                                                
-  app.get("/api/v1/public/rent/:stateCode/:countyName", async (req, res) => {                                                                              
-    try {                                                                                                                                                  
-      const { stateCode, countyName } = req.params;                                                                                                        
-
-      // Fetch Data (You might need to adjust storage method to filter by county name if not exists)                                                       
-      // Assuming getCountyRentalStats filters by state, we filter locally for now:                                                                        
-      const allCounties = await storage.getCountyRentalStats(stateCode.toUpperCase());                                                                    
-      const specificCounty = allCounties.filter(c =>                                                                                                       
-        c.countyName.toLowerCase().includes(countyName.toLowerCase())                                                                                     
-      );                                                                                                                                                   
-
-      res.header("Access-Control-Allow-Origin", "*");                                                                                                     
-      res.json({                                                                                                                                           
-        meta: { source: "Housing Intel", region: `${countyName}, ${stateCode}` },                                                                          
-        data: specificCounty                                                                                                                               
-      });                                                                                                                                                  
-    } catch (err) {                                                                                                                                        
-      res.status(500).json({ error: "Server Error" });                                                                                                     
-    }                                                                                                                                                      
-  });                              
-  // --- EMBED WIDGET GENERATOR ---                                                                                                                        
-  // Usage: <script src="https://housing-intel.com/api/v1/widget.js?state=TX"></script>                                                                    
-
-  app.get("/api/v1/widget.js", (req, res) => {                                                                                                             
-    const { state, metro, theme = "light" } = req.query;                                                                                                   
-    const targetUrl = `https://housing-intel.com/embed?state=${state || ''}&metro=${metro || ''}&theme=${theme}`;                                          
-
-    const scriptContent = `                                                                                                                                
-      (function() {                                                                                                                                        
-        var container = document.createElement('div');                                                                                                     
-        container.id = 'housing-intel-widget-' + Math.random().toString(36).substring(2, 9);                                                                 
-        container.style.width = '100%';                                                                                                                    
-        container.style.height = '400px';                                                                                                                  
-        container.style.border = '1px solid #e2e8f0';                                                                                                      
-        container.style.borderRadius = '8px';                                                                                                              
-        container.style.overflow = 'hidden';                                                                                                               
-
-        var iframe = document.createElement('iframe');                                                                                                    
-        iframe.src = '${targetUrl}';                                                                                                                       
-        iframe.style.width = '100%';                                                                                                                       
-        iframe.style.height = '100%';                                                                                                                      
-        iframe.style.border = 'none';                                                                                                                      
-
-        container.appendChild(iframe);                                                                                                                     
-        document.write(container.outerHTML);                                                                                                              
-      })();                                                                                                                                                
-    `;                                                                                                                                                     
-
-    res.setHeader("Content-Type", "application/javascript");                                                                                               
-    res.send(scriptContent);                                                                                                                               
+  app.get("/api/v1/widget.js", (req, res) => {
+    const { state, metro, theme = "light" } = req.query;
+    const targetUrl = `https://housing-intel.com/embed?state=${state || ''}&metro=${metro || ''}&theme=${theme}`;
+    const scriptContent = `
+      (function() {
+        var container = document.createElement('div');
+        container.id = 'housing-intel-widget-' + Math.random().toString(36).substring(2, 9);
+        container.style.width = '100%';
+        container.style.height = '400px';
+        container.style.border = '1px solid #e2e8f0';
+        container.style.borderRadius = '8px';
+        container.style.overflow = 'hidden';
+        var iframe = document.createElement('iframe');
+        iframe.src = '${targetUrl}';
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.border = 'none';
+        container.appendChild(iframe);
+        document.write(container.outerHTML);
+      })();
+    `;
+    res.setHeader("Content-Type", "application/javascript");
+    res.send(scriptContent);
   });
 
   return httpServer;
