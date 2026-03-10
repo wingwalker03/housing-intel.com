@@ -227,7 +227,7 @@ export default function AccountPage() {
                   </Select>
                 </div>
 
-                {embedState && (embedView === "chart" || embedView === "map") && (
+                {embedState && embedView === "chart" && (
                   <div>
                     <Label className="text-sm">Metro Area (optional)</Label>
                     <Select value={embedMetro || "__none"} onValueChange={(v) => setEmbedMetro(v === "__none" ? "" : v)}>
