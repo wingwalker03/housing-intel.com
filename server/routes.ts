@@ -9,7 +9,7 @@ import multer from "multer";
 import { parse } from "csv-parse";
 import { renderHomepage, renderStatePage, renderMetroPage, renderStatesPage, renderMetrosPage, renderCrawlHubPage, renderEmbedInfoPage, renderSitemap, getSEOData } from "./ssr";
 import { getLatestSentiment, getAllLatestSentiments } from "./newsbriefs";
-import { createUser, loginUser, confirmEmail, getUserById, getUserByEmail, updateUserStripeInfo, requireAuth } from "./auth";
+import { createUser, loginUser, confirmEmail, getUserById, getUserByEmail, updateUserStripeInfo, requireAuth, requireApiSubscription, requireEmbedSubscription } from "./auth";
 import { sendContactFormEmail } from "./emailService";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { db } from "./db";
@@ -481,8 +481,8 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     next();
   });
 
-  // ── PUBLIC API V1 ──
-  app.get("/api/v1/public/states/:stateCode", async (req, res) => {
+  // ── PUBLIC API V1 (requires API subscription) ──
+  app.get("/api/v1/public/states/:stateCode", requireApiSubscription, async (req, res) => {
     try {
       const { stateCode } = req.params;
       const { startDate, endDate } = req.query;
@@ -498,7 +498,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     }
   });
 
-  app.get("/api/v1/public/rent/:stateCode/:countyName", async (req, res) => {
+  app.get("/api/v1/public/rent/:stateCode/:countyName", requireApiSubscription, async (req, res) => {
     try {
       const { stateCode, countyName } = req.params;
       const allCounties = await storage.getCountyRentalStats(stateCode.toUpperCase());
@@ -512,7 +512,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     }
   });
 
-  app.get("/api/v1/widget.js", (req, res) => {
+  app.get("/api/v1/widget.js", requireEmbedSubscription, (req, res) => {
     const { state, metro, theme = "light" } = req.query;
     const targetUrl = `https://housing-intel.com/embed?state=${state || ''}&metro=${metro || ''}&theme=${theme}`;
     const scriptContent = `

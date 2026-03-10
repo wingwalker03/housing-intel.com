@@ -85,3 +85,25 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
   }
   next();
 }
+
+export async function requireApiSubscription(req: Request, res: Response, next: NextFunction) {
+  if (!req.session.userId) {
+    return res.status(401).json({ error: "API access requires an active subscription. Visit https://housing-intel.com/subscribe." });
+  }
+  const [user] = await db.select().from(users).where(eq(users.id, req.session.userId));
+  if (!user || user.subscriptionStatus !== "active" || !["api", "both"].includes(user.subscriptionPlan || "")) {
+    return res.status(403).json({ error: "API access requires an API or Both subscription plan. Visit https://housing-intel.com/subscribe." });
+  }
+  next();
+}
+
+export async function requireEmbedSubscription(req: Request, res: Response, next: NextFunction) {
+  if (!req.session.userId) {
+    return res.status(401).json({ error: "Embed access requires an active subscription. Visit https://housing-intel.com/subscribe." });
+  }
+  const [user] = await db.select().from(users).where(eq(users.id, req.session.userId));
+  if (!user || user.subscriptionStatus !== "active" || !["embed", "both"].includes(user.subscriptionPlan || "")) {
+    return res.status(403).json({ error: "Embed access requires an Embed or Both subscription plan. Visit https://housing-intel.com/subscribe." });
+  }
+  next();
+}

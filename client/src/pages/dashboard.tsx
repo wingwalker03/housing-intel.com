@@ -806,35 +806,62 @@ export default function Dashboard() {
           </div>
           
           <div className="flex items-center gap-2">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 gap-2 text-muted-foreground hover:text-foreground">
+            <Link href="/for-business">
+              <Button variant="ghost" size="sm" className="h-8 gap-2 text-muted-foreground hover:text-foreground hidden md:flex" data-testid="button-for-business">
+                <Building2 className="h-4 w-4" />
+                <span>For Business</span>
+              </Button>
+            </Link>
+
+            <div className="h-4 w-[1px] bg-border mx-1 hidden md:block" />
+
+            {authData.hasActiveSubscription && ["api","both"].includes(authData.subscriptionPlan || "") ? (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 gap-2 text-muted-foreground hover:text-foreground" data-testid="button-api-docs">
+                    <Code2 className="h-4 w-4" />
+                    <span className="hidden sm:inline">API</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                  <ApiDocumentation />
+                </DialogContent>
+              </Dialog>
+            ) : (
+              <Link href="/subscribe">
+                <Button variant="ghost" size="sm" className="h-8 gap-2 text-muted-foreground hover:text-foreground" data-testid="button-api-subscribe">
                   <Code2 className="h-4 w-4" />
                   <span className="hidden sm:inline">API</span>
                 </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                <ApiDocumentation />
-              </DialogContent>
-            </Dialog>
+              </Link>
+            )}
 
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 gap-2 text-muted-foreground hover:text-foreground">
+            {authData.hasActiveSubscription && ["embed","both"].includes(authData.subscriptionPlan || "") ? (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 gap-2 text-muted-foreground hover:text-foreground" data-testid="button-embed-open">
+                    <Maximize2 className="h-4 w-4" />
+                    <span className="hidden sm:inline">Embed</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto bg-background text-foreground">
+                  <DialogHeader>
+                    <DialogTitle className="text-foreground">Create an Embed</DialogTitle>
+                  </DialogHeader>
+                  <EmbedBuilder
+                    stateCode={selectedStateCode}
+                    metroName={selectedMetroName}
+                  />
+                </DialogContent>
+              </Dialog>
+            ) : (
+              <Link href="/subscribe">
+                <Button variant="ghost" size="sm" className="h-8 gap-2 text-muted-foreground hover:text-foreground" data-testid="button-embed-subscribe">
                   <Maximize2 className="h-4 w-4" />
                   <span className="hidden sm:inline">Embed</span>
                 </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto bg-background text-foreground">
-                <DialogHeader>
-                  <DialogTitle className="text-foreground">Create an Embed</DialogTitle>
-                </DialogHeader>
-                <EmbedBuilder
-                  stateCode={selectedStateCode}
-                  metroName={selectedMetroName}
-                />
-              </DialogContent>
-            </Dialog>
+              </Link>
+            )}
 
             <div className="h-4 w-[1px] bg-border mx-1 hidden sm:block" />
 
