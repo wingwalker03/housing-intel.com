@@ -399,7 +399,7 @@ export default function EmbedPage() {
           </div>
         )}
         {showChart && (
-          <div className={`${view === "both" ? "md:w-1/2 h-1/2 md:h-full border-t md:border-t-0 md:border-l border-border/40" : "w-full h-full"} relative min-h-0 bg-background`}>
+          <div className={`${view === "both" ? "md:w-1/2 h-1/2 md:h-full border-t md:border-t-0 md:border-l border-border/40" : "w-full h-full"} relative min-h-0 bg-background`} style={containerStyle}>
             <HousingTrendChart
               data={stats}
               metric={metricParam}
@@ -411,7 +411,7 @@ export default function EmbedPage() {
           </div>
         )}
         {showRentalChart && (
-          <div className="w-full h-full relative min-h-0 bg-background">
+          <div className="w-full h-full relative min-h-0 bg-background" style={containerStyle}>
             <HousingTrendChart
               data={rentalStats}
               metric="medianHomeValue"

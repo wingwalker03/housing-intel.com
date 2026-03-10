@@ -1,13 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Building2, Loader2, LogOut, CreditCard, Palette, Copy, Check, ExternalLink } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
+import { STATE_CODE_TO_NAME } from "@/lib/slugs";
+
+const STATE_OPTIONS = Object.entries(STATE_CODE_TO_NAME).sort((a, b) => a[1].localeCompare(b[1]));
+
+const isChartView = (view: string) => view === "chart" || view === "rental-chart";
 
 export default function AccountPage() {
   const { user, isLoggedIn, isLoading, logout, hasActiveSubscription, subscriptionPlan } = useAuth();
@@ -15,12 +22,33 @@ export default function AccountPage() {
   const [bgColor, setBgColor] = useState("#0f172a");
   const [embedView, setEmbedView] = useState<"map" | "chart" | "rental" | "rental-chart">("map");
   const [embedState, setEmbedState] = useState("");
+  const [embedMetro, setEmbedMetro] = useState("");
   const [embedTheme, setEmbedTheme] = useState<"dark" | "light">("dark");
+  const [embedMetric, setEmbedMetric] = useState<"medianHomeValue" | "yoyChange">("medianHomeValue");
   const [copied, setCopied] = useState(false);
   const [canceling, setCanceling] = useState(false);
 
   const params = new URLSearchParams(window.location.search);
   const sessionId = params.get("session_id");
+
+  const { data: metroData } = useQuery<{ metroName: string }[]>({
+    queryKey: ["/api/metro", embedState],
+    queryFn: () => fetch(`/api/metro?stateCode=${embedState}`).then(r => r.json()),
+    enabled: !!embedState,
+    staleTime: 300000,
+  });
+
+  const metroOptions = useMemo(() => {
+    if (!metroData) return [];
+    const seen = new Set<string>();
+    return metroData
+      .filter(m => { if (seen.has(m.metroName)) return false; seen.add(m.metroName); return true; })
+      .sort((a, b) => a.metroName.localeCompare(b.metroName));
+  }, [metroData]);
+
+  useEffect(() => {
+    setEmbedMetro("");
+  }, [embedState]);
 
   useEffect(() => {
     if (sessionId) {
@@ -49,7 +77,14 @@ export default function AccountPage() {
   }
 
   const baseUrl = "https://housing-intel.com";
-  const embedUrl = `${baseUrl}/embed?view=${embedView}${embedState ? `&state=${embedState}` : ""}&theme=${embedTheme}&bgColor=${encodeURIComponent(bgColor)}`;
+  const embedUrl = [
+    `${baseUrl}/embed?view=${embedView}`,
+    embedState ? `&state=${embedState}` : "",
+    embedMetro ? `&metro=${encodeURIComponent(embedMetro)}` : "",
+    `&theme=${embedTheme}`,
+    `&bgColor=${encodeURIComponent(bgColor)}`,
+    isChartView(embedView) ? `&metric=${embedMetric}` : "",
+  ].join("");
   const iframeCode = `<iframe src="${embedUrl}" width="100%" height="500" frameborder="0" style="border-radius: 8px;"></iframe>`;
 
   const handleCopy = () => {
@@ -147,42 +182,83 @@ export default function AccountPage() {
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <Label className="text-sm">Embed Type</Label>
-                  <select
-                    value={embedView}
-                    onChange={(e) => setEmbedView(e.target.value as any)}
-                    className="w-full mt-1 h-9 rounded-md border border-input bg-background px-3 text-sm"
-                    data-testid="select-embed-view"
-                  >
-                    <option value="map">Housing Map</option>
-                    <option value="chart">Housing Chart</option>
-                    <option value="rental">Rental Map</option>
-                    <option value="rental-chart">Rental Chart</option>
-                  </select>
+                  <Select value={embedView} onValueChange={(v) => setEmbedView(v as any)}>
+                    <SelectTrigger className="mt-1" data-testid="select-embed-view">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="map">Housing Map</SelectItem>
+                      <SelectItem value="chart">Housing Chart</SelectItem>
+                      <SelectItem value="rental">Rental Map</SelectItem>
+                      <SelectItem value="rental-chart">Rental Chart</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
+
+                {isChartView(embedView) && (
+                  <div>
+                    <Label className="text-sm">Metric</Label>
+                    <Select value={embedMetric} onValueChange={(v) => setEmbedMetric(v as any)}>
+                      <SelectTrigger className="mt-1" data-testid="select-embed-metric">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="medianHomeValue">
+                          {embedView === "rental-chart" ? "Rental Price" : "Housing Price"}
+                        </SelectItem>
+                        <SelectItem value="yoyChange">Year-over-Year Growth</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
                 <div>
                   <Label className="text-sm">State (optional)</Label>
-                  <Input
-                    placeholder="e.g. TX, CA"
-                    value={embedState}
-                    onChange={(e) => setEmbedState(e.target.value.toUpperCase())}
-                    maxLength={2}
-                    data-testid="input-embed-state"
-                  />
+                  <Select value={embedState || "__none"} onValueChange={(v) => setEmbedState(v === "__none" ? "" : v)}>
+                    <SelectTrigger className="mt-1" data-testid="select-embed-state">
+                      <SelectValue placeholder="All states (national)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__none">All states (national)</SelectItem>
+                      {STATE_OPTIONS.map(([code, name]) => (
+                        <SelectItem key={code} value={code}>{name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
+
+                {embedState && (embedView === "chart" || embedView === "map") && (
+                  <div>
+                    <Label className="text-sm">Metro Area (optional)</Label>
+                    <Select value={embedMetro || "__none"} onValueChange={(v) => setEmbedMetro(v === "__none" ? "" : v)}>
+                      <SelectTrigger className="mt-1" data-testid="select-embed-metro">
+                        <SelectValue placeholder="All metros in state" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__none">All metros in state</SelectItem>
+                        {metroOptions.map((m) => (
+                          <SelectItem key={m.metroName} value={m.metroName}>{m.metroName}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
                 <div>
                   <Label className="text-sm">Theme</Label>
-                  <select
-                    value={embedTheme}
-                    onChange={(e) => setEmbedTheme(e.target.value as "dark" | "light")}
-                    className="w-full mt-1 h-9 rounded-md border border-input bg-background px-3 text-sm"
-                    data-testid="select-embed-theme"
-                  >
-                    <option value="dark">Dark</option>
-                    <option value="light">Light</option>
-                  </select>
+                  <Select value={embedTheme} onValueChange={(v) => setEmbedTheme(v as "dark" | "light")}>
+                    <SelectTrigger className="mt-1" data-testid="select-embed-theme">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="dark">Dark</SelectItem>
+                      <SelectItem value="light">Light</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
+
                 <div>
-                  <Label className="text-sm">Background Color</Label>
+                  <Label className="text-sm">Custom Color</Label>
                   <div className="flex items-center gap-2 mt-1">
                     <input
                       type="color"
@@ -204,14 +280,14 @@ export default function AccountPage() {
               <div>
                 <Label className="text-sm mb-2 block">Preview</Label>
                 <div className="rounded-lg overflow-hidden border border-border" style={{ backgroundColor: bgColor }}>
-                  <iframe src={embedUrl.replace(baseUrl, "")} width="100%" height="400" frameBorder="0" />
+                  <iframe src={embedUrl.replace(baseUrl, "")} width="100%" height="400" frameBorder="0" title="Embed preview" />
                 </div>
               </div>
 
               <div>
                 <Label className="text-sm mb-2 block">Embed Code</Label>
                 <div className="relative">
-                  <pre className="p-3 bg-muted rounded-lg text-xs overflow-x-auto" data-testid="text-embed-code">{iframeCode}</pre>
+                  <pre className="p-3 bg-muted rounded-lg text-xs overflow-x-auto whitespace-pre-wrap" data-testid="text-embed-code">{iframeCode}</pre>
                   <Button
                     size="sm"
                     variant="ghost"
