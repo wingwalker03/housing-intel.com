@@ -316,9 +316,11 @@ export default function EmbedPage() {
 
   const pageIsLoading = isLoading || (isRentalChart && rentalLoading);
 
+  const containerStyle = bgColorParam ? { backgroundColor: bgColorParam } : {};
+
   if (pageIsLoading) {
     return (
-      <div className="w-full h-screen flex items-center justify-center bg-background text-foreground">
+      <div className="w-full h-screen flex items-center justify-center bg-background text-foreground" style={containerStyle}>
         <div className="flex flex-col items-center gap-3">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
           <p className="text-sm text-muted-foreground">Loading...</p>
@@ -328,7 +330,7 @@ export default function EmbedPage() {
   }
 
   return (
-    <div className="w-full h-screen flex flex-col bg-background text-foreground overflow-hidden" data-testid="embed-container">
+    <div className="w-full h-screen flex flex-col bg-background text-foreground overflow-hidden" style={containerStyle} data-testid="embed-container">
       <div className="flex items-center justify-between px-4 py-2 border-b border-border/40 bg-background/95 shrink-0 z-10">
         <div className="flex items-center gap-2 flex-wrap">
           {showRentalChart ? (
